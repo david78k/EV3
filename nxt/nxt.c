@@ -1,9 +1,4 @@
 #include<stdlib.h>
-#include<math.h>
-#include<string.h>
-//#include<cstring>
-
-//namespace std
 
 #define NUMPAT 4
 #define NUMIN  2
@@ -60,16 +55,14 @@ int main() {
                 for( i = 1 ; i <= NumInput ; i++ ) {
                     SumH[p][j] += Input[p][i] * WeightIH[i][j] ;
                 }
-                Hidden[p][j] = 1.0/(1.0 + pow(E, (-SumH[p][j]))) ;
-                //Hidden[p][j] = 1.0/(1.0 + E^(-SumH[p][j])) ;
+                Hidden[p][j] = 1.0/(1.0 + E^(-SumH[p][j])) ;
             }
             for( k = 1 ; k <= NumOutput ; k++ ) {    /* compute output unit activations and errors */
                 SumO[p][k] = WeightHO[0][k] ;
                 for( j = 1 ; j <= NumHidden ; j++ ) {
                     SumO[p][k] += Hidden[p][j] * WeightHO[j][k] ;
                 }
-                Output[p][k] = 1.0/(1.0 + pow(E, (-SumO[p][k]))) ;   /* Sigmoidal Outputs */
-                //Output[p][k] = 1.0/(1.0 + E^(-SumO[p][k])) ;   /* Sigmoidal Outputs */
+                Output[p][k] = 1.0/(1.0 + E^(-SumO[p][k])) ;   /* Sigmoidal Outputs */
 /*              Output[p][k] = SumO[p][k];      Linear Outputs */
                 Error += 0.5 * (Target[p][k] - Output[p][k]) * (Target[p][k] - Output[p][k]) ;   /* SSE */
 /*              Error -= ( Target[p][k] * log( Output[p][k] ) + ( 1.0 - Target[p][k] ) * log( 1.0 - Output[p][k] ) ) ;    Cross-Entropy Error */
@@ -119,8 +112,8 @@ int main() {
             //fprintf(stdout, "%f\t", Input[p][i]) ;
         }
         for( k = 1 ; k <= NumOutput ; k++ ) {
-//            string str=NumToStr(Output[p][k]);
-//            TextOut(0,k,str) ;
+            string str=NumToStr(Output[p][k]);
+            TextOut(0,k,str) ;
         }
     }
    Wait(40000);
