@@ -1,12 +1,19 @@
-import josx.platform.rcx.LCD;
+import lejos.hardware.ev3.EV3;
+import lejos.hardware.lcd.TextLCD;
+import lejos.hardware.Audio;
+import lejos.hardware.BrickFinder;
+import lejos.hardware.Keys;
+
+/*
 import josx.platform.rcx.TextLCD;
 import josx.platform.rcx.Sound;
 import josx.platform.rcx.Sensor;
 import josx.platform.rcx.SensorConstants;
 import josx.platform.rcx.Motor;
 import josx.platform.rcx.Button;
+*/
 
-public class LMbpnDemoRcx {
+public class LMbpnDemo {
     public static LMbpn bpn = new LMbpn();
 
     public static void main(String args[]) throws InterruptedException
@@ -14,13 +21,24 @@ public class LMbpnDemoRcx {
         int i, white;
         int inp[] = {0,0,0};
         int out[] = {0,0};
-        Sound.beep();
-        TextLCD.print( "Train" );
+
+	EV3 ev3 = (EV3) BrickFinder.getDefault();
+ 	Keys keys = ev3.getKeys();
+
+        //Sound.beep();
+	Audio audio = ev3.getAudio();
+	audio.systemSound(0);
+
+//        TextLCD.print( "Train" );
+	TextLCD lcd = ev3.getTextLCD();
+	lcd.drawString("Train", 4, 4);
         // Train bpn 500 epochs, sit down and wait about 5 minutes!
         for(i=0;i<500;i++) {
             bpn.train(1);
-            LCD.showNumber( bpn.trainedEpochs );
+            lcd.drawInt( bpn.trainedEpochs, 4, 4 );
+            //LCD.showNumber( bpn.trainedEpochs );
         }
+/*
         Sensor.S1.setTypeAndMode ( SensorConstants.SENSOR_TYPE_TOUCH,
                                    SensorConstants.SENSOR_MODE_BOOL );
         Sensor.S2.setTypeAndMode ( SensorConstants.SENSOR_TYPE_LIGHT,
@@ -62,5 +80,6 @@ public class LMbpnDemoRcx {
         Motor.A.stop();
         Motor.C.stop();
         Sound.beep();
+*/
     } // main()
 } // class LMbpn

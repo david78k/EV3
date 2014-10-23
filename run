@@ -1,0 +1,4 @@
+javac -cp lib/ev3/ev3classes.jar:. LMbpnDemo.java
+
+#java -cp lib/ev3/ev3classes.jar:. LMbpnDemo
+
