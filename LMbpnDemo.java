@@ -1,8 +1,23 @@
 import lejos.hardware.ev3.EV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.Audio;
+import lejos.hardware.Bluetooth;
 import lejos.hardware.BrickFinder;
 import lejos.hardware.Keys;
+import lejos.hardware.Sound;
+import lejos.hardware.port.IOPort;
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.AnalogSensor;
+import lejos.hardware.sensor.BaseSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
+import lejos.hardware.sensor.EV3SensorConstants;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.hardware.sensor.EV3IRSensor;
+import lejos.hardware.sensor.SensorMode;
+import lejos.hardware.sensor.SensorModes;
+import lejos.hardware.sensor.EV3SensorConstants;
+import lejos.remote.ev3.RemoteEV3;
 
 /*
 import josx.platform.rcx.TextLCD;
@@ -13,6 +28,10 @@ import josx.platform.rcx.Motor;
 import josx.platform.rcx.Button;
 */
 
+/*
+ * Two touch sensors, one light sensor, one infrared tower
+ * Two motors
+ */
 public class LMbpnDemo {
     public static LMbpn bpn = new LMbpn();
 
@@ -22,19 +41,18 @@ public class LMbpnDemo {
         int inp[] = {0,0,0};
         int out[] = {0,0};
 
-	EV3 ev3 = (EV3) BrickFinder.getDefault();
- 	Keys keys = ev3.getKeys();
+//        RemoteEV3 ev3 = RemoteEV3.
+        EV3 ev3 = (EV3) BrickFinder.getDefault();
+        Keys keys = ev3.getKeys();
 
-        //Sound.beep();
-	Audio audio = ev3.getAudio();
-	audio.systemSound(0);
-
-//        TextLCD.print( "Train" );
-	TextLCD lcd = ev3.getTextLCD();
-	lcd.drawString("Train", 4, 4);
+        Sound.beep();
+        
+        //        TextLCD.print( "Train" );
+        TextLCD lcd = ev3.getTextLCD();
+        lcd.drawString("Train", 4, 4);
         // Train bpn 500 epochs, sit down and wait about 5 minutes!
         for(i=0;i<500;i++) {
-            bpn.train(1);
+        	bpn.train(1);
             lcd.drawInt( bpn.trainedEpochs, 4, 4 );
             //LCD.showNumber( bpn.trainedEpochs );
         }
@@ -45,6 +63,36 @@ public class LMbpnDemo {
                                    SensorConstants.SENSOR_MODE_RAW );
         Sensor.S3.setTypeAndMode ( SensorConstants.SENSOR_TYPE_TOUCH,
                                    SensorConstants.SENSOR_MODE_BOOL );
+*/
+        EV3TouchSensor tsensor = new EV3TouchSensor(new Port() {
+			
+			@Override
+			public <T extends IOPort> T open(Class<T> arg0) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public int getSensorType() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public int getPortType() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public String getName() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		});
+        
+        Sound.twoBeeps();
+        /*
         Sound.twoBeeps();
         Sensor.S2.activate();   
         white = Sensor.S2.readRawValue();
