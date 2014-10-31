@@ -93,7 +93,6 @@ public class LMbpnDemo {
         
         Sound.twoBeeps();
         /*
-        Sound.twoBeeps();
         Sensor.S2.activate();   
         white = Sensor.S2.readRawValue();
         Motor.A.setPower(1);
