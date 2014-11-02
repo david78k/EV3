@@ -1,0 +1,7 @@
+/Users/tkang/github/ev3/monobrick/ev3/ev3/obj/x86/Release/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Release/ev3.exe.mdb
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Release/ev3.exe
+/Users/tkang/github/ev3/monobrick/ev3/ev3/obj/x86/Release/ev3.exe
+/Users/tkang/github/ev3/monobrick/ev3/ev3/obj/x86/Release/ev3.exe.mdb
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Release/MonoBrick.dll
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Release/LibUsbDotNet.dll
