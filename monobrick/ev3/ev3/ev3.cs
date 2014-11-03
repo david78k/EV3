@@ -9,10 +9,12 @@ public class EV3Program{
 	static void Main(string[] args)
 	{
 		EV3Program program = new EV3Program ();
-		program.hello (); // motor B
+//		program.hello (); // motor B
 //		program.PositionControl (); // motor C
 //		program.firstProgram ();
-//		program.linefollow ();
+		program.linefollow ();
+
+		Console.WriteLine ("Complete");
 	}
 
 	void linefollow() {
@@ -54,20 +56,20 @@ public class EV3Program{
 
 				correction = Kp * error + Ki * integral + Kd * derivative;
 				Console.WriteLine(error + " " + correction);
-				// turn B+c motors by correction
+				// turn B+C motors by correction
 //				ev3.Vehicle.TurnRightForward(speed, (sbyte)correction);
 				if(error == 0) {
 //					vehicle.Forward(speed);
 				} else if (error > 0) {
 					Console.WriteLine("spin left");
 					ev3.MotorB.On((sbyte)correction);
-					ev3.MotorC.Off();
+					ev3.MotorC.On(speed);
 //					vehicle.SpinLeft((sbyte)correction);
 //					vehicle.TurnLeftForward(speed, (sbyte)correction);
 				} else {
 					Console.WriteLine("spin right");
 					ev3.MotorC.On ((sbyte)correction);
-					ev3.MotorB.Off();
+					ev3.MotorB.On(speed);
 //					vehicle.SpinRight((sbyte)correction);
 //					vehicle.TurnRightForward(speed, (sbyte)correction);
 				}
@@ -75,6 +77,7 @@ public class EV3Program{
 				lasterror = error;
 
 				iteration ++;
+				Thread.Sleep(1000);
 			}
 //			vehicle.Brake();
 //			vehicle.Off();
@@ -108,6 +111,7 @@ public class EV3Program{
 		}
 	}
 
+	// test Motor B
 	void hello() {
 		Console.WriteLine ("Hello");
 
@@ -138,6 +142,7 @@ public class EV3Program{
 		}
 	}
 
+	// test Motor C
 	void PositionControl()  
 	{  
 		var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
