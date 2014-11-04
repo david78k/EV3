@@ -32,6 +32,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ev3.cs" />
+    <Compile Include="BackPropProgram.cs" />
+    <Compile Include="NeuralNetwork.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoBrick">
