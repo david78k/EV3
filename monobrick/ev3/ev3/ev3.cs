@@ -24,8 +24,13 @@ namespace ev3 {
 			// sensors (touch, light|color, ultrasonic) and bias 1
 			// light sensor (0|1)
 			double[] inputs = {0, 1};
-			// motors B, C (0|1)
-			double[] outputs = {1, 1};
+			// motors B, C on/off (0|1)
+			double[] outputs = {1, 0};
+
+			net.test (inputs, outputs);
+
+			inputs = new double[]{1, 1};
+			outputs = new double[] {0, 1};
 
 			net.test (inputs, outputs);
 		}

@@ -4,16 +4,16 @@ namespace ev3
 {
 	public class NeuralNetwork
 	{
-//		int nInputs = 2;
-//		int nOutputs = 2;
 		double[][] trainInputs = new double[][]{
-			new double[]{0, 1}
-		};
-		double[][] trainOutputs = new double[][]{
+			new double[]{0, 1},
 			new double[]{1, 1}
 		};
+		double[][] trainOutputs = new double[][]{
+			new double[]{1, 0},
+			new double[]{0, 1}
+		};
 		double[][] weights; // need matrix?
-		int epochs = 5;
+		int epochs = 2;
 
 		public NeuralNetwork ()
 		{
@@ -44,14 +44,16 @@ namespace ev3
 			double error = 0;
 			double gradient = 0;
 			double[] outputs = new double[targets.Length];
+			double[] gradients = new double[targets.Length];
 
 			// forward propagate
-			for (int i = 0; i < inputs.Length; i++) {
-				for (int j = 0; j < targets.Length; j++) {
-					outputs [j] = inputs [i] * weights [i] [j];
-					error = targets [j] - outputs [j];
-					gradient = error * (1 - error);
+			for (int j = 0; j < targets.Length; j++) {
+				for (int i = 0; i < inputs.Length; i++) {
+					outputs [j] += inputs [i] * weights [i] [j];
 				}
+				error = targets [j] - outputs [j];
+				gradients[j] = error;
+//				gradients[j] = targets[j] * (1 - targets[j]) * error;
 			}
 			// compute errors
 
@@ -60,7 +62,7 @@ namespace ev3
 			// backward propagate
 			for (int i = 0; i < inputs.Length; i++) {
 				for (int j = 0; j < targets.Length; j++) {
-					weights [i][j] += gradient;
+					weights [i][j] += gradients[j]*inputs[i];
 				}
 			}
 		}
@@ -68,16 +70,15 @@ namespace ev3
 		public void test(double[] inputs, double[] targets) {
 			int corrects = 0;
 			double[] outputs = new double[targets.Length];
-			for (int i = 0; i < inputs.Length; i ++) {
-				for (int j = 0; j < outputs.Length; j++) {
-					outputs [j] = inputs [i] * weights [i] [j];
-					if (outputs [j] == targets [j])
-						corrects++;
-					else
-						Console.WriteLine ("incorrect: " + outputs [j] + " - expected: " + targets [j]);
+			for (int j = 0; j < outputs.Length; j ++) {
+				for (int i = 0; i < inputs.Length; i++) {
+					outputs [j] += inputs [i] * weights [i] [j];
 				}
+				Console.WriteLine ("expected (" + targets [j] + "): " + outputs [j]);
+				if (outputs [j] == targets [j])
+					corrects++;
 			}
-			Console.WriteLine ("corrects: " + corrects + "/" + targets.Length);
+			Console.WriteLine ("Result: " + 100*corrects/targets.Length + "% (" + corrects + "/" + targets.Length + ")");
 		}
 
 		// initialize random weights
