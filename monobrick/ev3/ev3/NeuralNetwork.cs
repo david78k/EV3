@@ -6,8 +6,12 @@ namespace ev3
 	{
 //		int nInputs = 2;
 //		int nOutputs = 2;
-		double[,] trainInputs = new double[,]{{0, 1}};
-		double[,] trainOutputs = new double[,]{{1, 1}};
+		double[][] trainInputs = new double[][]{
+			new double[]{0, 1}
+		};
+		double[][] trainOutputs = new double[][]{
+			new double[]{1, 1}
+		};
 		double[][] weights; // need matrix?
 		int epochs = 5;
 
@@ -16,11 +20,12 @@ namespace ev3
 			init();
 		}
 
-		public void train() {
+		public void learn() {
 			Console.WriteLine("Training network for " + epochs + " epochs ...");
 
 			int tInputs = trainInputs.Length;
 			int tOutputs = trainOutputs.Length;
+			Console.WriteLine("(tInputs, tOutputs) = (" + tInputs + ", " + tOutputs + ")");
 			if (tInputs != tOutputs) {
 				Console.WriteLine ("train data have inconsistent dimensions");
 				return;
@@ -28,13 +33,14 @@ namespace ev3
 			for (int epoch = 0; epoch < epochs; epoch ++) {
 				Console.WriteLine("epoch " + epoch);
 				for (int i = 0; i < tInputs; i++) {
-					Console.WriteLine (i);
-//					train (trainInputs [i], trainOutputs [i]);
+					Console.WriteLine (i + " " + trainInputs[i]);
+					learn (trainInputs[i], trainOutputs[i]);
+					print (weights);
 				}
 			}
 		}
 
-		public void train(double[] inputs, double[] targets) {
+		public void learn(double[] inputs, double[] targets) {
 			double error = 0;
 			double gradient = 0;
 			double[] outputs = new double[targets.Length];
@@ -59,18 +65,33 @@ namespace ev3
 			}
 		}
 
-		public void test(double[] inputs, double[] outputs) {
+		public void test(double[] inputs, double[] targets) {
+			int corrects = 0;
+			double[] outputs = new double[targets.Length];
 			for (int i = 0; i < inputs.Length; i ++) {
 				for (int j = 0; j < outputs.Length; j++) {
 					outputs [j] = inputs [i] * weights [i] [j];
+					if (outputs [j] == targets [j])
+						corrects++;
+					else
+						Console.WriteLine ("incorrect: " + outputs [j] + " - expected: " + targets [j]);
 				}
 			}
+			Console.WriteLine ("corrects: " + corrects + "/" + targets.Length);
 		}
 
 		// initialize random weights
 		public void init() {
-			int nInputs = trainInputs.Length;
-			int nOutputs = trainOutputs.Length;
+			Console.WriteLine("trainInputs: ");
+			print(trainInputs);
+			Console.WriteLine("trainOutputs: ");
+			print (trainOutputs);
+
+			Console.WriteLine ();
+
+			int nInputs = trainInputs[0].Length;
+			int nOutputs = trainOutputs[0].Length;
+
 			Console.WriteLine("Initializing weight matrix " + nInputs + " x " + nOutputs + " ...");
 			weights = new double[nInputs][];
 			Random rand = new Random(1);
@@ -79,16 +100,15 @@ namespace ev3
 				weights[i] = new double[nOutputs];
 				for (int j = 0; j < weights [i].Length; j++) {
 					weights [i] [j] = rand.NextDouble ();
-//					Console.WriteLine (weights [i][j]);
 				}
 			}
-			printWeights ();
+			print (weights);
 		}
 
-		public void printWeights() {
-			for (int i = 0; i < weights.Length; i ++) {
-				for (int j = 0; j < weights [i].Length; j++) {
-					Console.Write (weights [i][j] + " ");
+		public void print(double[][] matrix) {
+			for (int i = 0; i < matrix.Length; i ++) {
+				for (int j = 0; j < matrix [i].Length; j++) {
+					Console.Write (matrix [i][j] + " ");
 				}
 				Console.WriteLine ();
 			}
