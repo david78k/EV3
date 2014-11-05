@@ -17,7 +17,9 @@ namespace ev3 {
 
 		static void testNN() {
 			NeuralNetwork net = new NeuralNetwork ();
+			Console.WriteLine ();
 			net.train ();
+			Console.WriteLine ();
 
 			// sensors (touch, light|color, ultrasonic) and bias 1
 			// light sensor (0|1)
@@ -25,7 +27,7 @@ namespace ev3 {
 			// motors B, C (0|1)
 			double[] outputs = {1, 1};
 
-			net.test (inputs, outputs);
+//			net.test (inputs, outputs);
 		}
 
 		static void testBackProp() {
