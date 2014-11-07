@@ -1,0 +1,15 @@
+﻿[Top]
+Touch (TOUCH): 0    Color (COL-REFLECT): 31    UltraSonic (US-DIST-CM): 32.6    Color (COL-COLOR): 7
+Position: -35
+
+[middle]
+Touch (TOUCH): 0    Color (COL-REFLECT): 4    UltraSonic (US-DIST-CM): 32.6    Color (COL-COLOR): NaN    Color (COL-COLOR): 1 (on brick)
+Position: 181
+
+[almost bottom close to ground]
+Touch (TOUCH): 0    Color (COL-REFLECT): 1    UltraSonic (US-DIST-CM): 14.7    Color (COL-COLOR): 1
+Position: 107
+
+[Bottom (ground)]
+Touch (TOUCH): 0    Color (COL-REFLECT): 1 (2)    UltraSonic (US-DIST-CM): 32.6 (7.8 delayed)    Color (COL-COLOR): NaN    Color (COL-COLOR): 1 (on brick)
+Position: 34

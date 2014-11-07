@@ -10,8 +10,12 @@ namespace ev3 {
 
 		static void Main(string[] args)
 		{
-			testEV3 ();
-	//		testBackProp ();
+			EV3Program program = new EV3Program ();
+			program.testH25 ();
+//			testH25 ();
+//		testBackProp ();
+
+//			testEV3 ();
 //			testNN ();
 		}
 
@@ -33,6 +37,177 @@ namespace ev3 {
 			outputs = new double[] {0, 1};
 
 			net.test (inputs, outputs);
+		}
+
+		void testH25() {
+			Console.WriteLine ("Starting H25 ...");
+
+			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+
+			try{
+				Console.WriteLine("Opening connection... ");
+				ev3.Connection.Open();
+				Console.WriteLine("Connected: " + ev3.Connection.IsConnected);
+
+//				ev3.MotorA.On(10);
+//				Console.WriteLine("Sleeping for 2 seconds ... ");
+//				System.Threading.Thread.Sleep(2000);
+//				ev3.MotorA.Off();
+
+				ev3.MotorB.ResetTacho();  
+//				ev3.MotorB.On(-10, (uint)(0.5*360),true);  
+//				ev3.MotorB.On(-5, (uint)(0.5*360),true);  
+//				ev3.MotorB.On(-10, (uint)(0.1*360),true);  
+//				ev3.MotorB.On(-5, (uint)(0.1*360),true);  
+//				ev3.MotorB.On(10, (uint)(0.5*360),true);  
+//				ev3.MotorB.On(10, (uint)(0.3*360),true);  
+//				ev3.MotorB.On(5, (uint)(0.1*360),true);  
+//				ev3.MotorB.On(5, (uint)(0.5*360),true);  
+//				ev3.MotorB.On(3, (uint)(0.5*360),true);  
+				Sensor lightSensor = getLightSensor(ev3);
+				string status = "GROUND";
+				measure(ev3);
+				int light = measureLight(lightSensor);
+				// move up
+				while(light < 8) {
+					ev3.MotorB.On(-3, (uint)(0.5*360),true);  
+					WaitForMotorToStop(ev3);  
+					light = measureLight(lightSensor);
+				}				
+				Console.WriteLine();
+				WaitForMotorToStop(ev3);  
+				measure(ev3);
+				Console.WriteLine("Position: TOP (" + ev3.MotorB.GetTachoCount() + ")");
+				Console.WriteLine("Moving down ...");
+
+				// move down to the ground
+				while(light > 2) {
+					ev3.MotorB.On(3, (uint)(0.5*360),true);  
+					WaitForMotorToStop(ev3);  
+					light = measureLight(lightSensor);
+				}				
+				Console.WriteLine();
+				WaitForMotorToStop(ev3);  
+				measure(ev3);
+				Console.WriteLine("Position: " + ev3.MotorB.GetTachoCount());  
+
+				/*
+				//			Sensor lightSensor;
+				float threshold = 40;
+				float lasterror = 0;
+				var maxIter = 10;
+				var iteration = 0;
+				float light;
+				sbyte speed = 10;
+
+				while (iteration < maxIter) {
+					light = System.Convert.ToSingle(ev3.Sensor1.ReadAsString());
+
+					iteration ++;
+					Thread.Sleep(1000);
+				}
+	
+				*/
+				Console.WriteLine("Program Complete.");
+			}
+			catch(Exception e){
+				Console.WriteLine(e.StackTrace);
+				Console.WriteLine("Error: " + e.Message);
+				Console.WriteLine("Press any key to end...");
+				Console.ReadKey();				
+			}
+			finally{
+				ev3.Connection.Close();
+				Console.WriteLine ("Connection closed.");
+			}
+		}
+
+		void measure(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
+			SensorType[] stypes = ev3.GetSensorTypes();
+//
+//			foreach (SensorType stype in stypes) {
+//				Console.WriteLine (stype);
+//			}
+			measure (ev3.Sensor1); 
+			measure (ev3.Sensor2);
+			measure (ev3.Sensor3);
+			measure (ev3.Sensor4);
+			Console.WriteLine ();
+		}
+
+		void measure(Sensor sensor) {
+			SensorType stype = sensor.GetSensorType();
+			// Touch: 0 TOUCH                         
+			// Color: 53 COL-REFLECT                   
+			// UltraSonic: 0 US-DIST-CM 
+			string sename = sensor.GetName ();
+			string sname = "";
+
+			string[] snames = { "TOUCH", 
+				"COL-REFLECT", "COL-AMBIENT", "COL-COLOR", 
+				"US-DIST-CM", "US-DIST-IN", "US-LISTEN" };
+
+			foreach (string s in snames) {
+				if (sename.Contains (s))
+					sname = s;
+			}
+
+			switch (stype) {
+			case SensorType.Color: 
+			case SensorType.Touch:
+			case SensorType.UltraSonic:
+				Console.Write (stype + " (" + sname + "): ");
+				Console.Write (sensor.ReadAsString () + "    ");
+//				Console.WriteLine (sname);
+				break;
+			default:
+				break;
+			}
+//			if(stype != SensorType.None)
+//				Console.WriteLine ();
+		}
+
+		// Color: 53 COL-REFLECT                   
+		int measureLight(Sensor sensor) {
+			int light = -1;
+
+			SensorType stype = sensor.GetSensorType();
+			string sename = sensor.GetName ();
+			string sname = "";
+
+			string[] snames = { "TOUCH", 
+				"COL-REFLECT", "COL-AMBIENT", "COL-COLOR", 
+				"US-DIST-CM", "US-DIST-IN", "US-LISTEN" };
+
+			foreach (string s in snames) {
+				if (sename.Contains (s))
+					sname = s;
+			}
+
+			switch (stype) {
+			case SensorType.Color: 
+				Console.Write (stype + " (" + sname + "): ");
+				Console.Write (sensor.ReadAsString () + "    ");
+				light = Convert.ToInt16(sensor.ReadAsString ());
+				break;
+			default:
+				break;
+			}			
+
+			return light;
+		}
+
+		Sensor getLightSensor(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
+			if (ev3.Sensor1.GetSensorType () == SensorType.Color)
+				return ev3.Sensor1;
+			else if (ev3.Sensor2.GetSensorType () == SensorType.Color)
+				return ev3.Sensor2;
+			else if (ev3.Sensor3.GetSensorType () == SensorType.Color)
+				return ev3.Sensor3;
+			else if (ev3.Sensor4.GetSensorType () == SensorType.Color)
+				return ev3.Sensor4;
+			else
+				return null;
 		}
 
 		static void testBackProp() {

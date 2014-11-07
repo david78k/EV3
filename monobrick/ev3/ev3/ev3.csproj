@@ -40,4 +40,7 @@
       <HintPath>..\..\..\..\..\Downloads\ev3\MonoBrick\MonoBrick.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="system identification.txt" />
+  </ItemGroup>
 </Project>
