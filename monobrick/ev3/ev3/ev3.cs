@@ -10,9 +10,9 @@ namespace ev3 {
 
 		static void Main(string[] args)
 		{
-	//		testEV3 ();
+			testEV3 ();
 	//		testBackProp ();
-			testNN ();
+//			testNN ();
 		}
 
 		static void testNN() {
@@ -65,7 +65,7 @@ namespace ev3 {
 	//			Sensor lightSensor;
 				float threshold = 40;
 				float lasterror = 0;
-				var maxIter = 20;
+				var maxIter = 10;
 				var iteration = 0;
 				float light;
 				float error, integral = 0, derivative;
