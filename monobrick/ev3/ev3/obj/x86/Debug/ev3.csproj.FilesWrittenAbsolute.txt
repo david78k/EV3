@@ -5,3 +5,10 @@
 /Users/tkang/github/ev3/monobrick/ev3/ev3/obj/x86/Debug/ev3.exe.mdb
 /Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/MonoBrick.dll
 /Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/LibUsbDotNet.dll
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/IronPython.dll
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Dynamic.dll
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Dynamic.xml
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Scripting.dll
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Scripting.xml
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Scripting.Metadata.dll
+/Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Scripting.Metadata.xml

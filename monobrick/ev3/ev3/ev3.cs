@@ -2,6 +2,7 @@
 using System.Threading;
 using MonoBrick.EV3;
 using BackProp;
+using IronPython.Hosting;
 
 namespace ev3 {
 	public class EV3Program{
@@ -11,15 +12,17 @@ namespace ev3 {
 		static void Main(string[] args)
 		{
 			EV3Program program = new EV3Program ();
-			program.testH25 ();
-//			testH25 ();
+			program.testIronPython ();
+//			program.testH25 ();
+//			program.testMotorA ();
+//			program.testMotorD ();
 //		testBackProp ();
 
 //			testEV3 ();
 //			testNN ();
 		}
 
-		static void testNN() {
+		void testNN() {
 			NeuralNetwork net = new NeuralNetwork ();
 			Console.WriteLine ();
 			net.learn ();
@@ -39,6 +42,71 @@ namespace ev3 {
 			net.test (inputs, outputs);
 		}
 
+		void testMotorA() {
+			Console.WriteLine ("Testing motor A ...");
+
+			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+
+			try{
+				Console.WriteLine("Opening connection... ");
+				ev3.Connection.Open();
+				Console.WriteLine("Connected: " + ev3.Connection.IsConnected);
+
+				ev3.MotorA.ResetTacho();  
+				// drop or pick up the ball
+//				ev3.MotorA.On(5, (uint)(70),true);  
+				ev3.MotorA.On(-5, (uint)(100),true);  
+				WaitForMotorToStop(ev3);  
+				ev3.MotorA.Off();
+
+				Console.WriteLine("Program Complete.");
+			}
+			catch(Exception e){
+				Console.WriteLine(e.StackTrace);
+				Console.WriteLine("Error: " + e.Message);
+				Console.WriteLine("Press any key to end...");
+				Console.ReadKey();				
+			}
+			finally{
+				ev3.MotorA.Off ();
+				ev3.Connection.Close();
+				Console.WriteLine ("Connection closed.");
+			}
+		}
+
+		void testMotorD() {
+			Console.WriteLine ("Testing motor D ...");
+
+			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+
+			try{
+				Console.WriteLine("Opening connection... ");
+				ev3.Connection.Open();
+				Console.WriteLine("Connected: " + ev3.Connection.IsConnected);
+
+				ev3.MotorD.ResetTacho();  
+
+				// drop or pick up the ball
+//				ev3.MotorD.On(5, (uint)(100),true);  
+				ev3.MotorD.On(-5, (uint)(80),true);  
+				WaitForMotorToStop(ev3);  
+				ev3.MotorD.Off();
+	
+				Console.WriteLine("Program Complete.");
+			}
+			catch(Exception e){
+				Console.WriteLine(e.StackTrace);
+				Console.WriteLine("Error: " + e.Message);
+				Console.WriteLine("Press any key to end...");
+				Console.ReadKey();				
+			}
+			finally{
+				ev3.MotorD.Off ();
+				ev3.Connection.Close();
+				Console.WriteLine ("Connection closed.");
+			}
+		}
+
 		void testH25() {
 			Console.WriteLine ("Starting H25 ...");
 
@@ -49,65 +117,61 @@ namespace ev3 {
 				ev3.Connection.Open();
 				Console.WriteLine("Connected: " + ev3.Connection.IsConnected);
 
-//				ev3.MotorA.On(10);
-//				Console.WriteLine("Sleeping for 2 seconds ... ");
-//				System.Threading.Thread.Sleep(2000);
-//				ev3.MotorA.Off();
+				//				ev3.MotorA.On(10);
+				//				Console.WriteLine("Sleeping for 2 seconds ... ");
+				//				System.Threading.Thread.Sleep(2000);
+				//				ev3.MotorA.Off();
 
 				ev3.MotorB.ResetTacho();  
-//				ev3.MotorB.On(-10, (uint)(0.5*360),true);  
-//				ev3.MotorB.On(-5, (uint)(0.5*360),true);  
-//				ev3.MotorB.On(-10, (uint)(0.1*360),true);  
-//				ev3.MotorB.On(-5, (uint)(0.1*360),true);  
-//				ev3.MotorB.On(10, (uint)(0.5*360),true);  
-//				ev3.MotorB.On(10, (uint)(0.3*360),true);  
-//				ev3.MotorB.On(5, (uint)(0.1*360),true);  
-//				ev3.MotorB.On(5, (uint)(0.5*360),true);  
-//				ev3.MotorB.On(3, (uint)(0.5*360),true);  
+				//				ev3.MotorB.On(-10, (uint)(0.5*360),true);  
+				//				ev3.MotorB.On(-5, (uint)(0.5*360),true);  
+				//				ev3.MotorB.On(-10, (uint)(0.1*360),true);  
+				//				ev3.MotorB.On(-5, (uint)(0.1*360),true);  
+				//				ev3.MotorB.On(10, (uint)(0.5*360),true);  
+				//				ev3.MotorB.On(10, (uint)(0.3*360),true);  
+				//				ev3.MotorB.On(5, (uint)(0.1*360),true);  
+				//				ev3.MotorB.On(5, (uint)(0.5*360),true);  
+				//				ev3.MotorB.On(3, (uint)(0.5*360),true);  
 				Sensor lightSensor = getLightSensor(ev3);
 				string status = "GROUND";
 				measure(ev3);
 				int light = measureLight(lightSensor);
+
+				// pick up the ball
+//				ev3.MotorA.On(10, (uint)(100),true);  
+				ev3.MotorA.On(-10, (uint)(100),true);  
+
 				// move up
 				while(light < 8) {
-					ev3.MotorB.On(-3, (uint)(0.5*360),true);  
+					ev3.MotorB.On(-10, (uint)(0.5*360),true);  
 					WaitForMotorToStop(ev3);  
 					light = measureLight(lightSensor);
 				}				
 				Console.WriteLine();
-				WaitForMotorToStop(ev3);  
+				WaitForMotorToStop(ev3); 
+				ev3.MotorB.Off();
 				measure(ev3);
 				Console.WriteLine("Position: TOP (" + ev3.MotorB.GetTachoCount() + ")");
 				Console.WriteLine("Moving down ...");
 
 				// move down to the ground
-				while(light > 2) {
-					ev3.MotorB.On(3, (uint)(0.5*360),true);  
+				while(light > 1) {
+					ev3.MotorB.On(5, (uint)(0.5*360),true);  
 					WaitForMotorToStop(ev3);  
 					light = measureLight(lightSensor);
 				}				
 				Console.WriteLine();
 				WaitForMotorToStop(ev3);  
+				ev3.MotorB.Off();
 				measure(ev3);
-				Console.WriteLine("Position: " + ev3.MotorB.GetTachoCount());  
+				Console.WriteLine("Position: GROUND (" + ev3.MotorB.GetTachoCount() + ")");  
 
-				/*
-				//			Sensor lightSensor;
-				float threshold = 40;
-				float lasterror = 0;
-				var maxIter = 10;
-				var iteration = 0;
-				float light;
-				sbyte speed = 10;
+				// drop the ball
+				ev3.MotorA.On(10, (uint)(100),true);  
+//				ev3.MotorA.On(-10, (uint)(100),true);  
+				WaitForMotorToStop(ev3);  
+				ev3.MotorA.Off();
 
-				while (iteration < maxIter) {
-					light = System.Convert.ToSingle(ev3.Sensor1.ReadAsString());
-
-					iteration ++;
-					Thread.Sleep(1000);
-				}
-	
-				*/
 				Console.WriteLine("Program Complete.");
 			}
 			catch(Exception e){
@@ -187,7 +251,7 @@ namespace ev3 {
 			switch (stype) {
 			case SensorType.Color: 
 				Console.Write (stype + " (" + sname + "): ");
-				Console.Write (sensor.ReadAsString () + "    ");
+				Console.WriteLine (sensor.ReadAsString () + "    ");
 				light = Convert.ToInt16(sensor.ReadAsString ());
 				break;
 			default:
@@ -208,6 +272,26 @@ namespace ev3 {
 				return ev3.Sensor4;
 			else
 				return null;
+		}
+
+		private void testIronPython()
+		{
+			Console.WriteLine("Press enter to execute the python script!");
+//			Console.ReadLine();
+
+			var py = Python.CreateEngine();
+			try
+			{
+				py.ExecuteFile("script.py");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(
+					"Oops! We couldn't execute the script because of an exception: " + ex.Message);
+			}
+
+			Console.WriteLine("Press enter to exit...");
+			Console.ReadLine();
 		}
 
 		static void testBackProp() {
