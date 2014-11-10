@@ -33,6 +33,8 @@
   <ItemGroup>
     <Compile Include="ev3.cs" />
     <Compile Include="BackPropProgram.cs" />
+    <Compile Include="EV3Brick.cs" />
+    <Compile Include="NeuralNetworkLineFollower.cs" />
     <Compile Include="NeuralNetwork.cs" />
   </ItemGroup>
   <ItemGroup>

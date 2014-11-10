@@ -12,18 +12,46 @@ namespace ev3 {
 		static void Main(string[] args)
 		{
 			EV3Program program = new EV3Program ();
-			program.testIronPython ();
-//			program.testH25 ();
-//			program.testMotorA ();
-//			program.testMotorD ();
-//		testBackProp ();
+//			program.testIronPython ();
+
+			EV3Brick ev3 = new EV3Brick ();
+//			ev3.testH25 ();
+//			ev3.testMotorA ();
+//			ev3.testMotorB ();
+//			ev3.testMotorD ();
+			program.testBackProp ();
 
 //			testEV3 ();
-//			testNN ();
+//			program.testNN ();
 		}
 
 		void testNN() {
 			NeuralNetwork net = new NeuralNetwork ();
+			Console.WriteLine ();
+			net.learn ();
+			Console.WriteLine ();
+
+			// sensors (touch, light|color, ultrasonic) and bias 1
+			// light sensor (0|1)
+			double[] inputs = {0, 0, 300, 0};
+			// motors B, C on/off (0|1)
+			double[] outputs = {0, 300};
+
+			net.test (inputs, outputs);
+			// inputs: light 0-2, 3-8, 9-100
+			// inputs: current position/status => light?
+			// desired: r1 (down), r2(pick), r3(up), r4(down), r5(drop)
+			// outputs: direction, speed, degree
+			//			net.test (inputs, desired);
+
+			inputs = new double[]{0, 300, 50, 0};
+			outputs = new double[] {50, 0};
+
+			net.test (inputs, outputs);
+		}
+
+		void testNNLineFollower() {
+			NeuralNetworkLineFollower net = new NeuralNetworkLineFollower ();
 			Console.WriteLine ();
 			net.learn ();
 			Console.WriteLine ();
@@ -35,243 +63,16 @@ namespace ev3 {
 			double[] outputs = {1, 0};
 
 			net.test (inputs, outputs);
+			// inputs: light 0-2, 3-8, 9-100
+			// inputs: current position/status => light?
+			// desired: r1 (down), r2(pick), r3(up), r4(down), r5(drop)
+			// outputs: direction, speed, degree
+//			net.test (inputs, desired);
 
 			inputs = new double[]{1, 1};
 			outputs = new double[] {0, 1};
 
 			net.test (inputs, outputs);
-		}
-
-		void testMotorA() {
-			Console.WriteLine ("Testing motor A ...");
-
-			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
-
-			try{
-				Console.WriteLine("Opening connection... ");
-				ev3.Connection.Open();
-				Console.WriteLine("Connected: " + ev3.Connection.IsConnected);
-
-				ev3.MotorA.ResetTacho();  
-				// drop or pick up the ball
-//				ev3.MotorA.On(5, (uint)(70),true);  
-				ev3.MotorA.On(-5, (uint)(100),true);  
-				WaitForMotorToStop(ev3);  
-				ev3.MotorA.Off();
-
-				Console.WriteLine("Program Complete.");
-			}
-			catch(Exception e){
-				Console.WriteLine(e.StackTrace);
-				Console.WriteLine("Error: " + e.Message);
-				Console.WriteLine("Press any key to end...");
-				Console.ReadKey();				
-			}
-			finally{
-				ev3.MotorA.Off ();
-				ev3.Connection.Close();
-				Console.WriteLine ("Connection closed.");
-			}
-		}
-
-		void testMotorD() {
-			Console.WriteLine ("Testing motor D ...");
-
-			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
-
-			try{
-				Console.WriteLine("Opening connection... ");
-				ev3.Connection.Open();
-				Console.WriteLine("Connected: " + ev3.Connection.IsConnected);
-
-				ev3.MotorD.ResetTacho();  
-
-				// drop or pick up the ball
-//				ev3.MotorD.On(5, (uint)(100),true);  
-				ev3.MotorD.On(-5, (uint)(80),true);  
-				WaitForMotorToStop(ev3);  
-				ev3.MotorD.Off();
-	
-				Console.WriteLine("Program Complete.");
-			}
-			catch(Exception e){
-				Console.WriteLine(e.StackTrace);
-				Console.WriteLine("Error: " + e.Message);
-				Console.WriteLine("Press any key to end...");
-				Console.ReadKey();				
-			}
-			finally{
-				ev3.MotorD.Off ();
-				ev3.Connection.Close();
-				Console.WriteLine ("Connection closed.");
-			}
-		}
-
-		void testH25() {
-			Console.WriteLine ("Starting H25 ...");
-
-			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
-
-			try{
-				Console.WriteLine("Opening connection... ");
-				ev3.Connection.Open();
-				Console.WriteLine("Connected: " + ev3.Connection.IsConnected);
-
-				//				ev3.MotorA.On(10);
-				//				Console.WriteLine("Sleeping for 2 seconds ... ");
-				//				System.Threading.Thread.Sleep(2000);
-				//				ev3.MotorA.Off();
-
-				ev3.MotorB.ResetTacho();  
-				//				ev3.MotorB.On(-10, (uint)(0.5*360),true);  
-				//				ev3.MotorB.On(-5, (uint)(0.5*360),true);  
-				//				ev3.MotorB.On(-10, (uint)(0.1*360),true);  
-				//				ev3.MotorB.On(-5, (uint)(0.1*360),true);  
-				//				ev3.MotorB.On(10, (uint)(0.5*360),true);  
-				//				ev3.MotorB.On(10, (uint)(0.3*360),true);  
-				//				ev3.MotorB.On(5, (uint)(0.1*360),true);  
-				//				ev3.MotorB.On(5, (uint)(0.5*360),true);  
-				//				ev3.MotorB.On(3, (uint)(0.5*360),true);  
-				Sensor lightSensor = getLightSensor(ev3);
-				string status = "GROUND";
-				measure(ev3);
-				int light = measureLight(lightSensor);
-
-				// pick up the ball
-//				ev3.MotorA.On(10, (uint)(100),true);  
-				ev3.MotorA.On(-10, (uint)(100),true);  
-
-				// move up
-				while(light < 8) {
-					ev3.MotorB.On(-10, (uint)(0.5*360),true);  
-					WaitForMotorToStop(ev3);  
-					light = measureLight(lightSensor);
-				}				
-				Console.WriteLine();
-				WaitForMotorToStop(ev3); 
-				ev3.MotorB.Off();
-				measure(ev3);
-				Console.WriteLine("Position: TOP (" + ev3.MotorB.GetTachoCount() + ")");
-				Console.WriteLine("Moving down ...");
-
-				// move down to the ground
-				while(light > 1) {
-					ev3.MotorB.On(5, (uint)(0.5*360),true);  
-					WaitForMotorToStop(ev3);  
-					light = measureLight(lightSensor);
-				}				
-				Console.WriteLine();
-				WaitForMotorToStop(ev3);  
-				ev3.MotorB.Off();
-				measure(ev3);
-				Console.WriteLine("Position: GROUND (" + ev3.MotorB.GetTachoCount() + ")");  
-
-				// drop the ball
-				ev3.MotorA.On(10, (uint)(100),true);  
-//				ev3.MotorA.On(-10, (uint)(100),true);  
-				WaitForMotorToStop(ev3);  
-				ev3.MotorA.Off();
-
-				Console.WriteLine("Program Complete.");
-			}
-			catch(Exception e){
-				Console.WriteLine(e.StackTrace);
-				Console.WriteLine("Error: " + e.Message);
-				Console.WriteLine("Press any key to end...");
-				Console.ReadKey();				
-			}
-			finally{
-				ev3.Connection.Close();
-				Console.WriteLine ("Connection closed.");
-			}
-		}
-
-		void measure(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
-			SensorType[] stypes = ev3.GetSensorTypes();
-//
-//			foreach (SensorType stype in stypes) {
-//				Console.WriteLine (stype);
-//			}
-			measure (ev3.Sensor1); 
-			measure (ev3.Sensor2);
-			measure (ev3.Sensor3);
-			measure (ev3.Sensor4);
-			Console.WriteLine ();
-		}
-
-		void measure(Sensor sensor) {
-			SensorType stype = sensor.GetSensorType();
-			// Touch: 0 TOUCH                         
-			// Color: 53 COL-REFLECT                   
-			// UltraSonic: 0 US-DIST-CM 
-			string sename = sensor.GetName ();
-			string sname = "";
-
-			string[] snames = { "TOUCH", 
-				"COL-REFLECT", "COL-AMBIENT", "COL-COLOR", 
-				"US-DIST-CM", "US-DIST-IN", "US-LISTEN" };
-
-			foreach (string s in snames) {
-				if (sename.Contains (s))
-					sname = s;
-			}
-
-			switch (stype) {
-			case SensorType.Color: 
-			case SensorType.Touch:
-			case SensorType.UltraSonic:
-				Console.Write (stype + " (" + sname + "): ");
-				Console.Write (sensor.ReadAsString () + "    ");
-//				Console.WriteLine (sname);
-				break;
-			default:
-				break;
-			}
-//			if(stype != SensorType.None)
-//				Console.WriteLine ();
-		}
-
-		// Color: 53 COL-REFLECT                   
-		int measureLight(Sensor sensor) {
-			int light = -1;
-
-			SensorType stype = sensor.GetSensorType();
-			string sename = sensor.GetName ();
-			string sname = "";
-
-			string[] snames = { "TOUCH", 
-				"COL-REFLECT", "COL-AMBIENT", "COL-COLOR", 
-				"US-DIST-CM", "US-DIST-IN", "US-LISTEN" };
-
-			foreach (string s in snames) {
-				if (sename.Contains (s))
-					sname = s;
-			}
-
-			switch (stype) {
-			case SensorType.Color: 
-				Console.Write (stype + " (" + sname + "): ");
-				Console.WriteLine (sensor.ReadAsString () + "    ");
-				light = Convert.ToInt16(sensor.ReadAsString ());
-				break;
-			default:
-				break;
-			}			
-
-			return light;
-		}
-
-		Sensor getLightSensor(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
-			if (ev3.Sensor1.GetSensorType () == SensorType.Color)
-				return ev3.Sensor1;
-			else if (ev3.Sensor2.GetSensorType () == SensorType.Color)
-				return ev3.Sensor2;
-			else if (ev3.Sensor3.GetSensorType () == SensorType.Color)
-				return ev3.Sensor3;
-			else if (ev3.Sensor4.GetSensorType () == SensorType.Color)
-				return ev3.Sensor4;
-			else
-				return null;
 		}
 
 		private void testIronPython()
@@ -294,7 +95,7 @@ namespace ev3 {
 			Console.ReadLine();
 		}
 
-		static void testBackProp() {
+		void testBackProp() {
 			BackPropProgram program = new BackPropProgram ();
 			program.run ();
 		}
@@ -435,42 +236,6 @@ namespace ev3 {
 				ev3.Connection.Close();
 			}
 		}
-
-		// test Motor C
-		void PositionControl()  
-		{  
-			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
-
-			try{  
-				ev3.Connection.Open();  
-				ev3.MotorC.ResetTacho();  
-				ev3.MotorC.On(50, 6*360,true);  
-				WaitForMotorToStop(ev3);  
-				Console.WriteLine("Position: " + ev3.MotorC.GetTachoCount());  
-				ev3.MotorC.On(-50, 9*360, true);  
-				WaitForMotorToStop (ev3);  
-				Console.WriteLine("Position: " + ev3.MotorC.GetTachoCount());  
-				ev3.MotorC.MoveTo(50,0,true);  
-				WaitForMotorToStop(ev3);  
-				ev3.MotorC.Off();  
-				Console.WriteLine("Position: " + ev3.MotorC.GetTachoCount());  
-			}  
-			catch(Exception e){  
-				Console.WriteLine(e.StackTrace);  
-				Console.WriteLine("Error: " + e.Message);  
-				Console.WriteLine("Press any key to end...");  
-				Console.ReadKey();                
-			}  
-			finally{  
-				ev3.Connection.Close();  
-			}  
-		}  
-
-		void WaitForMotorToStop (Brick<Sensor,Sensor,Sensor,Sensor> ev3)  
-		{  
-			Thread.Sleep(500);  
-			while(ev3.MotorC.IsRunning()){Thread.Sleep(50);}  
-		}  
 
 		void firstProgram() {
 			var brick = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType); 
