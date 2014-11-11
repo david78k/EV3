@@ -125,8 +125,11 @@ class NN:
 
 
     def test(self, patterns):
+        outputs = []
         for p in patterns:
+            #outputs.add(self.update(p[0]))
             print(p[0], '->', self.update(p[0]))
+        return self.ao
 
     def weights(self):
         print('Input weights:')
@@ -150,8 +153,23 @@ class NN:
             if i % 100 == 0:
                 print('error %-.5f' % error)
 
-
+	
 def demo():
+    network = train()
+    # test it
+    test(network, [[[0,0.9,0.8,0.99], [1,0]]])
+    #n.test(pat)
+    #n.test([[[0,0,0,1], [0,0]]])
+    #n.test([[[0,0.9,0.8,0.99], [1,0]]])
+
+def testPredefined():
+    network = train()
+    return test(network, [[[0,0.9,0.8,0.99], [1,0]]])
+
+def test(network, patterns):
+	return network.test(patterns)
+
+def train():
     # Teach network XOR function
     pat = [
         [[0,0], [0]],
@@ -167,6 +185,14 @@ def demo():
         [[50,300,0,300], [-50,0]],
         [[0,300,0,0], [0,-300]]
     ]
+    pat = [
+        [[0,0,0,1], [0,1]],
+        [[0,1,1,1], [1,0]],
+        [[1,1,1,0], [0,-1]],
+        [[1,0,1,1], [0,1]],
+        [[1,1,0,1], [-1,0]],
+        [[0,1,0,0], [0,-1]]
+    ]
 
     # create a network with two input, two hidden, and one output nodes
     n = NN(4, 2, 2)
@@ -174,9 +200,8 @@ def demo():
   #  n = NN(pat.shape, pat.
     # train it with some patterns
     n.train(pat)
-    # test it
-    n.test(pat)
+    return n
 
 if __name__ == '__main__':
-	print 'demo'
+	#print 'demo'
 	demo()

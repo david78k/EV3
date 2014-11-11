@@ -93,7 +93,12 @@ namespace ev3 {
 			try
 			{
 //				engine.ExecuteFile("bpnn.py");
-				engine.ExecuteFile("script.py");
+				dynamic result = engine.ExecuteFile("script.py");
+				Console.WriteLine(result.outputs);
+				var outputs = result.outputs;
+				foreach (double output in outputs) {
+					Console.WriteLine(output);
+				}
 			}
 			catch (Exception ex)
 			{

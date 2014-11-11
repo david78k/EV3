@@ -10,4 +10,10 @@ import bpnn
 random.seed(0)
 
 #print 'demo'
-bpnn.demo()
+bpnn.train()
+outputs = bpnn.testPredefined()
+
+"""
+for output in outputs:
+	print output
+"""
