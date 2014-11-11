@@ -4,6 +4,17 @@ namespace ev3
 {
 	public class NeuralNetwork
 	{
+		// -1 1
+		// 1 0
+		double[][] trainInputs = new double[][]{
+			new double[]{0, 1},
+			new double[]{1, 1}
+		};
+		double[][] trainOutputs = new double[][]{
+			new double[]{1, 0},
+			new double[]{0, 1}
+		};
+		/*
 		// current status: degrees (motorA, motorB)
 		// desired degrees: (motorA, motorB)
 		double[][] trainInputs = new double[][]{
@@ -38,8 +49,9 @@ namespace ev3
 		  0.743352171704018 0.861532711544111
 		 */
 		double[][] weights; // need matrix?
-		int epochs = 1;
+		int epochs = 100;
 		double learningRate = 0.35;
+		int seed = (int) DateTime.Now.Ticks & 0x0000FFFF;
 
 		public NeuralNetwork ()
 		{
@@ -57,14 +69,15 @@ namespace ev3
 				return;
 			}
 			for (int epoch = 0; epoch < epochs; epoch ++) {
-				Console.WriteLine("======== epoch " + epoch + " =========");
+//				Console.WriteLine("======== epoch " + epoch + " =========");
 				for (int i = 0; i < tInputs; i++) {
-					Console.WriteLine ("[" + i + "] ");
+//					Console.WriteLine ("[" + i + "] ");
 					learn (trainInputs[i], trainOutputs[i]);
-					print (weights);
+//					print (weights);
 				}
-				Console.WriteLine ();
+//				Console.WriteLine ();
 			}
+			print (weights);
 		}
 
 		public void learn(double[] inputs, double[] targets) {
@@ -81,10 +94,10 @@ namespace ev3
 				}
 //				outputs [j] = sum;
 				outputs[j] = 1 / (1 + Math.Exp(sum));
-				error = targets [j]/300 - outputs [j];
+				error = targets [j] - outputs [j];
 //				gradients[j] = error;
 				gradients[j] = outputs[j] * (1 - outputs[j]) * error;
-				Console.WriteLine (error + " " + targets [j]/300 + " " + outputs [j]);
+//				Console.WriteLine (error + " " + targets [j] + " " + outputs [j]);
 			}
 			// compute errors
 
@@ -109,8 +122,8 @@ namespace ev3
 				for (int i = 0; i < inputs.Length; i++) {
 					sum += inputs [i] * weights [i] [j];
 				}
-//				outputs [j] = 1 / (1 + Math.Exp (sum));
-				outputs [j] = sum;
+				outputs [j] = 1 / (1 + Math.Exp (sum));
+//				outputs [j] = sum;
 				Console.WriteLine ("expected (" + targets [j] + "): " + outputs [j]);
 				if (outputs [j] == targets [j])
 					corrects++;
@@ -132,7 +145,7 @@ namespace ev3
 
 			Console.WriteLine("Initializing weight matrix " + nInputs + " x " + nOutputs + " ...");
 			weights = new double[nInputs][];
-			Random rand = new Random(1);
+			Random rand = new Random(seed);
 
 			for (int i = 0; i < weights.Length; i ++) {
 				weights[i] = new double[nOutputs];

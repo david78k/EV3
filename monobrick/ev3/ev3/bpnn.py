@@ -159,16 +159,24 @@ def demo():
         [[1,0], [1]],
         [[1,1], [0]]
     ]
+    pat = [
+        [[0,0,0,300], [0,300]],
+        [[0,300,50,300], [50,0]],
+        [[50,300,50,0], [0,-300]],
+        [[50,0,50,300], [0,300]],
+        [[50,300,0,300], [-50,0]],
+        [[0,300,0,0], [0,-300]]
+    ]
 
     # create a network with two input, two hidden, and one output nodes
-    n = NN(2, 2, 1)
+    n = NN(4, 2, 2)
+   # n = NN(3, 2, 2)
+  #  n = NN(pat.shape, pat.
     # train it with some patterns
     n.train(pat)
     # test it
     n.test(pat)
 
-
-
 if __name__ == '__main__':
-    print demo
-    demo()
+	print 'demo'
+	demo()

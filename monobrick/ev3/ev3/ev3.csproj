@@ -41,15 +41,19 @@
     <Reference Include="MonoBrick">
       <HintPath>..\..\..\..\..\Downloads\ev3\MonoBrick\MonoBrick.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\..\..\..\Downloads\ev3\IronPython-2.7.4\Microsoft.Scripting.dll</HintPath>
+    </Reference>
     <Reference Include="IronPython">
       <HintPath>..\..\..\..\..\Downloads\ev3\IronPython-2.7.4\IronPython.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\..\..\Downloads\ev3\IronPython-2.7.4\Microsoft.Scripting.dll</HintPath>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\..\..\..\..\Downloads\ev3\IronPython-2.7.4\IronPython.Modules.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="system identification.txt" />
     <None Include="script.py" />
+    <None Include="bpnn.py" />
   </ItemGroup>
 </Project>

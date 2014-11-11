@@ -12,17 +12,19 @@ namespace ev3 {
 		static void Main(string[] args)
 		{
 			EV3Program program = new EV3Program ();
-//			program.testIronPython ();
+			program.testIronPython ();
+
+//			program.testBackProp ();
+//			program.testNN ();
+//			program.testNNLineFollower ();
 
 			EV3Brick ev3 = new EV3Brick ();
 //			ev3.testH25 ();
 //			ev3.testMotorA ();
 //			ev3.testMotorB ();
 //			ev3.testMotorD ();
-			program.testBackProp ();
 
 //			testEV3 ();
-//			program.testNN ();
 		}
 
 		void testNN() {
@@ -33,9 +35,11 @@ namespace ev3 {
 
 			// sensors (touch, light|color, ultrasonic) and bias 1
 			// light sensor (0|1)
-			double[] inputs = {0, 0, 300, 0};
+//			double[] inputs = {0, 0, 300, 0};
+			double[] inputs = {0, 1};
 			// motors B, C on/off (0|1)
-			double[] outputs = {0, 300};
+//			double[] outputs = {0, 300};
+			double[] outputs = {1, 0};
 
 			net.test (inputs, outputs);
 			// inputs: light 0-2, 3-8, 9-100
@@ -44,8 +48,10 @@ namespace ev3 {
 			// outputs: direction, speed, degree
 			//			net.test (inputs, desired);
 
-			inputs = new double[]{0, 300, 50, 0};
-			outputs = new double[] {50, 0};
+//			inputs = new double[]{0, 300, 50, 0};
+//			outputs = new double[] {50, 0};
+			inputs = new double[]{1, 1};
+			outputs = new double[] {0, 1};
 
 			net.test (inputs, outputs);
 		}
@@ -78,12 +84,16 @@ namespace ev3 {
 		private void testIronPython()
 		{
 			Console.WriteLine("Press enter to execute the python script!");
-//			Console.ReadLine();
 
-			var py = Python.CreateEngine();
+			var engine = Python.CreateEngine();
+			var paths = engine.GetSearchPaths();
+			paths.Add("/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/");
+			engine.SetSearchPaths(paths);
+
 			try
 			{
-				py.ExecuteFile("script.py");
+//				engine.ExecuteFile("bpnn.py");
+				engine.ExecuteFile("script.py");
 			}
 			catch (Exception ex)
 			{
@@ -91,8 +101,8 @@ namespace ev3 {
 					"Oops! We couldn't execute the script because of an exception: " + ex.Message);
 			}
 
-			Console.WriteLine("Press enter to exit...");
-			Console.ReadLine();
+			Console.WriteLine("Complete.");
+//			Console.ReadLine();
 		}
 
 		void testBackProp() {
