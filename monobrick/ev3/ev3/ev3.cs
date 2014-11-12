@@ -9,18 +9,21 @@ using IronPython.Hosting;
 namespace ev3 {
 	public class EV3Program{
 		private const string connectionType = "/dev/tty.EV3-SerialPort";
+		private const string pythonPath = "/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/";
 	//	Brick<Sensor,Sensor,Sensor,Sensor> ev3;
 
 		static void Main(string[] args)
 		{
 			EV3Program program = new EV3Program ();
-			program.testIronPython ();
+			program.testController ();
+//			program.testIronPython ();
 
 //			program.testBackProp ();
 //			program.testNN ();
 //			program.testNNLineFollower ();
 
 			EV3Brick ev3 = new EV3Brick ();
+//			ev3.runH25 ();
 //			ev3.testH25 ();
 //			ev3.testMotorA ();
 //			ev3.testMotorB ();
@@ -58,29 +61,72 @@ namespace ev3 {
 			net.test (inputs, outputs);
 		}
 
-		void testNNLineFollower() {
-			NeuralNetworkLineFollower net = new NeuralNetworkLineFollower ();
-			Console.WriteLine ();
-			net.learn ();
-			Console.WriteLine ();
+		private void testController()
+		{
+			Console.WriteLine("Testing constoller ...");
+			EV3Brick ev3 = new EV3Brick ();
+			ev3.connect ();
 
-			// sensors (touch, light|color, ultrasonic) and bias 1
-			// light sensor (0|1)
-			double[] inputs = {0, 1};
-			// motors B, C on/off (0|1)
-			double[] outputs = {1, 0};
+			// current status: normalize
+			int motorAdeg = (int) (ev3.getMotorADegree()/50.0);  
+			int motorBdeg = (int) (ev3.getMotorBDegree()/300.0);
 
-			net.test (inputs, outputs);
-			// inputs: light 0-2, 3-8, 9-100
-			// inputs: current position/status => light?
-			// desired: r1 (down), r2(pick), r3(up), r4(down), r5(drop)
-			// outputs: direction, speed, degree
-//			net.test (inputs, desired);
+			/*
+			training data = [
+				[[0,0,0,1], [0,1]],		// down1
+				[[0,1,1,1], [1,0]],		// pick
+				[[1,1,1,0], [0,-1]],	// up1
+				[[1,0,1,1], [0,1]],		// down2
+				[[1,1,0,1], [-1,0]],	// drop
+				[[0,1,0,0], [0,-1]]		// up2
+			]
+			*/
+			var argv = new List<int[]> ();
+			// current (A, B), desired (A, B)
+			// down1
+			argv.Add (new []{motorAdeg,motorBdeg,0,1});
+//			argv.Add (new []{0,0,0,1}); 
+			argv.Add (new []{0,1});		// targets A, B
 
-			inputs = new double[]{1, 1};
-			outputs = new double[] {0, 1};
+			// up1
+//			argv.Add (new []{1,1,1,0}); 
+//			argv.Add (new []{motorAdeg,motorBdeg,1,0});
+//			argv.Add (new []{0,-1});		// targets A, B
 
-			net.test (inputs, outputs);
+			var engine = Python.CreateEngine();
+			var paths = engine.GetSearchPaths();
+			paths.Add(pythonPath);
+			engine.SetSearchPaths(paths);
+			engine.GetSysModule ().SetVariable ("argv", argv);
+
+			var scriptRuntime = Python.CreateRuntime();
+			scriptRuntime.GetSysModule().SetVariable("argv", argv);
+
+			try
+			{
+				dynamic result = engine.ExecuteFile("script.py");
+				Console.WriteLine(result.outputs);
+				var outputs = result.outputs;
+				foreach (double output in outputs) {
+					Console.WriteLine(output);
+				}
+				motorAdeg = (int) (outputs[0]*50);
+				motorBdeg = (int) (outputs[1]*300);
+				Console.WriteLine(motorAdeg + ", " + motorBdeg);
+				ev3.moveMotorA(motorAdeg);
+				ev3.moveMotorB(motorBdeg);
+				Thread.Sleep(5000);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(
+					"Oops! We couldn't execute the script because of an exception: " + ex.Message);
+			}
+
+			ev3.disconnect ();
+
+			Console.WriteLine("Complete.");
+			//			Console.ReadLine();
 		}
 
 		private void testIronPython()
@@ -94,7 +140,7 @@ namespace ev3 {
 
 			var engine = Python.CreateEngine();
 			var paths = engine.GetSearchPaths();
-			paths.Add("/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/");
+			paths.Add(pythonPath);
 			engine.SetSearchPaths(paths);
 			engine.GetSysModule ().SetVariable ("argv", argv);
 
@@ -120,6 +166,32 @@ namespace ev3 {
 
 			Console.WriteLine("Complete.");
 //			Console.ReadLine();
+		}
+
+
+		void testNNLineFollower() {
+			NeuralNetworkLineFollower net = new NeuralNetworkLineFollower ();
+			Console.WriteLine ();
+			net.learn ();
+			Console.WriteLine ();
+
+			// sensors (touch, light|color, ultrasonic) and bias 1
+			// light sensor (0|1)
+			double[] inputs = {0, 1};
+			// motors B, C on/off (0|1)
+			double[] outputs = {1, 0};
+
+			net.test (inputs, outputs);
+			// inputs: light 0-2, 3-8, 9-100
+			// inputs: current position/status => light?
+			// desired: r1 (down), r2(pick), r3(up), r4(down), r5(drop)
+			// outputs: direction, speed, degree
+			//			net.test (inputs, desired);
+
+			inputs = new double[]{1, 1};
+			outputs = new double[] {0, 1};
+
+			net.test (inputs, outputs);
 		}
 
 		void testBackProp() {

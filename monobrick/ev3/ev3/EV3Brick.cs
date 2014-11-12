@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Collections.Generic;
 using MonoBrick.EV3;
 
 namespace ev3
@@ -7,10 +8,75 @@ namespace ev3
 	public class EV3Brick
 	{
 		private const string connectionType = "/dev/tty.EV3-SerialPort";
-		Brick<Sensor,Sensor,Sensor,Sensor> ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+		private Brick<Sensor,Sensor,Sensor,Sensor> ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
 
 		public EV3Brick ()
 		{
+		}
+
+		public void connect() {
+			try {
+				Console.WriteLine ("Opening connection... ");
+				ev3.Connection.Open ();
+				Console.WriteLine ("Connected: " + ev3.Connection.IsConnected);
+
+//				motor.ResetTacho ();  
+//				Console.WriteLine ("Position: " + motor.GetTachoCount ());
+			} catch (Exception e) {
+				Console.WriteLine (e.StackTrace);
+				Console.WriteLine ("Error: " + e.Message);
+				Console.WriteLine ("Press any key to end...");
+				Console.ReadKey ();				
+			} finally {
+//				ev3.Connection.Close ();
+//				Console.WriteLine ("Connection closed.");
+			}
+		}
+
+		public void disconnect() {
+			try {
+				Console.WriteLine ("Closing connection... ");
+				ev3.Connection.Close ();
+				Console.WriteLine ("Connected: " + ev3.Connection.IsConnected);
+			} catch (Exception e) {
+				Console.WriteLine (e.StackTrace);
+				Console.WriteLine ("Error: " + e.Message);
+				Console.WriteLine ("Press any key to end...");
+				Console.ReadKey ();				
+			} finally {
+				ev3.Connection.Close ();
+				Console.WriteLine ("Connection closed.");
+			}
+		}
+
+		public void getMotorDegrees() {
+
+		}
+
+		public int getMotorADegree() {
+			return ev3.MotorA.GetTachoCount ();
+		}
+
+		public int getMotorBDegree() {
+			return ev3.MotorB.GetTachoCount ();
+		}
+
+		// direction = -1 or 1
+		public void moveMotorA(int degree) {
+			int direction = (degree > 0 ? 1 : -1);
+			Console.WriteLine ("Moving motor A " + degree + "(" + (uint)Math.Abs(degree) + ") ...");
+			ev3.MotorA.On ((sbyte)(direction * 5), (uint)Math.Abs(degree), true);
+			WaitForMotorToStop (ev3.MotorA);
+			Console.WriteLine ("Motor A stopped.");
+		}
+
+		public void moveMotorB(int degree) {
+			Console.WriteLine ("is connected? " + ev3.Connection.IsConnected);
+			int direction = (degree > 0 ? 1 : -1);
+			Console.WriteLine ("Moving motor B " + degree + " (" + (uint)Math.Abs(degree) + ") ..." + (sbyte)(direction*5));
+			ev3.MotorB.On ((sbyte)(direction * 5), (uint)Math.Abs(degree), true);
+			WaitForMotorToStop (ev3.MotorB);
+			Console.WriteLine ("Motor B stopped.");
 		}
 
 		public void testMotorB() {
@@ -24,9 +90,9 @@ namespace ev3
 
 				motor.ResetTacho();  
 //				motor.On(5, (uint)(50),true);  
-//				motor.On(5, (uint)(310),true);  // down
+				motor.On(5, (uint)(310),true);  // down +
 				// pick up the ball
-				motor.On(-5, (uint)(310),true);  // up
+//				motor.On(-5, (uint)(300),true);  // up -
 				WaitForMotorToStop(motor);  
 				//				ev3.MotorB.Off();
 				Console.WriteLine("Position: " + motor.GetTachoCount());
@@ -57,8 +123,8 @@ namespace ev3
 
 				motor.ResetTacho();  
 				// drop or pick up the ball
-				//				ev3.MotorA.On(5, (uint)(70),true);  
-				motor.On(-5, (uint)(100),true);  
+				//				ev3.MotorA.On(5, (uint)(70),true);  // pick +
+				motor.On(-5, (uint)(100),true);  // drop -
 				WaitForMotorToStop(motor);  
 				motor.Off();
 
@@ -108,11 +174,44 @@ namespace ev3
 				Console.WriteLine ("Connection closed.");
 			}
 		}
+		/*
+		void runH25() {
+			var argv = new List<int[]> ();
+			//			args.ToList().ForEach(a => argv.Add(a));
+			argv.Add (new []{0,1,1,1});
+			argv.Add (new []{1,0});
 
+			var engine = Python.CreateEngine();
+			var paths = engine.GetSearchPaths();
+			paths.Add(pythonPath);
+			engine.SetSearchPaths(paths);
+			engine.GetSysModule ().SetVariable ("argv", argv);
+
+			var scriptRuntime = Python.CreateRuntime();
+			scriptRuntime.GetSysModule().SetVariable("argv", argv);
+			//			scriptRuntime.ExecuteFile("script.py");
+
+			try
+			{
+				//				engine.ExecuteFile("bpnn.py");
+				dynamic result = engine.ExecuteFile("script.py");
+				Console.WriteLine(result.outputs);
+				var outputs = result.outputs;
+				foreach (double output in outputs) {
+					Console.WriteLine(output);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(
+					"Oops! We couldn't execute the script because of an exception: " + ex.Message);
+			}
+		}
+*/
 		void testH25() {
 			Console.WriteLine ("Starting H25 ...");
 
-			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+//			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
 
 			try{
 				Console.WriteLine("Opening connection... ");
