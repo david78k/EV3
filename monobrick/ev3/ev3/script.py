@@ -1,17 +1,24 @@
 ﻿print('Look at this python code go!')
 
 import sys
-#sys.path.append("/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/")
 import math
 import random
 import string
 import bpnn
 
+for arg in sys.argv:
+    print arg
+
 random.seed(0)
 
 #print 'demo'
-bpnn.train()
-outputs = bpnn.testPredefined()
+network = bpnn.train()
+
+inputs = sys.argv[0]
+targets = sys.argv[1]
+
+outputs = network.test([[inputs, targets]])
+#outputs = bpnn.testPredefined()
 
 """
 for output in outputs:

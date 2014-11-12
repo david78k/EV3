@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using System.Collections.Generic;
+
 using MonoBrick.EV3;
 using BackProp;
 using IronPython.Hosting;
@@ -85,10 +87,20 @@ namespace ev3 {
 		{
 			Console.WriteLine("Press enter to execute the python script!");
 
+			var argv = new List<int[]> ();
+			//			args.ToList().ForEach(a => argv.Add(a));
+			argv.Add (new []{0,1,1,1});
+			argv.Add (new []{1,0});
+
 			var engine = Python.CreateEngine();
 			var paths = engine.GetSearchPaths();
 			paths.Add("/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/");
 			engine.SetSearchPaths(paths);
+			engine.GetSysModule ().SetVariable ("argv", argv);
+
+			var scriptRuntime = Python.CreateRuntime();
+			scriptRuntime.GetSysModule().SetVariable("argv", argv);
+//			scriptRuntime.ExecuteFile("script.py");
 
 			try
 			{
