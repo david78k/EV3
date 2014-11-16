@@ -81,6 +81,9 @@ namespace ev3
 			nMotorEncoder[motorB] = 0;
 			int[] motor = new int[4];
 
+			ev3.resetMotorATachoCount ();
+			ev3.resetMotorDTachoCount ();
+
 			// Sensor setup
 			int Gyro = 2;
 			int[] SensorType = new int[5];
@@ -142,10 +145,10 @@ namespace ev3
 			while(true)
 			{
 
-			//READ GYRO SENSOR
+				//READ GYRO SENSOR
 				u = ev3.getAngularVelocity ();
-				Thread.Sleep (2);
-				u = ev3.getAngularVelocity ();
+//				Thread.Sleep (2);
+//				u = ev3.getAngularVelocity ();
 
 						/*
 				#ifdef HiTechnic_Gyro
@@ -173,6 +176,8 @@ namespace ev3
 				y_ref = y_ref + v*dt;
 
 				//COMPUTE MOTOR ENCODER POSITION AND SPEED
+				nMotorEncoder [motorB] = ev3.getMotorADegree ();
+				nMotorEncoder [motorC] = ev3.getMotorDDegree ();
 				n++;if(n == n_max){n = 0;}
 				encoder[n] = nMotorEncoder[motorB] + nMotorEncoder[motorC] + (int)y_ref;
 				n_comp = n+1;if(n_comp == n_max){n_comp = 0;}
