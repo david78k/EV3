@@ -143,13 +143,15 @@ namespace ev3
 
 //	ClearTimer(T4);                 // This timer is used in the driver. Do not use it for other purposes!
 
+			Console.WriteLine ("u\tpid\tth\tmotorpower");
+
 			while(true)
 			{
 
 				//READ GYRO SENSOR
 				u = ev3.getAngularVelocity ();
-//				Thread.Sleep (2);
-//				u = ev3.getAngularVelocity ();
+				Thread.Sleep (2);
+				u = ev3.getAngularVelocity ();
 
 						/*
 				#ifdef HiTechnic_Gyro
@@ -207,7 +209,7 @@ namespace ev3
 				motor[motorC] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
-				Console.WriteLine (u + " " + pid + " " + th + " " + motorpower);
+				Console.WriteLine (u + "\t" + pid + "\t" + th + "\t" + motorpower);
 				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 //				  StopAllTasks();
 					Console.WriteLine ("error");
@@ -222,6 +224,7 @@ namespace ev3
 //				  wait1Msec(1);
 //				}
 //				ClearTimer(T4);
+				Thread.Sleep ((int)(dt * 1000));
 			}
 
 //			starting_balancing_task = false;
