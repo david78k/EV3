@@ -2,13 +2,17 @@
 
 namespace ev3
 {
+	/**
+	 * Segway using PID control
+	 */
 	public class Segway
 	{
 		int steering = 0;
 		int acceleration = 50;
 		int speed = 0;
-		const float wheel_diameter = 0;
 		bool starting_balancing_task = true;
+		const float wheel_diameter = 0;
+		EV3Brick ev3 = new EV3Brick();
 
 		//GLOBAL VARIABLE SETUP
 		float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
@@ -18,8 +22,12 @@ namespace ev3
 		}
 
 		public void start() {
+//			ev3.connect();
+
 			balance();
 			while (starting_balancing_task) {}
+
+//			ev3.disconnect ();
 			Console.WriteLine("End");
 		}
 
@@ -61,18 +69,22 @@ namespace ev3
 			///////////////////////////
 
 			//MOTOR SETUP
-			int motorB = 0;
-			int motorC = 1;
+			int motorB = 1;
+			int motorC = 2;
 			int mtrNoReg = 0;
-			int[] nMotorPIDSpeedCtrl = new int[2];
+			int[] nMotorPIDSpeedCtrl = new int[4];
 			nMotorPIDSpeedCtrl[motorB] = mtrNoReg;
 			nMotorPIDSpeedCtrl[motorC] = mtrNoReg;
-			int[] nMotorEncoder = new int[2];
+			int[] nMotorEncoder = new int[4];
 			nMotorEncoder[motorC] = 0;
 			nMotorEncoder[motorB] = 0;
-			int[] motor = new int[2];
+			int[] motor = new int[4];
 
 			// Sensor setup
+			int Gyro = 2;
+			int[] SensorType = new int[5];
+//			SensorType[Gyro] = ev3.getAngularVelocity();
+
 			int nSensorsDefined = 0;
 			/*
 	#ifdef HiTechnic_Gyro

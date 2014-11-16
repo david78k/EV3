@@ -49,6 +49,13 @@ namespace ev3
 			}
 		}
 
+		/**
+		 * Assuming Sensor2 to be GyroSensor
+		 */
+		public int getAngularVelocity() {
+			return Convert.ToInt16(ev3.Sensor2.ReadAsString ());
+		}
+
 		public void getMotorDegrees() {
 
 		}
@@ -287,7 +294,7 @@ namespace ev3
 			}
 		}
 
-		void measure(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
+		public void measure(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
 			SensorType[] stypes = ev3.GetSensorTypes();
 			//
 			//			foreach (SensorType stype in stypes) {
@@ -300,7 +307,7 @@ namespace ev3
 			Console.WriteLine ();
 		}
 
-		void measure(Sensor sensor) {
+		public void measure(Sensor sensor) {
 			SensorType stype = sensor.GetSensorType();
 			// Touch: 0 TOUCH                         
 			// Color: 53 COL-REFLECT                   
@@ -333,7 +340,7 @@ namespace ev3
 		}
 
 		// Color: 53 COL-REFLECT                   
-		int measureLight(Sensor sensor) {
+		public int measureLight(Sensor sensor) {
 			int light = -1;
 
 			SensorType stype = sensor.GetSensorType();
@@ -362,7 +369,7 @@ namespace ev3
 			return light;
 		}
 
-		Sensor getLightSensor(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
+		public Sensor getLightSensor(Brick<Sensor,Sensor,Sensor,Sensor> ev3) {
 			if (ev3.Sensor1.GetSensorType () == SensorType.Color)
 				return ev3.Sensor1;
 			else if (ev3.Sensor2.GetSensorType () == SensorType.Color)
