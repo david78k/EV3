@@ -44,6 +44,7 @@ namespace ev3
 				Console.WriteLine ("Press any key to end...");
 				Console.ReadKey ();				
 			} finally {
+//				stopAll ();
 				ev3.Connection.Close ();
 				Console.WriteLine ("Connection closed.");
 			}
@@ -116,6 +117,13 @@ namespace ev3
 
 		public void resetMotorDTachoCount() {
 			ev3.MotorD.ResetTacho ();
+		}
+
+		public void stopAll() {
+			ev3.MotorA.Brake ();
+			ev3.MotorA.Off ();
+			ev3.MotorD.Brake ();
+			ev3.MotorD.Off ();
 		}
 
 		// direction = -1 or 1

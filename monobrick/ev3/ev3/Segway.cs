@@ -9,8 +9,10 @@ namespace ev3
 	public class Segway
 	{
 		int steering = 0;
+//		int steering = -7;
 		int acceleration = 50;
-		int speed = 0;
+//		int speed = 0;
+		int speed = 30;
 		bool starting_balancing_task = true;
 		const float wheel_diameter = 56;	// in millimeters
 		const int max_iter = 10;
@@ -144,7 +146,7 @@ namespace ev3
 
 //	ClearTimer(T4);                 // This timer is used in the driver. Do not use it for other purposes!
 
-			Console.WriteLine ("iter\tu\tpid\tth\tmotorpower");
+			Console.WriteLine ("iter\tu\tpid\tth\tmotorpower\td_pwr\tmotorB\tmotorC");
 
 			int iter = 0;
 //			while(true)
@@ -212,15 +214,19 @@ namespace ev3
 				motor[motorC] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
-				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower);
+				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
+					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 //				  StopAllTasks();
 					Console.WriteLine ("error");
+					ev3.stopAll ();
 					break;
 				}
 
 				ev3.onMotorA (motor [motorB]);
 				ev3.onMotorD (motor [motorC]);
+//				ev3.onMotorA (motor [motorB]/100);
+//				ev3.onMotorD (motor [motorC]/100);
 
 //				//WAIT THEN REPEAT
 //				while(time1[T4] < dt*1000){
