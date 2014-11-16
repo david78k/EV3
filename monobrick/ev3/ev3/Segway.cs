@@ -22,12 +22,12 @@ namespace ev3
 		}
 
 		public void start() {
-//			ev3.connect();
+			ev3.connect();
 
 			balance();
 			while (starting_balancing_task) {}
 
-//			ev3.disconnect ();
+			ev3.disconnect ();
 			Console.WriteLine("End");
 		}
 
@@ -196,12 +196,15 @@ namespace ev3
 				motor[motorC] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
-				Console.WriteLine (pid + " " + th + " " + motorpower);
+				Console.WriteLine (u + " " + pid + " " + th + " " + motorpower);
 				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 //				  StopAllTasks();
 					Console.WriteLine ("error");
 					break;
 				}
+
+				ev3.onMotorA (motor [motorB]);
+				ev3.onMotorD (motor [motorC]);
 
 //				//WAIT THEN REPEAT
 //				while(time1[T4] < dt*1000){

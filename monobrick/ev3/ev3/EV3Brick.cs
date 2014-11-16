@@ -49,11 +49,37 @@ namespace ev3
 			}
 		}
 
+		public void onMotorA(int speed) {
+			ev3.MotorA.On ((sbyte)speed);
+		}
+
+		public void onMotorB(int speed) {
+			ev3.MotorB.On ((sbyte)speed);
+		}
+
+		public void onMotorC(int speed) {
+			ev3.MotorC.On ((sbyte)speed);
+		}
+
+		public void onMotorD(int speed) {
+			ev3.MotorD.On ((sbyte)speed);
+		}
+
+		public void setPowerMotorB(int power) {
+			ev3.MotorB.SetPower ((byte)power);
+		}
+
+		public void setPowerMotorC(int power) {
+			ev3.MotorC.SetPower ((byte)power);
+		}
+
 		/**
 		 * Assuming Sensor2 to be GyroSensor
 		 */
 		public int getAngularVelocity() {
-			return Convert.ToInt16(ev3.Sensor2.ReadAsString ());
+			string value = ev3.Sensor2.ReadAsString ();
+//			Console.WriteLine ("Gyro: " + value);
+			return Convert.ToInt16(value);
 		}
 
 		public void getMotorDegrees() {
@@ -66,6 +92,30 @@ namespace ev3
 
 		public int getMotorBDegree() {
 			return ev3.MotorB.GetTachoCount ();
+		}
+
+		public int getMotorCDegree() {
+			return ev3.MotorC.GetTachoCount ();
+		}
+
+		public int getMotorDDegree() {
+			return ev3.MotorD.GetTachoCount ();
+		}
+
+		public void resetMotorBTachoCount() {
+			ev3.MotorB.ResetTacho ();
+		}
+
+		public void resetMotorATachoCount() {
+			ev3.MotorA.ResetTacho ();
+		}
+
+		public void resetMotorCTachoCount() {
+			ev3.MotorC.ResetTacho ();
+		}
+
+		public void resetMotorDTachoCount() {
+			ev3.MotorD.ResetTacho ();
 		}
 
 		// direction = -1 or 1
