@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ev3
 {
@@ -142,6 +143,10 @@ namespace ev3
 			{
 
 			//READ GYRO SENSOR
+				u = ev3.getAngularVelocity ();
+				Thread.Sleep (2);
+				u = ev3.getAngularVelocity ();
+
 						/*
 				#ifdef HiTechnic_Gyro
 			  u =   SensorRaw[Gyro];wait1Msec(2);
@@ -217,4 +222,3 @@ namespace ev3
 		}
 	}
 }
-
