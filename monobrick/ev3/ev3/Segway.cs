@@ -13,6 +13,7 @@ namespace ev3
 		int speed = 0;
 		bool starting_balancing_task = true;
 		const float wheel_diameter = 56;	// in millimeters
+		const int max_iter = 10;
 		EV3Brick ev3 = new EV3Brick();
 
 		//GLOBAL VARIABLE SETUP
@@ -143,9 +144,11 @@ namespace ev3
 
 //	ClearTimer(T4);                 // This timer is used in the driver. Do not use it for other purposes!
 
-			Console.WriteLine ("u\tpid\tth\tmotorpower");
+			Console.WriteLine ("iter\tu\tpid\tth\tmotorpower");
 
-			while(true)
+			int iter = 0;
+//			while(true)
+			while(iter ++ < max_iter)
 			{
 
 				//READ GYRO SENSOR
@@ -209,7 +212,7 @@ namespace ev3
 				motor[motorC] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
-				Console.WriteLine (u + "\t" + pid + "\t" + th + "\t" + motorpower);
+				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower);
 				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 //				  StopAllTasks();
 					Console.WriteLine ("error");
