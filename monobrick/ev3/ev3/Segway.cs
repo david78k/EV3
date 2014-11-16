@@ -12,7 +12,7 @@ namespace ev3
 		int acceleration = 50;
 		int speed = 0;
 		bool starting_balancing_task = true;
-		const float wheel_diameter = 0;
+		const float wheel_diameter = 56;	// in millimeters
 		EV3Brick ev3 = new EV3Brick();
 
 		//GLOBAL VARIABLE SETUP
@@ -90,6 +90,7 @@ namespace ev3
 //			SensorType[Gyro] = ev3.getAngularVelocity();
 
 			int nSensorsDefined = 0;
+			mean_reading = 0;
 			/*
 	#ifdef HiTechnic_Gyro
 	    SensorType[Gyro] = sensorRawValue;
