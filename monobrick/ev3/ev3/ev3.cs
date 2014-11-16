@@ -10,12 +10,12 @@ namespace ev3 {
 	public class EV3Program{
 		private const string connectionType = "/dev/tty.EV3-SerialPort";
 		private const string pythonPath = "/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/";
-	//	Brick<Sensor,Sensor,Sensor,Sensor> ev3;
 
 		static void Main(string[] args)
 		{
 			EV3Program program = new EV3Program ();
-			program.testController ();
+			program.testSegway ();
+//			program.testController ();
 //			program.testIronPython ();
 
 //			program.testBackProp ();
@@ -30,6 +30,11 @@ namespace ev3 {
 //			ev3.testMotorD ();
 
 //			testEV3 ();
+		}
+
+		void testSegway() {
+			Segway sw = new Segway ();
+			sw.start ();
 		}
 
 		void testNN() {

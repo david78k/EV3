@@ -36,6 +36,7 @@
     <Compile Include="EV3Brick.cs" />
     <Compile Include="NeuralNetworkLineFollower.cs" />
     <Compile Include="NeuralNetwork.cs" />
+    <Compile Include="Segway.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoBrick">
