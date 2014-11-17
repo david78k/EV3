@@ -4,7 +4,7 @@ using System.Threading;
 namespace ev3
 {
 	/**
-	 * for NXT
+	 * for NXT using PID
 	 */
 	public class Sejway
 	{
