@@ -9,10 +9,8 @@ namespace ev3
 	public class Segway
 	{
 		int steering = 0;
-//		int steering = -7;
 		int acceleration = 50;
-//		int speed = 0;
-		int speed = 30;
+		int speed = 0;
 		bool starting_balancing_task = true;
 		const float wheel_diameter = 56;	// in millimeters
 		const int max_iter = 10;
@@ -28,8 +26,14 @@ namespace ev3
 		public void start() {
 			ev3.connect();
 
-			balance();
+			Thread t1 = new Thread(new ThreadStart(balance));
+			t1.Start ();
 			while (starting_balancing_task) {}
+
+//			steering = -7;
+			speed = 30;
+
+			t1.Join ();
 
 			ev3.disconnect ();
 			Console.WriteLine("End");
@@ -235,8 +239,6 @@ namespace ev3
 //				ClearTimer(T4);
 				Thread.Sleep ((int)(dt * 1000));
 			}
-
-//			starting_balancing_task = false;
 		}
 	}
 }
