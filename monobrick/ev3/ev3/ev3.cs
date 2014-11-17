@@ -34,7 +34,8 @@ namespace ev3 {
 
 		void testSegway() {
 //			Segway sw = new Segway ();
-			Sejway sw = new Sejway ();
+//			Sejway sw = new Sejway ();
+			GyroBoy sw = new GyroBoy ();
 			sw.start ();
 		}
 
