@@ -3,15 +3,18 @@ using System.Threading;
 
 namespace ev3
 {
+	/**
+	 * for NXT
+	 */
 	public class Sejway
 	{
 		// PID constants
-		const int KP = 28;
-		const int KI = 4;
-		const int KD = 33;
+		const int KP = 28; // originally 28
+		const int KI = 4;	// originally 4
+		const int KD = 33;	// origianlly 33
 		const int SCALE_PID = 18;  // originally 18
-		const int SCALE_POWER = 50; // orginally 100
-		const int SPEED = 10; // originally 55
+		const int SCALE_POWER =100; // orginally 100
+		const int SPEED = 55; // originally 55
 		const int SLEEP = 10; // in milliseconds
 
 		// Global vars:
@@ -109,7 +112,7 @@ namespace ev3
 //					MotorPort.C.controlMotor(power, BasicMotorPort.BACKWARD);
 				}
 
-				Thread.Sleep (SLEEP);
+//				Thread.Sleep (SLEEP);
 			}
 		}
 

@@ -38,6 +38,7 @@
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="Segway.cs" />
     <Compile Include="Sejway.cs" />
+    <Compile Include="GyroBoy.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoBrick">
