@@ -37,6 +37,7 @@
     <Compile Include="NeuralNetworkLineFollower.cs" />
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="Segway.cs" />
+    <Compile Include="Sejway.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoBrick">
@@ -58,5 +59,6 @@
     <None Include="system identification.txt" />
     <None Include="script.py" />
     <None Include="bpnn.py" />
+    <None Include="Sejway.java" />
   </ItemGroup>
 </Project>
