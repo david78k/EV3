@@ -76,6 +76,12 @@ namespace ev3
 
 		void initialize() {
 //			dt = (sample_time - 2)/1000;
+
+			// erase array
+			for (int i = 0; i < max_index; i++) {
+				enc_val [i] = 0;
+			}
+
 			ev3.resetMotorATachoCount ();
 			ev3.resetMotorDTachoCount ();
 		}
