@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ev3
 {
@@ -8,15 +9,18 @@ namespace ev3
 		const int KP = 28;
 		const int KI = 4;
 		const int KD = 33;
-		const int SCALE = 18;
+		const int SCALE_PID = 18;  // originally 18
+		const int SCALE_POWER = 50; // orginally 100
+		const int SPEED = 10; // originally 55
+		const int SLEEP = 10; // in milliseconds
 
 		// Global vars:
-		int offset;
-		int prev_error;
-		float int_error;
+		int offset = 0;
+		int prev_error = 0;
+		float int_error = 0;
 
 		int iter = 0;
-		const int max_iter = 10;
+		const int max_iter = 100;
 
 //		LightSensor ls;
 		EV3Brick ev3;
@@ -68,7 +72,7 @@ namespace ev3
 				// Proportional Error:
 				int error = normVal - offset;
 				// Adjust far and near light readings:
-				if (error < 0) error = (int)(error * 1.8F);
+//				if (error < 0) error = (int)(error * 1.8F);
 
 				// Integral Error:
 				int_error = ((int_error + error) * 2)/3;
@@ -77,7 +81,7 @@ namespace ev3
 				int deriv_error = error - prev_error;
 				prev_error = error;
 
-				int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error) / SCALE;
+				int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error) / SCALE_PID;
 
 				if (pid_val > 100)
 					pid_val = 100;
@@ -86,20 +90,26 @@ namespace ev3
 
 				// Power derived from PID value:
 				int power = Math.Abs(pid_val);
-				power = 55 + (power * 45) / 100; // NORMALIZE POWER
+				power = SPEED + (power * 45) / SCALE_POWER; // NORMALIZE POWER
 
-				Console.WriteLine (iter + "\t" + normVal + "\t" + error + "\t"
-				+ pid_val + "\t" + power);
+				Console.Write (iter + "\t" + normVal + "\t" + error + "\t"
+				+ pid_val + "\t" + power + "\t");
 
-				if (pid_val > 0) {
+				if (pid_val >= 0) {
 					Console.WriteLine ("Forward");
+					ev3.onMotorA (power);
+					ev3.onMotorD (power);
 //					MotorPort.B.controlMotor(power, BasicMotorPort.FORWARD);
 //					MotorPort.C.controlMotor(power, BasicMotorPort.FORWARD);
 				} else {
 					Console.WriteLine ("Backward");
+					ev3.onMotorA (-1*power);
+					ev3.onMotorD (-1*power);
 //					MotorPort.B.controlMotor(power, BasicMotorPort.BACKWARD);
 //					MotorPort.C.controlMotor(power, BasicMotorPort.BACKWARD);
 				}
+
+				Thread.Sleep (SLEEP);
 			}
 		}
 
