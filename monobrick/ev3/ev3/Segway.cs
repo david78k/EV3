@@ -29,6 +29,7 @@ namespace ev3
 			Thread t1 = new Thread(new ThreadStart(balance));
 			t1.Start ();
 			while (starting_balancing_task) {}
+			Console.WriteLine ("Complete balancing task.");
 
 //			steering = -7;
 			speed = 30;
@@ -215,7 +216,8 @@ namespace ev3
 				//CONTROL MOTOR POWER AND STEERING
 				motorpower = 	(int)pid;
 				motor[motorB] = motorpower + d_pwr;
-				motor[motorC] = motorpower - d_pwr;
+				motor[motorC] = motorpower + d_pwr;
+//				motor[motorC] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
 				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
