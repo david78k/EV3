@@ -16,6 +16,14 @@ namespace ev3
 		const int max_iter = 100;
 		int iter = 0;
 
+		float refpos = 0;	// reference position
+		int sample_time = 20;	// sample time in milliseconds (ms)
+		float dt = (sample_time - 2)/1000;	// 
+		float speed = 0;
+		const int wheel_diameter = 55; // in millimeters (mm)
+		int radius = wheel_diameter;
+		const int max_index = 7;
+
 		private EV3Brick ev3 = new EV3Brick();
 
 		public GyroBoy ()
@@ -34,10 +42,31 @@ namespace ev3
 
 		void control() {
 			while (iter++ < max_iter) {
+				// Position
+				refpos = refpos + (dt * speed * 0.002);
+
+				// ReadEncoders
+
+				// ReadGyro
+
+				// CombineSensorValues
+
+				// ReadConstants
+
+				// PID
+
+				// Errors
+
+				//GetSteer
+
+				// SetMotorPower
+
+				// Wait
 			}
 		}
 
 		void initialize() {
+//			dt = (sample_time - 2)/1000;
 		}
 
 	}
