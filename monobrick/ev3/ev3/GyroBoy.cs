@@ -73,10 +73,17 @@ namespace ev3
 				// ReadGyro
 
 				// CombineSensorValues
+				float input = gain_angle * ang
+//				              + gain_angular_velocity * angular_velocity
+				              + gain_motor_position * (robot_position - refpos)
+				              + gain_motor_speed * robot_speed
+					;
 
 				// ReadConstants
+//				Kp, Ki, Kd, dt
 
 				// PID
+//				float input
 
 				// Errors
 
