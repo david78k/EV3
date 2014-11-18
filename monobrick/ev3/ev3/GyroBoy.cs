@@ -60,6 +60,10 @@ namespace ev3
 		void control() {
 			Console.WriteLine ("iter\trefpos\tdt\tspeed\tmotorpower\td_pwr\tmotorB\tmotorC");
 			const float radius_const = 57.3f;
+			float curr_err = 0;
+			float acc_err = 0;
+			float dif_err = 0;
+			float prev_err = 0;
 
 			while (iter++ < max_iter) {
 				// Position
@@ -83,7 +87,13 @@ namespace ev3
 //				Kp, Ki, Kd, dt
 
 				// PID
-//				float input
+//				input
+				curr_err = input;
+				acc_err += curr_err*dt;
+				dif_err = (curr_err - prev_err) / dt;
+				float output = curr_err * Kp
+				               + acc_err * Ki
+				               + dif_err * Kd;
 
 				// Errors
 
@@ -91,7 +101,7 @@ namespace ev3
 
 				// SetMotorPower
 
-				Console.WriteLine (iter + "\t" + refpos + "\t" + dt + "\t" + speed + "\t"); 
+				Console.WriteLine (iter + "\t" + refpos + "\t" + dt + "\t" + speed + "\t" + input + "\t" + output + "\t"); 
 //				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 
