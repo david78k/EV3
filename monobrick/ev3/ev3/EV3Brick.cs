@@ -50,6 +50,10 @@ namespace ev3
 			}
 		}
 
+		public void sound(int volume, int frequency, int durationMs) {
+			ev3.PlayTone ((byte)volume, (ushort)frequency, (ushort)durationMs);
+		}
+
 		public void onMotorA(int speed) {
 			ev3.MotorA.On ((sbyte)speed);
 		}
