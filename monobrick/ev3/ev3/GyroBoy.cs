@@ -34,9 +34,9 @@ namespace ev3
 		int outOfBoundCount = 0;
 		int outOfBound = 0;
 
-		int ang = 0;
-		int mean_ang = 0;
-		int mean = 0;
+		float ang = 0;
+		float mean_ang = 0;
+		float mean = 0;
 		int steering = 0;
 		int max_acceleration = 0;
 
@@ -88,15 +88,21 @@ namespace ev3
 //				Kp, Ki, Kd, dt
 
 				// PID
-				float output = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
+				// input: sensor values
+				// output: average power
+				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
 
 				// Errors
+				// input: PID output
 
 				// GetSteer
+				//steering
 
 				// SetMotorPower
+				// input: steering, pid output
+				setMotorPower (avg_pwr);
 
-				Console.WriteLine (iter + "\t" + refpos + "\t" + dt + "\t" + speed + "\t" + sensor_values + "\t" + output + "\t"); 
+				Console.WriteLine (iter + "\t" + refpos + "\t" + dt + "\t" + speed + "\t" + sensor_values + "\t" + avg_pwr + "\t"); 
 //				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 
@@ -128,7 +134,7 @@ namespace ev3
 		/**
 		 * average of 20 gyroRate values
 		 */
-		int calibrate() {
+		float calibrate() {
 			Console.WriteLine ("calibrating ...");
 
 			// Play tone: frequency 440Hz, volume 10
@@ -174,9 +180,10 @@ namespace ev3
 
 		float readGyro() {
 			float curr_val = gyroRate ();
-			mean = mean * (1 - 0.2 * dt) + (curr_val * 0.2 * dt);
+			mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
 			float ang_vel = curr_val - mean;
-			mean_ang = mean_ang * 0.999 + ang * (1 - 0.999);
+			ang = ang + dt * ang_vel;
+			mean_ang = mean_ang * 0.999f + ang * (1 - 0.999f);
 			ang = ang - mean_ang;
 
 			return ang_vel;
@@ -208,6 +215,34 @@ namespace ev3
 			return curr_err * Kp
 				+ acc_err * Ki
 				+ dif_err * Kd;
+		}
+
+		public void setMotorPower(float avg_pwr) {
+			// limit: [-50, 50]
+			if (avg_pwr > 50)
+				avg_pwr = 50;
+			if (avg_pwr < -50)
+				avg_pwr = -50;
+
+			float new_steering = avg_pwr;
+			float old_steering = 0;
+			float extra_pwr = 0;
+			if (new_steering == 0) {
+				int sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
+
+				if (old_steering != 0) {
+					extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
+				}
+			} else {
+				extra_pwr = new_steering * (-0.5f);
+			}
+
+			float pwr_c = extra_pwr - avg_pwr;
+			float pwr_b = extra_pwr + avg_pwr;
+			old_steering = new_steering;
+
+			ev3.setPowerMotorA ((int)(pwr_b * 0.021f / radius));
+			ev3.setPowerMotorD ((int)(pwr_c * 0.021f/ radius));
 		}
 	}
 }
