@@ -19,7 +19,7 @@ namespace ev3
 		int iter = 0;
 
 		float refpos = 0;	// reference position
-		const int sample_time = 20;	// sample time in milliseconds (ms)
+		const int sample_time = 22;	// sample time in milliseconds (ms)
 		float dt = (sample_time - 2)/1000f;	// 
 		float speed = 0;
 		const int wheel_diameter = 55; // in millimeters (mm)
@@ -77,7 +77,7 @@ namespace ev3
 				// ReadGyro
 
 				// CombineSensorValues
-				float input = gain_angle * ang
+				float sensor_values = gain_angle * ang
 //				              + gain_angular_velocity * angular_velocity
 				              + gain_motor_position * (robot_position - refpos)
 				              + gain_motor_speed * robot_speed
@@ -87,13 +87,15 @@ namespace ev3
 //				Kp, Ki, Kd, dt
 
 				// PID
-//				input
-				curr_err = input;
+				float output = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
+				/*
+				curr_err = sensor_values;
 				acc_err += curr_err*dt;
 				dif_err = (curr_err - prev_err) / dt;
 				float output = curr_err * Kp
 				               + acc_err * Ki
 				               + dif_err * Kd;
+				*/
 
 				// Errors
 
@@ -192,6 +194,17 @@ namespace ev3
 //			Console.WriteLine (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
 
 			return (int)((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
+		}
+
+		public float pid(float sensor_values, float curr_err, float acc_err, float dif_err, float prev_err) {
+			const float ref_val = 0;
+			curr_err = sensor_values - ref_val;
+			acc_err += curr_err*dt;
+			dif_err = (curr_err - prev_err) / dt;
+
+			return curr_err * Kp
+				+ acc_err * Ki
+				+ dif_err * Kd;
 		}
 	}
 }
