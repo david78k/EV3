@@ -59,7 +59,7 @@ namespace ev3
 
 		void control() {
 			Console.WriteLine ("iter\trefpos\tdt\tspeed\tmotorpower\td_pwr\tmotorB\tmotorC");
-			const float radius_const = 57.3;
+			const float radius_const = 57.3f;
 
 			while (iter++ < max_iter) {
 				// Position
@@ -67,8 +67,9 @@ namespace ev3
 
 				// ReadEncoders
 				speed = getMotorSpeed ();
-				int robot_speed = (radius * speed) / radius_const;
-//				int robot_position = (radius * (ev3.get
+				float robot_speed = (radius * speed) / radius_const;
+				float robot_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2) / radius_const;
+
 				// ReadGyro
 
 				// CombineSensorValues
@@ -79,7 +80,7 @@ namespace ev3
 
 				// Errors
 
-				//GetSteer
+				// GetSteer
 
 				// SetMotorPower
 
