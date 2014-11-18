@@ -75,10 +75,11 @@ namespace ev3
 				float robot_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2) / radius_const;
 
 				// ReadGyro
+				float ang_vel = readGyro ();
 
 				// CombineSensorValues
 				float sensor_values = gain_angle * ang
-//				              + gain_angular_velocity * angular_velocity
+				              + gain_angular_velocity * ang_vel
 				              + gain_motor_position * (robot_position - refpos)
 				              + gain_motor_speed * robot_speed
 					;
@@ -88,14 +89,6 @@ namespace ev3
 
 				// PID
 				float output = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
-				/*
-				curr_err = sensor_values;
-				acc_err += curr_err*dt;
-				dif_err = (curr_err - prev_err) / dt;
-				float output = curr_err * Kp
-				               + acc_err * Ki
-				               + dif_err * Kd;
-				*/
 
 				// Errors
 
@@ -103,7 +96,7 @@ namespace ev3
 
 				// SetMotorPower
 
-				Console.WriteLine (iter + "\t" + refpos + "\t" + dt + "\t" + speed + "\t" + input + "\t" + output + "\t"); 
+				Console.WriteLine (iter + "\t" + refpos + "\t" + dt + "\t" + speed + "\t" + sensor_values + "\t" + output + "\t"); 
 //				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 
@@ -140,7 +133,7 @@ namespace ev3
 
 			// Play tone: frequency 440Hz, volume 10
 			// duration 0.1sec, play type 0
-			ev3.sound (10, 440, (int)(0.1 * 1000));
+//			ev3.sound (10, 440, (int)(0.1 * 1000));
 
 			Thread.Sleep (100);
 			mean = 0;
@@ -157,12 +150,11 @@ namespace ev3
 
 			Thread.Sleep (100);
 			// Play tone: frequency 440Hz, volume 10
-			// duration 0.1sec, play type 0
-			ev3.sound (10, 440, (int)(0.1 * 1000));
+//			ev3.sound (10, 440, (int)(0.1 * 1000));
 
 			Thread.Sleep (100);
 			// Play tone
-			ev3.sound (10, 440, (int)(0.1 * 1000));
+//			ev3.sound (10, 440, (int)(0.1 * 1000));
 
 			return mean;
 		}
@@ -178,6 +170,16 @@ namespace ev3
 				filter = ev3.getAngularVelocity () + filter;
 
 			return filter / 5;
+		}
+
+		float readGyro() {
+			float curr_val = gyroRate ();
+			mean = mean * (1 - 0.2 * dt) + (curr_val * 0.2 * dt);
+			float ang_vel = curr_val - mean;
+			mean_ang = mean_ang * 0.999 + ang * (1 - 0.999);
+			ang = ang - mean_ang;
+
+			return ang_vel;
 		}
 
 		int getMotorSpeed() {
@@ -198,6 +200,7 @@ namespace ev3
 
 		public float pid(float sensor_values, float curr_err, float acc_err, float dif_err, float prev_err) {
 			const float ref_val = 0;
+
 			curr_err = sensor_values - ref_val;
 			acc_err += curr_err*dt;
 			dif_err = (curr_err - prev_err) / dt;
