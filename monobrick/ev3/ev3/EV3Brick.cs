@@ -107,7 +107,7 @@ namespace ev3
 		 */
 		public int getAngularVelocity() {
 			string value = ev3.Sensor2.ReadAsString ();
-//			Console.WriteLine ("Gyro: " + value);
+			Console.WriteLine ("Gyro: " + value);
 			return Convert.ToInt16(value);
 		}
 

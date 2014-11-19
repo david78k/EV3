@@ -15,7 +15,7 @@ namespace ev3
 		const float gain_motor_speed = 75;	// for y_hat
 		const float gain_motor_position = 350;	// for y
 
-		const int max_iter = 3;
+		const int max_iter = 10;
 		int iter = 0;
 
 //		bool sound = false;
@@ -62,8 +62,11 @@ namespace ev3
 
 		void control() {
 			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
-			Console.WriteLine ("iter\tspeed\tsensor_values\tavg_pwr\tmotorB\tmotorC" 
+			Console.WriteLine ("iter\tspeed\tsensor_values\tavg_pwr"
+				+ "\tang_vel\tang\tposition_offset\trefpos"
+				+ "\trobot_speed"
 				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
+				+ "\tmotorB\tmotorC" 
 			);
 
 			const float radius_const = 57.3f;
@@ -104,7 +107,10 @@ namespace ev3
 				// input: pid output
 				setMotorPower (avg_pwr);
 
-				Console.WriteLine (iter + "\t" + speed + "\t" + sensor_values + "\t" + avg_pwr + "\t"); 
+				Console.WriteLine (iter + "\t" + speed + "\t" + sensor_values + "\t" + avg_pwr
+					+ "\t" + ang_vel + "\t" + ang + "\t" + (robot_position - refpos) + "\t" + refpos
+					+ "\t" + robot_speed
+				); 
 //				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 
@@ -190,7 +196,7 @@ namespace ev3
 			mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
 			float ang_vel = curr_val - mean;
 			ang = ang + dt * ang_vel;
-			mean_ang = mean_ang * 0.999f + ang * (1 - 0.999f);
+			mean_ang = mean_ang * 0.999f + ang * (1f - 0.999f);
 			ang = ang - mean_ang;
 
 			return ang_vel;
@@ -248,8 +254,13 @@ namespace ev3
 			float pwr_b = extra_pwr + avg_pwr;
 			old_steering = new_steering;
 
-			ev3.setPowerMotorA ((int)(pwr_b * 0.021f / radius));
-			ev3.setPowerMotorD ((int)(pwr_c * 0.021f/ radius));
+			float speedA = (pwr_b * 0.021f / radius);
+			float speedD = (pwr_c * 0.021f / radius);
+			ev3.setPowerMotorA ((int)speedA);
+			ev3.setPowerMotorD ((int)speedD);
+			Console.WriteLine ("speedA = " + speedA + ", speedD = " + speedD
+				+ ", extra_pwr = " + extra_pwr + ", pwr_b = " + pwr_b + ", pwr_c = " + pwr_c
+			);
 		}
 
 		public void errors(float avg_pwr) {
