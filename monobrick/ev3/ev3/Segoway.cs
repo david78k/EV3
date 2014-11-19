@@ -8,16 +8,6 @@ namespace ev3
 {
 	public class Segoway
 	{
-		private EV3Brick ev3 = new EV3Brick();
-		Stopwatch watch = new System.Diagnostics.Stopwatch();
-
-		//private GyroSensor gyro; 
-		private Sensor gyro;
-		protected Motor left_motor;
-		protected Motor right_motor;
-//		protected EncoderMotor left_motor;
-//		protected EncoderMotor right_motor;
-
 		/** 
 		 * Loop wait time.  WAIT_TIME is the time in ms passed to the Wait command.
 		 * NOTE: Balance control loop only takes 1.128 MS in leJOS NXJ. 
@@ -90,7 +80,7 @@ namespace ev3
 			/**
 	 * Time that robot first starts to balance.  Used to calculate tInterval.
 	 */
-			private long tCalcStart;
+//			private long tCalcStart;
 
 			/**
 	 * tInterval is the time, in seconds, for each iteration of the balance loop.
@@ -116,6 +106,17 @@ namespace ev3
 			private long mrcDeltaP1 = 0;
 
 		const double wheelDiameter = 5.6;
+
+		private EV3Brick ev3 = new EV3Brick();
+		Stopwatch stopwatch_interval;
+		Stopwatch stopwatch_motorpos;
+
+		//private GyroSensor gyro; 
+		private Sensor gyro;
+		protected Motor left_motor;
+		protected Motor right_motor;
+		//		protected EncoderMotor left_motor;
+		//		protected EncoderMotor right_motor;
 
 			/**
 	 * Creates an instance of the Segoway, prompts the user to lay Segoway flat for gyro calibration,
@@ -225,7 +226,7 @@ namespace ev3
 				float gyroRaw;
 
 //			gyroRaw = gyro.getAngularVelocity();
-			gyroRaw = ev3.getAngularVelocity;
+			gyroRaw = ev3.getAngularVelocity();
 				gOffset = EMAOFFSET * gyroRaw + (1-EMAOFFSET) * gOffset;
 				gyroSpeed = gyroRaw - gOffset; // Angular velocity (degrees/sec)
 
@@ -311,11 +312,13 @@ namespace ev3
 					// First time through, set an initial tInterval time and
 					// record start time
 					tInterval = 0.0055;
-					tCalcStart = System.currentTimeMillis();
+//				tCalcStart = System.currentTimeMillis();
+				stopwatch_interval = Stopwatch.StartNew();
 				} else {
 					// Take average of number of times through the loop and
 					// use for interval time.
-					tInterval = (System.currentTimeMillis() - tCalcStart)/(cLoop*1000.0);
+//				tInterval = (System.currentTimeMillis() - tCalcStart)/(cLoop*1000.0);
+				tInterval = stopwatch_interval.ElapsedMilliseconds/(cLoop*1000.0);
 				}
 			}
 
@@ -367,7 +370,8 @@ namespace ev3
 				Console.WriteLine("Balancing");
 				Console.WriteLine();
 
-				tMotorPosOK = System.currentTimeMillis();
+//				tMotorPosOK = System.currentTimeMillis();
+			stopwatch_motorpos = Stopwatch.StartNew ();
 
 				// Reset the motors to make sure we start at a zero position
 				left_motor.ResetTacho();
@@ -391,8 +395,9 @@ namespace ev3
 						KDRIVE     * motorControlDrive +        // To improve start/stop performance
 						KSPEED     * motorSpeed);                // Motor speed in Deg/Sec
 
-					if (Math.Abs(power) < 100)
-						tMotorPosOK = System.currentTimeMillis();
+				if (Math.Abs (power) < 100)
+					stopwatch_motorpos = Stopwatch.StartNew ();
+//						tMotorPosOK = System.currentTimeMillis();
 
 					steerControl(power); // Movement control. Not used for balancing.
 
@@ -401,7 +406,7 @@ namespace ev3
 					left_motor.SetPower(Math.Abs(powerLeft));
 					right_motor.SetPower(Math.Abs(powerRight));
 
-					if(powerLeft > 0) //left_motor.forward(); 
+					if(powerLeft > 0) left_motor.forward(); 
 //					ev3.on
 					else left_motor.backward();
 
