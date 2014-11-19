@@ -138,6 +138,8 @@ namespace ev3
 		}
 
 		public void start() {
+			ev3.connect ();
+
 			gyro = ev3.getGyroSensor();
 			left_motor = ev3.getMotorA();
 			right_motor = ev3.getMotorD();
@@ -152,13 +154,12 @@ namespace ev3
 				getGyroOffset();
 
 				// Play warning beep sequence before balance starts
-				startBeeps();
+//				startBeeps();
 
 				// Start balance thread
 //				this.setDaemon(true);
 //				this.start();
 
-			ev3.connect ();
 
 //			initialize ();
 			//			balance();
@@ -173,236 +174,291 @@ namespace ev3
 			ev3.disconnect ();
 		}
 
-			/**
+		/**
 	 * This function returns a suitable initial gyro offset.  It takes
 	 * 100 gyro samples over a time of 1/2 second and averages them to
 	 * get the offset.  It also check the max and min during that time
 	 * and if the difference is larger than one it rejects the data and
 	 * gets another set of samples.
 	 */
-			private void getGyroOffset() {
+		private void getGyroOffset() {
 
-				Console.WriteLine("EV3 Segoway");
-				Console.WriteLine();
-				Console.WriteLine("Lay robot down");
-				Console.WriteLine("to calibrate");
-				Console.WriteLine("the gyro");
-				Console.WriteLine();
+			Console.WriteLine("EV3 Segoway");
+			Console.WriteLine();
+			Console.WriteLine("Lay robot down");
+			Console.WriteLine("to calibrate");
+			Console.WriteLine("the gyro");
+			Console.WriteLine();
 
-				//left_motor.flt(); // TODO: This didn't seem to make a bit of difference with GyroSensor calibration.
-				//right_motor.flt();
+			//left_motor.flt(); // TODO: This didn't seem to make a bit of difference with GyroSensor calibration.
+			//right_motor.flt();
 
-				//gyro.recalibrateOffset();
-			}
+			//gyro.recalibrateOffset();
+			calibrate ();
+		}
 
-			/**
-	 * Warn user the Segoway is about to start balancing. 
-	 */
-			private void startBeeps() {
+		/**
+ * Warn user the Segoway is about to start balancing. 
+ */
+		private void startBeeps() {
 
-				Console.WriteLine("Balance in");
+			Console.WriteLine("Balance in");
 
-				// Play warning beep sequence to indicate balance about to start
-				for (int c=5; c>0;c--) {
-				Console.Write(c + " ");
+			// Play warning beep sequence to indicate balance about to start
+			for (int c=5; c>0;c--) {
+			Console.Write(c + " ");
 //					Sound.playTone(440,100);
-				ev3.sound (30, 440, 100);
-					try { Thread.Sleep(1000);
-					} catch (ThreadInterruptedException e) {}
-				}
-				Console.WriteLine("GO");
-				Console.WriteLine();
+//				ev3.sound (30, 440, 100);
+				try { Thread.Sleep(1000);
+				} catch (ThreadInterruptedException e) {}
 			}
+			Console.WriteLine("GO");
+			Console.WriteLine();
+		}
 
-			/**
-	 * Get the data from the gyro. 
-	 * Fills the pass by reference gyroSpeed and gyroAngle based on updated information from the Gyro Sensor.
-	 * Maintains an automatically adjusted gyro offset as well as the integrated gyro angle.
-	 * 
-	 */
-			private void updateGyroData() {
-				// TODO: The GyroSensor class actually rebaselines for drift ever 5 seconds. This not needed? Or is this method better?
-				// Some of this fine tuning may actually interfere with fine-tuning happening in the hardcoded dIMU and GyroScope code.
-				float gyroRaw;
+		/**
+		 * average of 20 gyroRate values
+		 */
+		double calibrate() {
+			Console.WriteLine ("calibrating ...");
+
+			bool sound = false;
+
+			// Play tone: frequency 440Hz, volume 10
+			// duration 0.1sec, play type 0
+			if(sound)
+				ev3.sound (10, 440, (int)(0.1 * 1000));
+
+			Thread.Sleep (100);
+			double mean = 0;
+
+			int count = 10;
+
+			// gyro rate
+			for (int i = 0; i < count; i++) {
+				mean += gyroRate ();
+				Console.WriteLine ("gyroRate mean: " + mean);
+				Thread.Sleep (5);
+			}
+			mean = mean / count;
+
+			Thread.Sleep (100);
+			// Play tone: frequency 440Hz, volume 10
+			if(sound)
+				ev3.sound (10, 440, (int)(0.1 * 1000));
+
+			Thread.Sleep (100);
+			// Play tone
+			if(sound)
+				ev3.sound (10, 440, (int)(0.1 * 1000));
+
+			return mean;
+		}
+
+		/**
+		 * average of 5 samples
+		 */
+		int gyroRate() {
+			int filter = 0;
+
+			// get 5 samples
+			for(int i = 0; i < 5; i ++)
+				filter = ev3.getAngularVelocity () + filter;
+
+			return filter / 5;
+		}
+
+		/**
+ * Get the data from the gyro. 
+ * Fills the pass by reference gyroSpeed and gyroAngle based on updated information from the Gyro Sensor.
+ * Maintains an automatically adjusted gyro offset as well as the integrated gyro angle.
+ * 
+ */
+		private void updateGyroData() {
+			// TODO: The GyroSensor class actually rebaselines for drift ever 5 seconds. This not needed? Or is this method better?
+			// Some of this fine tuning may actually interfere with fine-tuning happening in the hardcoded dIMU and GyroScope code.
+			float gyroRaw;
 
 //			gyroRaw = gyro.getAngularVelocity();
-			gyroRaw = ev3.getAngularVelocity();
-				gOffset = EMAOFFSET * gyroRaw + (1-EMAOFFSET) * gOffset;
-				gyroSpeed = gyroRaw - gOffset; // Angular velocity (degrees/sec)
+		gyroRaw = ev3.getAngularVelocity();
+			gOffset = EMAOFFSET * gyroRaw + (1-EMAOFFSET) * gOffset;
+			gyroSpeed = gyroRaw - gOffset; // Angular velocity (degrees/sec)
 
-				gAngleGlobal += gyroSpeed*tInterval;
-				gyroAngle = gAngleGlobal; // Absolute angle (degrees)
-			}
+			gAngleGlobal += gyroSpeed*tInterval;
+			gyroAngle = gAngleGlobal; // Absolute angle (degrees)
+		}
 
-			/**
-	 * Keeps track of wheel position with both motors.
-	 */
-			private void updateMotorData() {
-				long mrcLeft, mrcRight, mrcDelta;
+		/**
+ * Keeps track of wheel position with both motors.
+ */
+		private void updateMotorData() {
+			long mrcLeft, mrcRight, mrcDelta;
 
-				// Keep track of motor position and speed
-				mrcLeft = left_motor.GetTachoCount();
-				mrcRight = right_motor.GetTachoCount();
+			// Keep track of motor position and speed
+			mrcLeft = left_motor.GetTachoCount();
+			mrcRight = right_motor.GetTachoCount();
 
-				// Maintain previous mrcSum so that delta can be calculated and get
-				// new mrcSum and Diff values
-				mrcSumPrev = mrcSum;
-				mrcSum = mrcLeft + mrcRight;
-				motorDiff = mrcLeft - mrcRight;
+			// Maintain previous mrcSum so that delta can be calculated and get
+			// new mrcSum and Diff values
+			mrcSumPrev = mrcSum;
+			mrcSum = mrcLeft + mrcRight;
+			motorDiff = mrcLeft - mrcRight;
 
-				// mrcDetla is the change int sum of the motor encoders, update
-				// motorPos based on this detla
-				mrcDelta = mrcSum - mrcSumPrev;
-				motorPos += mrcDelta;
+			// mrcDetla is the change int sum of the motor encoders, update
+			// motorPos based on this detla
+			mrcDelta = mrcSum - mrcSumPrev;
+			motorPos += mrcDelta;
 
-				// motorSpeed is based on the average of the last four delta's.
-				motorSpeed = (mrcDelta+mrcDeltaP1+mrcDeltaP2+mrcDeltaP3)/(4*tInterval);
+			// motorSpeed is based on the average of the last four delta's.
+			motorSpeed = (mrcDelta+mrcDeltaP1+mrcDeltaP2+mrcDeltaP3)/(4*tInterval);
 
-				// Shift the latest mrcDelta into the previous three saved delta values
-				mrcDeltaP3 = mrcDeltaP2;
-				mrcDeltaP2 = mrcDeltaP1;
-				mrcDeltaP1 = mrcDelta;
-			}
+			// Shift the latest mrcDelta into the previous three saved delta values
+			mrcDeltaP3 = mrcDeltaP2;
+			mrcDeltaP2 = mrcDeltaP1;
+			mrcDeltaP1 = mrcDelta;
+		}
 
-			/** 
-	 * Global variables used to control the amount of power to apply to each wheel.
-	 * Updated by the steerControl() method.
-	 */
-			private int powerLeft, powerRight; // originally local variables
+		/** 
+ * Global variables used to control the amount of power to apply to each wheel.
+ * Updated by the steerControl() method.
+ */
+		private int powerLeft, powerRight; // originally local variables
 
-			/**
-	 * This function determines the left and right motor power that should
-	 * be used based on the balance power and the steering control.
-	 */
-			private void steerControl(int power) {
-				int powerSteer;
+		/**
+ * This function determines the left and right motor power that should
+ * be used based on the balance power and the steering control.
+ */
+		private void steerControl(int power) {
+			int powerSteer;
 
-				// Update the target motor difference based on the user steering
-				// control value.
-				motorDiffTarget += motorControlSteer * tInterval;
+			// Update the target motor difference based on the user steering
+			// control value.
+			motorDiffTarget += motorControlSteer * tInterval;
 
-				// Determine the proportionate power differential to be used based
-				// on the difference between the target motor difference and the
-				// actual motor difference.
-				powerSteer = (int)(KSTEER * (motorDiffTarget - motorDiff));
+			// Determine the proportionate power differential to be used based
+			// on the difference between the target motor difference and the
+			// actual motor difference.
+			powerSteer = (int)(KSTEER * (motorDiffTarget - motorDiff));
 
-				// Apply the power steering value with the main power value to
-				// get the left and right power values.
-				powerLeft = power + powerSteer;
-				powerRight = power - powerSteer;
+			// Apply the power steering value with the main power value to
+			// get the left and right power values.
+			powerLeft = power + powerSteer;
+			powerRight = power - powerSteer;
 
-				// Limit the power to motor power range -100 to 100
-				if (powerLeft > 100)   powerLeft = 100;
-				if (powerLeft < -100)  powerLeft = -100;
+			// Limit the power to motor power range -100 to 100
+			if (powerLeft > 100)   powerLeft = 100;
+			if (powerLeft < -100)  powerLeft = -100;
 
-				// Limit the power to motor power range -100 to 100
-				if (powerRight > 100)  powerRight = 100;
-				if (powerRight < -100) powerRight = -100;
-			}
+			// Limit the power to motor power range -100 to 100
+			if (powerRight > 100)  powerRight = 100;
+			if (powerRight < -100) powerRight = -100;
+		}
 
-			/**
+		/**
 	 * Calculate the interval time from one iteration of the loop to the next.
 	 * Note that first time through, cLoop is 0, and has not gone through
 	 * the body of the loop yet.  Use it to save the start time.
 	 * After the first iteration, take the average time and convert it to
 	 * seconds for use as interval time.
 	 */
-			private void calcInterval(long cLoop) {
-				if (cLoop == 0) {
-					// First time through, set an initial tInterval time and
-					// record start time
-					tInterval = 0.0055;
+		private void calcInterval(long cLoop) {
+			if (cLoop == 0) {
+				// First time through, set an initial tInterval time and
+				// record start time
+				tInterval = 0.0055;
 //				tCalcStart = System.currentTimeMillis();
-				stopwatch_interval = Stopwatch.StartNew();
-				} else {
-					// Take average of number of times through the loop and
-					// use for interval time.
+			stopwatch_interval = Stopwatch.StartNew();
+			} else {
+				// Take average of number of times through the loop and
+				// use for interval time.
 //				tInterval = (System.currentTimeMillis() - tCalcStart)/(cLoop*1000.0);
-				tInterval = stopwatch_interval.ElapsedMilliseconds/(cLoop*1000.0);
-				}
+			tInterval = stopwatch_interval.ElapsedMilliseconds/(cLoop*1000.0);
 			}
+		}
 
-			private double gyroSpeed, gyroAngle; // originally local variables
-			private double motorSpeed; // originally local variable
+		private double gyroSpeed, gyroAngle; // originally local variables
+		private double motorSpeed; // originally local variable
 
-			//---------------------------------------------------------------------
-			// 
-			// This is the main balance thread for the robot.
-			//
-			// Robot is assumed to start leaning on a wall.  The first thing it
-			// does is take multiple samples of the gyro sensor to establish and
-			// initial gyro offset.
-			//
-			// After an initial gyro offset is established, the robot backs up
-			// against the wall until it falls forward, when it detects the
-			// forward fall, it start the balance loop.
-			//
-			// The main state variables are:
-			// gyroAngle  This is the angle of the robot, it is the results of
-			//            integrating on the gyro value.
-			//            Units: degrees
-			// gyroSpeed  The value from the Gyro Sensor after offset subtracted
-			//            Units: degrees/second
-			// motorPos   This is the motor position used for balancing.
-			//            Note that this variable has two sources of input:
-			//             Change in motor position based on the sum of
-			//             MotorRotationCount of the two motors,
-			//            and,
-			//             forced movement based on user driving the robot.
-			//            Units: degrees (sum of the two motors)
-			// motorSpeed This is the speed of the wheels of the robot based on the
-			//            motor encoders.
-			//            Units: degrees/second (sum of the two motors)
-			//
-			// From these state variables, the power to the motors is determined
-			// by this linear equation:
-			//     power = KGYROSPEED * gyro +
-			//             KGYROANGLE * gyroAngle +
-			//             KPOS       * motorPos +
-			//             KSPEED     * motorSpeed;
-			//
-			public void balance() {
+		//---------------------------------------------------------------------
+		// 
+		// This is the main balance thread for the robot.
+		//
+		// Robot is assumed to start leaning on a wall.  The first thing it
+		// does is take multiple samples of the gyro sensor to establish and
+		// initial gyro offset.
+		//
+		// After an initial gyro offset is established, the robot backs up
+		// against the wall until it falls forward, when it detects the
+		// forward fall, it start the balance loop.
+		//
+		// The main state variables are:
+		// gyroAngle  This is the angle of the robot, it is the results of
+		//            integrating on the gyro value.
+		//            Units: degrees
+		// gyroSpeed  The value from the Gyro Sensor after offset subtracted
+		//            Units: degrees/second
+		// motorPos   This is the motor position used for balancing.
+		//            Note that this variable has two sources of input:
+		//             Change in motor position based on the sum of
+		//             MotorRotationCount of the two motors,
+		//            and,
+		//             forced movement based on user driving the robot.
+		//            Units: degrees (sum of the two motors)
+		// motorSpeed This is the speed of the wheels of the robot based on the
+		//            motor encoders.
+		//            Units: degrees/second (sum of the two motors)
+		//
+		// From these state variables, the power to the motors is determined
+		// by this linear equation:
+		//     power = KGYROSPEED * gyro +
+		//             KGYROANGLE * gyroAngle +
+		//             KPOS       * motorPos +
+		//             KSPEED     * motorSpeed;
+		//
+		public void balance() {
 
-				int power;
-				long tMotorPosOK;
-				long cLoop = 0;
+			int power;
+//			long tMotorPosOK;
+			long cLoop = 0;
 
-				Console.WriteLine("Balancing");
-				Console.WriteLine();
+			Console.WriteLine("Balancing");
+			Console.WriteLine();
 
 //				tMotorPosOK = System.currentTimeMillis();
 			stopwatch_motorpos = Stopwatch.StartNew ();
 
-				// Reset the motors to make sure we start at a zero position
-				left_motor.ResetTacho();
-				right_motor.ResetTacho();
+			// Reset the motors to make sure we start at a zero position
+			left_motor.ResetTacho();
+			right_motor.ResetTacho();
 
-				// NOTE: This balance control loop only takes 1.128 MS to execute each loop in leJOS NXJ.
-				while(true) {
-					calcInterval(cLoop++);
+			Console.WriteLine ("power\tmotorPos\tpowerLeft\tpowerRight");
+			
+			// NOTE: This balance control loop only takes 1.128 MS to execute each loop in leJOS NXJ.
+			while(true) {
+				calcInterval(cLoop++);
 
-					updateGyroData();
+				updateGyroData();
 
-					updateMotorData();
+				updateMotorData();
 
-					// Apply the drive control value to the motor position to get robot to move.
-					motorPos -= motorControlDrive * tInterval;
+				// Apply the drive control value to the motor position to get robot to move.
+				motorPos -= motorControlDrive * tInterval;
 
-					// This is the main balancing equation
-					power = (int)((KGYROSPEED * gyroSpeed +               // Deg/Sec from Gyro sensor
-						KGYROANGLE * gyroAngle) / ratioWheel + // Deg from integral of gyro
-						KPOS       * motorPos +                 // From MotorRotaionCount of both motors
-						KDRIVE     * motorControlDrive +        // To improve start/stop performance
-						KSPEED     * motorSpeed);                // Motor speed in Deg/Sec
+				// This is the main balancing equation
+				power = (int)((KGYROSPEED * gyroSpeed +               // Deg/Sec from Gyro sensor
+					KGYROANGLE * gyroAngle) / ratioWheel + // Deg from integral of gyro
+					KPOS       * motorPos +                 // From MotorRotaionCount of both motors
+					KDRIVE     * motorControlDrive +        // To improve start/stop performance
+					KSPEED     * motorSpeed);                // Motor speed in Deg/Sec
 
 				if (Math.Abs (power) < 100)
 					stopwatch_motorpos = Stopwatch.StartNew ();
 //						tMotorPosOK = System.currentTimeMillis();
 
-					steerControl(power); // Movement control. Not used for balancing.
+				steerControl(power); // Movement control. Not used for balancing.
 
-					// Apply the power values to the motors
-					// NOTE: It would be easier/faster to use MotorPort.controlMotorById(), but it needs to be public.
+				// Apply the power values to the motors
+				// NOTE: It would be easier/faster to use MotorPort.controlMotorById(), but it needs to be public.
 //				left_motor.SetPower((byte)Math.Abs(powerLeft));
 //				right_motor.SetPower((byte)Math.Abs(powerRight));
 //				int left_power = (Math.Abs(powerLeft));
@@ -416,22 +472,28 @@ namespace ev3
 //					if(powerRight > 0) right_motor.forward(); 
 //					else right_motor.backward();
 
-					// Check if robot has fallen by detecting that motorPos is being limited
-					// for an extended amount of time.
+				Console.WriteLine (power + "\t" + motorPos + "\t" + powerLeft + "\t" + powerRight
+//				Console.WriteLine (iter + "\t" + power + "\t" + sensor_values + "\t" + avg_pwr
+//					+ "\t" + ang_vel + "\t" + ang + "\t" + (robot_position - refpos) + "\t" + refpos
+//					+ "\t" + robot_speed
+				); 
+
+				// Check if robot has fallen by detecting that motorPos is being limited
+				// for an extended amount of time.
 //				if ((System.currentTimeMillis() - tMotorPosOK) > TIME_FALL_LIMIT) break;
 				if (stopwatch_motorpos.ElapsedMilliseconds > TIME_FALL_LIMIT) break;
 
-					try {Thread.Sleep(WAIT_TIME);} catch (ThreadInterruptedException e) {}
-				} // end of while() loop
+				try {Thread.Sleep(WAIT_TIME);} catch (ThreadInterruptedException e) {}
+			} // end of while() loop
 
 //				left_motor.flt();
 //				right_motor.flt();
 
 //				Sound.beepSequenceUp();
-				Console.WriteLine("Oops... I fell");
-				Console.WriteLine("tInt ms:");
-				Console.WriteLine((int)tInterval*1000);
-			} // END OF BALANCING THREAD CODE
+			Console.WriteLine("Oops... I fell");
+			Console.WriteLine("tInt ms:");
+			Console.WriteLine((int)tInterval*1000);
+		} // END OF BALANCING THREAD CODE
 
 			/**
 	 * This method allows the robot to move forward/backward and make in-spot rotations as
