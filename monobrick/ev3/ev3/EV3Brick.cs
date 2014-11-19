@@ -54,6 +54,18 @@ namespace ev3
 			ev3.PlayTone ((byte)volume, (ushort)frequency, (ushort)durationMs);
 		}
 
+		public Sensor getGyroSensor() {
+			return ev3.Sensor2;
+		}
+
+		public Motor getMotorA() {
+			return ev3.MotorA;
+		}
+
+		public Motor getMotorD() {
+			return ev3.MotorD;
+		}
+
 		public void onMotorA(int speed) {
 			ev3.MotorA.On ((sbyte)speed);
 		}
@@ -108,7 +120,7 @@ namespace ev3
 		public int getAngularVelocity() {
 			string value = ev3.Sensor2.ReadAsString ();
 //			Console.WriteLine ("Gyro: " + value);
-			return Convert.ToInt16(value);
+			return Convert.ToInt16(value); 
 		}
 
 		public void getMotorDegrees() {

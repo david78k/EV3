@@ -39,6 +39,7 @@
     <Compile Include="Segway.cs" />
     <Compile Include="Sejway.cs" />
     <Compile Include="GyroBoy.cs" />
+    <Compile Include="Segoway.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoBrick">
