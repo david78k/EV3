@@ -16,7 +16,6 @@ namespace ev3
 		const float gain_motor_position = 350;	// for y
 
 		const int max_iter = 10;
-		int iter = 0;
 
 //		bool sound = false;
 		bool sound = true;
@@ -43,6 +42,9 @@ namespace ev3
 		int steering = 0;
 		int max_acceleration = 0;
 
+		bool complete = false;
+		int drive_sleep = 3000; // milliseconds
+
 		private EV3Brick ev3 = new EV3Brick();
 
 		public GyroBoy ()
@@ -53,14 +55,33 @@ namespace ev3
 			ev3.connect ();
 
 			initialize ();
-//			getBalancePos();
-			control();
-//			shutDown();
+//			balance();
+			Thread t1 = new Thread (new ThreadStart (balance));
+			t1.Start ();
+			Thread t2 = new Thread (new ThreadStart (drive));
+			t2.Start ();
+
+			t1.Join ();
+			t2.Join ();
 
 			ev3.disconnect ();
 		}
 
-		void control() {
+		void drive() {
+			Console.WriteLine ("driving ...");
+
+			int iter = 0;
+
+//			while (true) {
+			while (!complete) {
+				Thread.Sleep (drive_sleep);
+				speed = 20;
+				Thread.Sleep (drive_sleep);
+				speed = -20;
+			}
+		}
+
+		void balance() {
 			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
 			Console.WriteLine ("iter\tspeed\tsensor_values\tavg_pwr"
 				+ "\tang_vel\tang\tposition_offset\trefpos"
@@ -68,6 +89,8 @@ namespace ev3
 				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
 				+ "\tmotorB\tmotorC" 
 			);
+
+			int iter = 0;
 
 			const float radius_const = 57.3f;
 			float curr_err = 0;
@@ -80,8 +103,8 @@ namespace ev3
 				refpos = refpos + (dt * speed * 0.002f);
 
 				// ReadEncoders
-				speed = getMotorSpeed ();
-				float robot_speed = (radius * speed) / radius_const;
+//				speed = getMotorSpeed ();
+				float robot_speed = (radius * getMotorSpeed ()) / radius_const;
 				float robot_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2) / radius_const;
 
 				// ReadGyro
@@ -118,6 +141,8 @@ namespace ev3
 				// Timer >= dt, elapsedTime
 				// timer.reset();
 			}
+
+			complete = true;
 		}
 
 		void initialize() {
@@ -256,8 +281,10 @@ namespace ev3
 
 			float speedA = (pwr_b * 0.021f / radius);
 			float speedD = (pwr_c * 0.021f / radius);
-			ev3.setPowerMotorA ((int)speedA);
-			ev3.setPowerMotorD ((int)speedD);
+//			ev3.setPowerMotorA ((int)speedA);
+//			ev3.setPowerMotorD ((int)speedD);
+			ev3.onMotorA ((int)speedA);
+			ev3.onMotorD ((int)speedD);
 			Console.WriteLine ("speedA = " + speedA + ", speedD = " + speedD
 				+ ", extra_pwr = " + extra_pwr + ", pwr_b = " + pwr_b + ", pwr_c = " + pwr_c
 			);
