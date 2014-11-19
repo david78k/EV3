@@ -9,9 +9,9 @@ namespace ev3
 		private EV3Brick ev3 = new EV3Brick();
 
 		//private GyroSensor gyro; 
-		private Sensor gyro = ev3.getGyroSensor();
-		protected Motor left_motor = ev3.getMotorA();
-		protected Motor right_motor = ev3.getMotorD();
+		private Sensor gyro;
+		protected Motor left_motor;
+		protected Motor right_motor;
 //		protected EncoderMotor left_motor;
 //		protected EncoderMotor right_motor;
 
@@ -134,10 +134,12 @@ namespace ev3
 		}
 
 		public void start() {
-				this.left_motor = left;
-				this.right_motor = right;
+			gyro = ev3.getGyroSensor();
+			left_motor = ev3.getMotorA();
+			right_motor = ev3.getMotorD();
+
 				// Optional code to accept BasicMotor: this.right_motor = (NXTMotor)right;
-				this.gyro = gyro;
+//				this.gyro = gyro;
 				this.ratioWheel = wheelDiameter/5.6; // Original algorithm was tuned for 5.6 cm NXT 1.0 wheels.
 
 				// Took out 50 ms delay here.
@@ -150,8 +152,22 @@ namespace ev3
 
 				// Start balance thread
 				this.setDaemon(true);
-				this.start();		
-			}
+//				this.start();
+
+			ev3.connect ();
+
+			initialize ();
+			//			balance();
+			Thread t1 = new Thread (new ThreadStart (balance));
+			t1.Start ();
+			Thread t2 = new Thread (new ThreadStart (drive));
+			t2.Start ();
+
+			t1.Join ();
+			t2.Join ();
+
+			ev3.disconnect ();
+		}
 
 			/**
 	 * This function returns a suitable initial gyro offset.  It takes
@@ -219,8 +235,8 @@ namespace ev3
 				long mrcLeft, mrcRight, mrcDelta;
 
 				// Keep track of motor position and speed
-				mrcLeft = left_motor.getTachoCount();
-				mrcRight = right_motor.getTachoCount();
+				mrcLeft = left_motor.GetTachoCount();
+				mrcRight = right_motor.GetTachoCount();
 
 				// Maintain previous mrcSum so that delta can be calculated and get
 				// new mrcSum and Diff values
@@ -337,7 +353,7 @@ namespace ev3
 			//             KPOS       * motorPos +
 			//             KSPEED     * motorSpeed;
 			//
-			public void run() {
+			public void balance() {
 
 				int power;
 				long tMotorPosOK;
@@ -349,8 +365,8 @@ namespace ev3
 				tMotorPosOK = System.currentTimeMillis();
 
 				// Reset the motors to make sure we start at a zero position
-				left_motor.resetTachoCount();
-				right_motor.resetTachoCount();
+				left_motor.ResetTacho();
+				right_motor.ResetTacho();
 
 				// NOTE: This balance control loop only takes 1.128 MS to execute each loop in leJOS NXJ.
 				while(true) {
