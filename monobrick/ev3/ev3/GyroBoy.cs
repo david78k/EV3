@@ -18,6 +18,9 @@ namespace ev3
 		const int max_iter = 3;
 		int iter = 0;
 
+//		bool sound = false;
+		bool sound = true;
+
 		float refpos = 0;	// reference position
 		const int sample_time = 22;	// sample time in milliseconds (ms)
 		float dt = (sample_time - 2)/1000f;	// 
@@ -29,8 +32,8 @@ namespace ev3
 		int[] enc_val = new int[max_index];
 		int enc_index = 0;
 
-		int nowOutOfBound = 0;
-		int prevOutofBound = 0;
+		bool nowOutOfBound = false;
+		bool prevOutOfBound = false;
 		int outOfBoundCount = 0;
 		int outOfBound = 0;
 
@@ -94,6 +97,7 @@ namespace ev3
 
 				// Errors
 				// input: PID output
+				errors (avg_pwr);
 
 				// GetSteer
 				//steering
@@ -139,7 +143,8 @@ namespace ev3
 
 			// Play tone: frequency 440Hz, volume 10
 			// duration 0.1sec, play type 0
-//			ev3.sound (10, 440, (int)(0.1 * 1000));
+			if(sound)
+				ev3.sound (10, 440, (int)(0.1 * 1000));
 
 			Thread.Sleep (100);
 			mean = 0;
@@ -156,11 +161,13 @@ namespace ev3
 
 			Thread.Sleep (100);
 			// Play tone: frequency 440Hz, volume 10
-//			ev3.sound (10, 440, (int)(0.1 * 1000));
+			if(sound)
+				ev3.sound (10, 440, (int)(0.1 * 1000));
 
 			Thread.Sleep (100);
 			// Play tone
-//			ev3.sound (10, 440, (int)(0.1 * 1000));
+			if(sound)
+				ev3.sound (10, 440, (int)(0.1 * 1000));
 
 			return mean;
 		}
@@ -243,6 +250,39 @@ namespace ev3
 
 			ev3.setPowerMotorA ((int)(pwr_b * 0.021f / radius));
 			ev3.setPowerMotorD ((int)(pwr_c * 0.021f/ radius));
+		}
+
+		public void errors(float avg_pwr) {
+			nowOutOfBound = (Math.Abs (avg_pwr) > 100);
+
+			if (nowOutOfBound && prevOutOfBound) {
+				outOfBound++;
+			} else {
+				outOfBound = 0;
+			}
+
+			if (outOfBound > 20) {
+				Thread.Sleep (100);
+				ev3.offMotorA ();
+				ev3.offMotorD ();
+
+				// diplay ERROR
+
+				ev3.sound (50, 800, 100);
+				ev3.sound (50, 600, 100);
+				ev3.sound (50, 300, 100);
+
+				// B+C
+//				ev3.offMotorB ();
+//				ev3.offMotorC ();
+
+				// interrupt balance loop
+
+				Thread.Sleep (4000);
+				// stop
+			} else {
+
+			}
 		}
 	}
 }

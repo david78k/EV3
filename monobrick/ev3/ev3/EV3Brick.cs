@@ -70,6 +70,22 @@ namespace ev3
 			ev3.MotorD.On ((sbyte)speed);
 		}
 
+		public void offMotorA() {
+			ev3.MotorA.Off ();
+		}
+
+		public void offMotorB() {
+			ev3.MotorB.Off ();
+		}
+
+		public void offMotorC() {
+			ev3.MotorC.Off ();
+		}
+
+		public void offMotorD() {
+			ev3.MotorD.Off ();
+		}
+
 		public void setPowerMotorA(int power) {
 			ev3.MotorA.SetPower ((byte)power);
 		}
