@@ -23,7 +23,7 @@ namespace ev3
 
 		float refpos = 0;	// reference position
 		const int sample_time = 22;	// sample time in milliseconds (ms)
-		float dt = (sample_time - 2)/1000f;	// 
+		const float dt = (sample_time - 2)/1000f;	// 
 		float speed = 0;
 		const int wheel_diameter = 55; // in millimeters (mm)
 		int radius = wheel_diameter;
@@ -61,7 +61,11 @@ namespace ev3
 		}
 
 		void control() {
-			Console.WriteLine ("iter\trefpos\tdt\tspeed\tmotorpower\td_pwr\tmotorB\tmotorC");
+			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
+			Console.WriteLine ("iter\tspeed\tsensor_values\tavg_pwr\tmotorB\tmotorC" 
+				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
+			);
+
 			const float radius_const = 57.3f;
 			float curr_err = 0;
 			float acc_err = 0;
@@ -87,9 +91,6 @@ namespace ev3
 				              + gain_motor_speed * robot_speed
 					;
 
-				// ReadConstants
-//				Kp, Ki, Kd, dt
-
 				// PID
 				// input: sensor values
 				// output: average power
@@ -99,14 +100,11 @@ namespace ev3
 				// input: PID output
 				errors (avg_pwr);
 
-				// GetSteer
-				//steering
-
 				// SetMotorPower
-				// input: steering, pid output
+				// input: pid output
 				setMotorPower (avg_pwr);
 
-				Console.WriteLine (iter + "\t" + refpos + "\t" + dt + "\t" + speed + "\t" + sensor_values + "\t" + avg_pwr + "\t"); 
+				Console.WriteLine (iter + "\t" + speed + "\t" + sensor_values + "\t" + avg_pwr + "\t"); 
 //				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 
