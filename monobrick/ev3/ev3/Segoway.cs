@@ -192,7 +192,7 @@ namespace ev3
 				//left_motor.flt(); // TODO: This didn't seem to make a bit of difference with GyroSensor calibration.
 				//right_motor.flt();
 
-				gyro.recalibrateOffset();
+				//gyro.recalibrateOffset();
 			}
 
 			/**
@@ -403,19 +403,23 @@ namespace ev3
 
 					// Apply the power values to the motors
 					// NOTE: It would be easier/faster to use MotorPort.controlMotorById(), but it needs to be public.
-					left_motor.SetPower(Math.Abs(powerLeft));
-					right_motor.SetPower(Math.Abs(powerRight));
+//				left_motor.SetPower((byte)Math.Abs(powerLeft));
+//				right_motor.SetPower((byte)Math.Abs(powerRight));
+//				int left_power = (Math.Abs(powerLeft));
+//				int right_power = (Math.Abs(powerRight));
 
-					if(powerLeft > 0) left_motor.forward(); 
-//					ev3.on
-					else left_motor.backward();
-
-					if(powerRight > 0) right_motor.forward(); 
-					else right_motor.backward();
+//				if(powerLeft > 0) //left_motor.forward(); 
+				left_motor.On((sbyte)powerLeft);
+//				else //left_motor.backward();
+//					right_motor.On((sbyte)right_motor);
+				right_motor.On ((sbyte)powerRight);
+//					if(powerRight > 0) right_motor.forward(); 
+//					else right_motor.backward();
 
 					// Check if robot has fallen by detecting that motorPos is being limited
 					// for an extended amount of time.
-					if ((System.currentTimeMillis() - tMotorPosOK) > TIME_FALL_LIMIT) break;
+//				if ((System.currentTimeMillis() - tMotorPosOK) > TIME_FALL_LIMIT) break;
+				if (stopwatch_motorpos.ElapsedMilliseconds > TIME_FALL_LIMIT) break;
 
 					try {Thread.Sleep(WAIT_TIME);} catch (ThreadInterruptedException e) {}
 				} // end of while() loop
