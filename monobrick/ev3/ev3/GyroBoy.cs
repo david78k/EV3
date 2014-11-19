@@ -111,6 +111,8 @@ namespace ev3
 //					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 
 				// Wait
+				// Timer >= dt, elapsedTime
+				// timer.reset();
 			}
 		}
 
@@ -281,7 +283,7 @@ namespace ev3
 				Thread.Sleep (4000);
 				// stop
 			} else {
-
+				prevOutOfBound = nowOutOfBound;
 			}
 		}
 	}
