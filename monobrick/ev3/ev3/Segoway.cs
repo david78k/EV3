@@ -151,20 +151,20 @@ namespace ev3
 				startBeeps();
 
 				// Start balance thread
-				this.setDaemon(true);
+//				this.setDaemon(true);
 //				this.start();
 
 			ev3.connect ();
 
-			initialize ();
+//			initialize ();
 			//			balance();
 			Thread t1 = new Thread (new ThreadStart (balance));
 			t1.Start ();
-			Thread t2 = new Thread (new ThreadStart (drive));
-			t2.Start ();
+//			Thread t2 = new Thread (new ThreadStart (drive));
+//			t2.Start ();
 
 			t1.Join ();
-			t2.Join ();
+//			t2.Join ();
 
 			ev3.disconnect ();
 		}
@@ -202,8 +202,9 @@ namespace ev3
 				for (int c=5; c>0;c--) {
 				Console.Write(c + " ");
 //					Sound.playTone(440,100);
-					try { Thread.sleep(1000);
-					} catch (InterruptedException e) {}
+				ev3.sound (30, 440, 100);
+					try { Thread.Sleep(1000);
+					} catch (ThreadInterruptedException e) {}
 				}
 				Console.WriteLine("GO");
 				Console.WriteLine();
@@ -220,7 +221,8 @@ namespace ev3
 				// Some of this fine tuning may actually interfere with fine-tuning happening in the hardcoded dIMU and GyroScope code.
 				float gyroRaw;
 
-				gyroRaw = gyro.getAngularVelocity();
+//			gyroRaw = gyro.getAngularVelocity();
+			gyroRaw = ev3.getAngularVelocity;
 				gOffset = EMAOFFSET * gyroRaw + (1-EMAOFFSET) * gOffset;
 				gyroSpeed = gyroRaw - gOffset; // Angular velocity (degrees/sec)
 
@@ -393,10 +395,11 @@ namespace ev3
 
 					// Apply the power values to the motors
 					// NOTE: It would be easier/faster to use MotorPort.controlMotorById(), but it needs to be public.
-					left_motor.setPower(Math.Abs(powerLeft));
-					right_motor.setPower(Math.Abs(powerRight));
+					left_motor.SetPower(Math.Abs(powerLeft));
+					right_motor.SetPower(Math.Abs(powerRight));
 
-					if(powerLeft > 0) left_motor.forward(); 
+					if(powerLeft > 0) //left_motor.forward(); 
+//					ev3.on
 					else left_motor.backward();
 
 					if(powerRight > 0) right_motor.forward(); 
@@ -406,7 +409,7 @@ namespace ev3
 					// for an extended amount of time.
 					if ((System.currentTimeMillis() - tMotorPosOK) > TIME_FALL_LIMIT) break;
 
-					try {Thread.sleep(WAIT_TIME);} catch (InterruptedException e) {}
+					try {Thread.Sleep(WAIT_TIME);} catch (ThreadInterruptedException e) {}
 				} // end of while() loop
 
 //				left_motor.flt();
