@@ -1,25 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ev3/Sejway.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ev3/Segoway.cs">
     <Files>
-      <File FileName="ev3/ev3.cs" Line="7" Column="7" />
-      <File FileName="ev3/Sejway.cs" Line="24" Column="24" />
-      <File FileName="ev3/Segway.cs" Line="2" Column="2" />
-      <File FileName="ev3/EV3Brick.cs" Line="18" Column="18" />
+      <File FileName="ev3/ev3.cs" Line="25" Column="25" />
+      <File FileName="ev3/Segoway.cs" Line="26" Column="26" />
+      <File FileName="ev3/EV3Brick.cs" Line="15" Column="15" />
+      <File FileName="ev3/GyroBoy.cs" Line="22" Column="22" />
+      <File FileName="ev3/Sejway.cs" Line="3" Column="3" />
+      <File FileName="ev3/Segway.cs" Line="28" Column="28" />
       <File FileName="ev3/script.py" Line="1" Column="1" />
-      <File FileName="ev3/Sejway.java" Line="6" Column="6" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Node name="Solution Items" expanded="True" />
-          <Node name="ev3" expanded="True">
-            <Node name="References" expanded="True" />
-            <Node name="Sejway.cs" selected="True" />
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

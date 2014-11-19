@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using System.Diagnostics;
+
 using MonoBrick.EV3;
 
 namespace ev3
@@ -7,6 +9,7 @@ namespace ev3
 	public class Segoway
 	{
 		private EV3Brick ev3 = new EV3Brick();
+		Stopwatch watch = new System.Diagnostics.Stopwatch();
 
 		//private GyroSensor gyro; 
 		private Sensor gyro;

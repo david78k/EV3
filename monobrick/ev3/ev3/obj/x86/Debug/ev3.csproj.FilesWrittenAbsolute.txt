@@ -13,3 +13,4 @@
 /Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Scripting.Metadata.dll
 /Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/Microsoft.Scripting.Metadata.xml
 /Users/tkang/github/ev3/monobrick/ev3/ev3/bin/Debug/IronPython.Modules.dll
+/Users/tkang/github/ev3/monobrick/ev3/ev3/obj/x86/Debug/.NETFramework,Version=v4.5.1.AssemblyAttribute.cs
