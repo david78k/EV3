@@ -22,7 +22,7 @@ namespace ev3 {
 //			program.testNN ();
 //			program.testNNLineFollower ();
 
-			EV3Brick ev3 = new EV3Brick ();
+//			EV3Brick ev3 = new EV3Brick ();
 //			ev3.runH25 ();
 //			ev3.testH25 ();
 //			ev3.testMotorA ();
@@ -35,8 +35,8 @@ namespace ev3 {
 		void testSegway() {
 //			Segway sw = new Segway ();
 //			Sejway sw = new Sejway ();
-//			GyroBoy sw = new GyroBoy ();
-			Segoway sw = new Segoway ();
+			GyroBoy sw = new GyroBoy ();
+//			Segoway sw = new Segoway ();
 			sw.start ();
 		}
 

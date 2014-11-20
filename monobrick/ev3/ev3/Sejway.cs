@@ -14,8 +14,9 @@ namespace ev3
 		const int KD = 33;	// origianlly 33
 		const int SCALE_PID = 18;  // originally 18
 		const int SCALE_POWER =100; // orginally 100
-		const int SPEED = 55; // originally 55
+		const int SPEED = 35; // originally 55
 		const int SLEEP = 10; // in milliseconds
+		const int NORM_POWER = 45; // normalize power, originally 45
 
 		// Global vars:
 		int offset = 0;
@@ -93,7 +94,7 @@ namespace ev3
 
 				// Power derived from PID value:
 				int power = Math.Abs(pid_val);
-				power = SPEED + (power * 45) / SCALE_POWER; // NORMALIZE POWER
+				power = SPEED + (power * NORM_POWER) / SCALE_POWER; // NORMALIZE POWER
 
 				Console.Write (iter + "\t" + normVal + "\t" + error + "\t"
 				+ pid_val + "\t" + power + "\t");

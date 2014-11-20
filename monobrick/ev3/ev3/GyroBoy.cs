@@ -15,7 +15,8 @@ namespace ev3
 		const float gain_motor_speed = 75;	// for y_hat
 		const float gain_motor_position = 350;	// for y
 
-		const int max_iter = 10;
+		const int max_iter = 20;
+		const int drive_sleep = 7000; // milliseconds
 
 //		bool sound = false;
 		bool sound = true;
@@ -25,7 +26,7 @@ namespace ev3
 		const float dt = (sample_time - 2)/1000f;	// 
 		float speed = 0;
 		const int wheel_diameter = 55; // in millimeters (mm)
-		int radius = wheel_diameter;
+		float radius = wheel_diameter / 2000f;
 
 		const int max_index = 7;
 		int[] enc_val = new int[max_index];
@@ -43,7 +44,6 @@ namespace ev3
 		int max_acceleration = 0;
 
 		bool complete = false;
-		int drive_sleep = 3000; // milliseconds
 
 		private EV3Brick ev3 = new EV3Brick();
 
@@ -83,11 +83,11 @@ namespace ev3
 
 		void balance() {
 			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
-			Console.WriteLine ("iter\tspeed\tsensor_values\tavg_pwr"
-				+ "\tang_vel\tang\tposition_offset\trefpos"
+			Console.WriteLine ("iter\tspeed\tang_vel\tang"
+				+ "\tsensor_values\tavg_pwr\tposition_offset\trefpos"
 				+ "\trobot_speed"
-				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
-				+ "\tmotorB\tmotorC" 
+//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
+//				+ "\tmotorB\tmotorC" 
 			);
 
 			int iter = 0;
@@ -130,12 +130,10 @@ namespace ev3
 				// input: pid output
 				setMotorPower (avg_pwr);
 
-				Console.WriteLine (iter + "\t" + speed + "\t" + sensor_values + "\t" + avg_pwr
-					+ "\t" + ang_vel + "\t" + ang + "\t" + (robot_position - refpos) + "\t" + refpos
+				Console.WriteLine (iter + "\t" + speed + "\t" + ang_vel + "\t" + ang 
+					+ "\t" + sensor_values + "\t" + avg_pwr + "\t" + (robot_position - refpos) + "\t" + refpos
 					+ "\t" + robot_speed
 				); 
-//				Console.WriteLine (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
-//					+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
 
 				// Wait
 				// Timer >= dt, elapsedTime
@@ -206,14 +204,14 @@ namespace ev3
 		/**
 		 * average of 5 samples
 		 */
-		int gyroRate() {
-			int filter = 0;
+		float gyroRate() {
+			float filter = 0;
 
 			// get 5 samples
 			for(int i = 0; i < 5; i ++)
 				filter = ev3.getAngularVelocity () + filter;
 
-			return filter / 5;
+			return filter / 5f;
 		}
 
 		float readGyro() {
@@ -285,9 +283,9 @@ namespace ev3
 //			ev3.setPowerMotorD ((int)speedD);
 			ev3.onMotorA ((int)speedA);
 			ev3.onMotorD ((int)speedD);
-			Console.WriteLine ("speedA = " + speedA + ", speedD = " + speedD
-				+ ", extra_pwr = " + extra_pwr + ", pwr_b = " + pwr_b + ", pwr_c = " + pwr_c
-			);
+//			Console.WriteLine ("speedA = " + speedA + ", speedD = " + speedD
+//				+ ", extra_pwr = " + extra_pwr + ", pwr_b = " + pwr_b + ", pwr_c = " + pwr_c
+//			);
 		}
 
 		public void errors(float avg_pwr) {

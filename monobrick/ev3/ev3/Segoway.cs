@@ -232,7 +232,7 @@ namespace ev3
 			Thread.Sleep (100);
 			double mean = 0;
 
-			int count = 10;
+			int count = 3;
 
 			// gyro rate
 			for (int i = 0; i < count; i++) {
