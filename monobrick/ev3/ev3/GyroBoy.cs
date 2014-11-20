@@ -87,8 +87,8 @@ namespace ev3
 			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
 			Console.WriteLine ("iter\tspeed\tang_vel\tang"
 				+ "\tsensor\tavg_pwr\toffset\trefpos"
-				+ "\trobot_speed"
-				+ "\tspeedA\tspeedD\textra_pwr\tpwr_b\tpwr_c"
+				+ "\trspeed"
+				+ "\tspeedA\tspeedD\textra\tpwr_b\tpwr_c"
 //				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
 //				+ "\tmotorB\tmotorC" 
 			);
@@ -129,7 +129,7 @@ namespace ev3
 				// input: PID output
 				errors (avg_pwr);
 
-				Console.Write (iter + "\t" + speed + "\t" + ang_vel + "\t" + ang 
+				Console.Write (iter + "\t" + speed + "\t" + ang_vel.ToString(FORMAT) + "\t" + ang.ToString(FORMAT)
 					+ "\t" + sensor_values.ToString(FORMAT) + "\t" + avg_pwr.ToString(FORMAT) 
 					+ "\t" + (robot_position - refpos).ToString(FORMAT) + "\t" + refpos.ToString(FORMAT)
 					+ "\t" + robot_speed.ToString(FORMAT) + "\t"
