@@ -43,6 +43,8 @@ namespace ev3
 		int steering = 0;
 		int max_acceleration = 0;
 
+		const string FORMAT = "0.00"; // precision
+
 		bool complete = false;
 
 		private EV3Brick ev3 = new EV3Brick();
@@ -84,7 +86,7 @@ namespace ev3
 		void balance() {
 			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
 			Console.WriteLine ("iter\tspeed\tang_vel\tang"
-				+ "\tsensor_values\tavg_pwr\tposition_offset\trefpos"
+				+ "\tsensor\tavg_pwr\toffset\trefpos"
 				+ "\trobot_speed"
 				+ "\tspeedA\tspeedD\textra_pwr\tpwr_b\tpwr_c"
 //				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
@@ -128,8 +130,9 @@ namespace ev3
 				errors (avg_pwr);
 
 				Console.Write (iter + "\t" + speed + "\t" + ang_vel + "\t" + ang 
-					+ "\t" + sensor_values + "\t" + avg_pwr + "\t" + (robot_position - refpos) + "\t" + refpos
-					+ "\t" + robot_speed + "\t"
+					+ "\t" + sensor_values.ToString(FORMAT) + "\t" + avg_pwr.ToString(FORMAT) 
+					+ "\t" + (robot_position - refpos).ToString(FORMAT) + "\t" + refpos.ToString(FORMAT)
+					+ "\t" + robot_speed.ToString(FORMAT) + "\t"
 				); 
 
 				// SetMotorPower
@@ -284,7 +287,8 @@ namespace ev3
 //			ev3.setPowerMotorD ((int)speedD);
 			ev3.onMotorA ((int)speedA);
 			ev3.onMotorD ((int)speedD);
-			Console.WriteLine (speedA + "\t" + speedD + "\t" + extra_pwr + "\t" + pwr_b + "\t" + pwr_c);
+			Console.WriteLine (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
+				+ "\t" + extra_pwr.ToString(FORMAT) + "\t" + pwr_b.ToString(FORMAT) + "\t" + pwr_c.ToString(FORMAT));
 //			Console.WriteLine ("speedA = " + speedA + ", speedD = " + speedD
 //				+ ", extra_pwr = " + extra_pwr + ", pwr_b = " + pwr_b + ", pwr_c = " + pwr_c
 //			);
