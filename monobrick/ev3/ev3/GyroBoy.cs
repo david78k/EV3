@@ -41,6 +41,7 @@ namespace ev3
 		float mean_ang = 0;
 		float mean = 0;
 		int steering = 0;
+		float old_steering = 0;
 		int max_acceleration = 0;
 
 		const string FORMAT = "0.00"; // precision
@@ -257,28 +258,29 @@ namespace ev3
 				+ dif_err * Kd;
 		}
 
+		// read the shared variable steering
 		public void setMotorPower(float avg_pwr) {
 			// limit steering: [-50, 50]
-			if (steering > 50)
-				steering = 50;
-			if (steering < -50)
-				steering = -50;
-
 			float new_steering = steering;
-			float old_steering = 0;
+			if (steering > 50)
+				new_steering = 50;
+			if (steering < -50)
+				new_steering = -50;
+
 			float extra_pwr = 0;
 			if (new_steering == 0) {
-				int sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
+				int sync_0 = 0;
 
 				if (old_steering != 0) {
-					extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
+					sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
 				}
+				extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
 			} else {
 				extra_pwr = new_steering * (-0.5f);
 			}
 
-			float pwr_c = extra_pwr - avg_pwr;
-			float pwr_b = extra_pwr + avg_pwr;
+			float pwr_c = avg_pwr - extra_pwr;
+			float pwr_b = avg_pwr + extra_pwr;
 			old_steering = new_steering;
 
 			float speedA = (pwr_b * 0.021f / radius);
