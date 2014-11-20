@@ -86,6 +86,7 @@ namespace ev3
 			Console.WriteLine ("iter\tspeed\tang_vel\tang"
 				+ "\tsensor_values\tavg_pwr\tposition_offset\trefpos"
 				+ "\trobot_speed"
+				+ "\tspeedA\tspeedD\textra_pwr\tpwr_b\tpwr_c"
 //				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
 //				+ "\tmotorB\tmotorC" 
 			);
@@ -126,14 +127,14 @@ namespace ev3
 				// input: PID output
 				errors (avg_pwr);
 
+				Console.Write (iter + "\t" + speed + "\t" + ang_vel + "\t" + ang 
+					+ "\t" + sensor_values + "\t" + avg_pwr + "\t" + (robot_position - refpos) + "\t" + refpos
+					+ "\t" + robot_speed + "\t"
+				); 
+
 				// SetMotorPower
 				// input: pid output
 				setMotorPower (avg_pwr);
-
-				Console.WriteLine (iter + "\t" + speed + "\t" + ang_vel + "\t" + ang 
-					+ "\t" + sensor_values + "\t" + avg_pwr + "\t" + (robot_position - refpos) + "\t" + refpos
-					+ "\t" + robot_speed
-				); 
 
 				// Wait
 				// Timer >= dt, elapsedTime
@@ -283,6 +284,7 @@ namespace ev3
 //			ev3.setPowerMotorD ((int)speedD);
 			ev3.onMotorA ((int)speedA);
 			ev3.onMotorD ((int)speedD);
+			Console.WriteLine (speedA + "\t" + speedD + "\t" + extra_pwr + "\t" + pwr_b + "\t" + pwr_c);
 //			Console.WriteLine ("speedA = " + speedA + ", speedD = " + speedD
 //				+ ", extra_pwr = " + extra_pwr + ", pwr_b = " + pwr_b + ", pwr_c = " + pwr_c
 //			);
