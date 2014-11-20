@@ -258,13 +258,13 @@ namespace ev3
 		}
 
 		public void setMotorPower(float avg_pwr) {
-			// limit: [-50, 50]
-			if (avg_pwr > 50)
-				avg_pwr = 50;
-			if (avg_pwr < -50)
-				avg_pwr = -50;
+			// limit steering: [-50, 50]
+			if (steering > 50)
+				steering = 50;
+			if (steering < -50)
+				steering = -50;
 
-			float new_steering = avg_pwr;
+			float new_steering = steering;
 			float old_steering = 0;
 			float extra_pwr = 0;
 			if (new_steering == 0) {
