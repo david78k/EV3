@@ -18,8 +18,8 @@ namespace ev3
 		const int max_iter = 20;
 		const int drive_sleep = 7000; // milliseconds
 
-//		bool sound = false;
-		bool sound = true;
+		bool sound = false;
+//		bool sound = true;
 
 		float refpos = 0;	// reference position
 		const int sample_time = 22;	// sample time in milliseconds (ms)
@@ -58,7 +58,7 @@ namespace ev3
 			ev3.connect ();
 
 			initialize ();
-//			balance();
+
 			Thread t1 = new Thread (new ThreadStart (balance));
 			t1.Start ();
 			Thread t2 = new Thread (new ThreadStart (drive));
@@ -72,8 +72,6 @@ namespace ev3
 
 		void drive() {
 			Console.WriteLine ("driving ...");
-
-			int iter = 0;
 
 //			while (true) {
 			while (!complete) {
@@ -108,18 +106,14 @@ namespace ev3
 
 				// ReadEncoders
 //				speed = getMotorSpeed ();
-				float robot_speed = (radius * getMotorSpeed ()) / radius_const;
-				float robot_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2) / radius_const;
+				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
+				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2) / radius_const;
 
 				// ReadGyro
 				float ang_vel = readGyro ();
 
 				// CombineSensorValues
-				float sensor_values = gain_angle * ang
-				              + gain_angular_velocity * ang_vel
-				              + gain_motor_position * (robot_position - refpos)
-				              + gain_motor_speed * robot_speed
-					;
+				float sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
 
 				// PID
 				// input: sensor values
@@ -244,6 +238,13 @@ namespace ev3
 //			Console.WriteLine (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
 
 			return (int)((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
+		}
+
+		public float combineSensorValues(float ang_vel, float motor_position, float motor_speed) {
+			return gain_angle * ang
+			+ gain_angular_velocity * ang_vel
+			+ gain_motor_position * (motor_position - refpos)
+			+ gain_motor_speed * motor_speed;
 		}
 
 		public float pid(float sensor_values, float curr_err, float acc_err, float dif_err, float prev_err) {
