@@ -26,10 +26,10 @@ namespace ev3
 		const float dt = (sample_time - 2)/1000f;	// 
 		float speed = 0;
 		const int wheel_diameter = 55; // in millimeters (mm)
-		float radius = wheel_diameter / 2000f;
+		const float radius = wheel_diameter / 2000f;
 
 		const int max_index = 7;
-		int[] enc_val = new int[max_index];
+		float[] enc_val = new float[max_index];
 		int enc_index = 0;
 
 		bool nowOutOfBound = false;
@@ -38,7 +38,7 @@ namespace ev3
 		int outOfBound = 0;
 
 		float ang = 0;
-		float mean_ang = 0;
+//		float mean_ang = 0;
 		float mean = 0;
 		int steering = 0;
 		float old_steering = 0;
@@ -99,12 +99,12 @@ namespace ev3
 			int iter = 0;
 
 			while (iter++ < max_iter) {
-				// Position
+				// Position: verified
 				refpos = refpos + (dt * speed * 0.002f);
 
-				// ReadEncoders
+				// ReadEncoders: verified
 				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
-				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2) / radius_const;
+				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
 
 				// ReadGyro
 				float ang_vel = readGyro ();
@@ -199,6 +199,7 @@ namespace ev3
 		}
 
 		/**
+		 * verified
 		 * average of 5 samples
 		 */
 		float gyroRate() {
@@ -211,18 +212,24 @@ namespace ev3
 			return filter / 5f;
 		}
 
+		// verified
+		// change ang and return ang_vel
 		float readGyro() {
 			float curr_val = gyroRate ();
+			// EMA
 			mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
 			float ang_vel = curr_val - mean;
 			ang = ang + dt * ang_vel;
-			mean_ang = mean_ang * 0.999f + ang * (1f - 0.999f);
-			ang = ang - mean_ang;
+
+			// what is this part? in lighter color
+//			mean_ang = mean_ang * 0.999f + ang * (1f - 0.999f);
+//			ang = ang - mean_ang;
 
 			return ang_vel;
 		}
 
-		int getMotorSpeed() {
+		// verified
+		float getMotorSpeed() {
 			enc_index++;
 
 			if (max_index <= enc_index)
@@ -232,10 +239,10 @@ namespace ev3
 			if (max_index <= compare_index)
 				compare_index = 0;
 
-			enc_val[enc_index] = (ev3.getMotorADegree() + ev3.getMotorDDegree())/2;
+			enc_val[enc_index] = (ev3.getMotorADegree() + ev3.getMotorDDegree())/2.0f;
 //			Console.WriteLine (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
 
-			return (int)((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
+			return ((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
 		}
 
 		// verified
