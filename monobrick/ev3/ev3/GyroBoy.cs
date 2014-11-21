@@ -24,10 +24,10 @@ namespace ev3
 
 		float refpos = 0;	// reference position
 		const int sample_time = 22;	// sample time in milliseconds (ms)
-		const float dt = (sample_time - 2)/1000f;	// 
+		const float dt = (sample_time - 2)/1000f;	// verified
 		float speed = 0;
 		const int wheel_diameter = 55; // in millimeters (mm)
-		const float radius = wheel_diameter / 2000f;
+		const float radius = wheel_diameter / 2000f; // verified
 
 		const int max_index = 7;
 		float[] enc_val = new float[max_index];
@@ -61,13 +61,17 @@ namespace ev3
 		{
 		}
 
+		// verified
 		public void start() {
 			ev3.connect ();
 
+			// verified
 			initialize ();
 
+			// verified
 			Thread t1 = new Thread (new ThreadStart (balance));
 			t1.Start ();
+			// verified
 			Thread t2 = new Thread (new ThreadStart (drive));
 			t2.Start ();
 
@@ -77,16 +81,19 @@ namespace ev3
 			ev3.disconnect ();
 		}
 
+		// verified
 		// controls speed and steering
 		void drive() {
 			Console.WriteLine ("driving ...");
 
 //			while (true) {
 			while (!complete) {
+				speed = 0;
 				Thread.Sleep (drive_sleep);
 				speed = 20;
 				Thread.Sleep (drive_sleep);
 				speed = -20;
+				Thread.Sleep (drive_sleep);
 			}
 		}
 
@@ -145,6 +152,7 @@ namespace ev3
 			complete = true;
 		}
 
+		// verified
 		void initialize() {
 			Console.WriteLine ("initializing ...");
 //			dt = (sample_time - 2)/1000;
@@ -159,7 +167,11 @@ namespace ev3
 
 			Thread.Sleep (100);
 
+			// verified
 			mean = calibrate ();
+
+			speed = 0;
+			steering = 0;
 
 			// reset timer 
 			stopwatch = Stopwatch.StartNew ();
@@ -168,6 +180,7 @@ namespace ev3
 		}
 
 		/**
+		 * verified
 		 * average of 20 gyroRate values
 		 */
 		float calibrate() {
