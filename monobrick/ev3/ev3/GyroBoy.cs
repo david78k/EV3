@@ -44,6 +44,10 @@ namespace ev3
 		float old_steering = 0;
 		int max_acceleration = 0;
 
+		const float radius_const = 57.3f;
+		float acc_err = 0;
+		float prev_err = 0;
+
 		const string FORMAT = "0.00"; // precision
 
 		bool complete = false;
@@ -70,6 +74,7 @@ namespace ev3
 			ev3.disconnect ();
 		}
 
+		// controls speed and steering
 		void drive() {
 			Console.WriteLine ("driving ...");
 
@@ -86,26 +91,18 @@ namespace ev3
 			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
 			Console.WriteLine ("iter\tspeed\tang_vel\tang"
 				+ "\tsensor\tavg_pwr\toffset\trefpos"
-				+ "\trspeed"
+				+ "\tmspeed"
 				+ "\tspeedA\tspeedD\textra\tpwr_b\tpwr_c"
 //				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
-//				+ "\tmotorB\tmotorC" 
 			);
 
 			int iter = 0;
-
-			const float radius_const = 57.3f;
-			float curr_err = 0;
-			float acc_err = 0;
-			float dif_err = 0;
-			float prev_err = 0;
 
 			while (iter++ < max_iter) {
 				// Position
 				refpos = refpos + (dt * speed * 0.002f);
 
 				// ReadEncoders
-//				speed = getMotorSpeed ();
 				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
 				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2) / radius_const;
 
@@ -118,7 +115,8 @@ namespace ev3
 				// PID
 				// input: sensor values
 				// output: average power
-				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
+				float avg_pwr = pid (sensor_values);
+//				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
 
 				// Errors
 				// input: PID output
@@ -126,8 +124,8 @@ namespace ev3
 
 				Console.Write (iter + "\t" + speed + "\t" + ang_vel.ToString(FORMAT) + "\t" + ang.ToString(FORMAT)
 					+ "\t" + sensor_values.ToString(FORMAT) + "\t" + avg_pwr.ToString(FORMAT) 
-					+ "\t" + (robot_position - refpos).ToString(FORMAT) + "\t" + refpos.ToString(FORMAT)
-					+ "\t" + robot_speed.ToString(FORMAT) + "\t"
+					+ "\t" + (motor_position - refpos).ToString(FORMAT) + "\t" + refpos.ToString(FORMAT)
+					+ "\t" + motor_speed.ToString(FORMAT) + "\t"
 				); 
 
 				// SetMotorPower
@@ -240,6 +238,7 @@ namespace ev3
 			return (int)((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
 		}
 
+		// verified
 		public float combineSensorValues(float ang_vel, float motor_position, float motor_speed) {
 			return gain_angle * ang
 			+ gain_angular_velocity * ang_vel
@@ -247,18 +246,22 @@ namespace ev3
 			+ gain_motor_speed * motor_speed;
 		}
 
-		public float pid(float sensor_values, float curr_err, float acc_err, float dif_err, float prev_err) {
+		// verified, but missing prev_err = curr_err
+//		public float pid(float sensor_values, float curr_err, float acc_err, float dif_err, float prev_err) {
+		public float pid(float sensor_values) {
 			const float ref_val = 0;
 
-			curr_err = sensor_values - ref_val;
-			acc_err += curr_err*dt;
-			dif_err = (curr_err - prev_err) / dt;
+			float curr_err = sensor_values - ref_val;
+			acc_err += curr_err * dt;
+			float dif_err = (curr_err - prev_err) / dt;
+//			prev_err = curr_err;
 
 			return curr_err * Kp
 				+ acc_err * Ki
 				+ dif_err * Kd;
 		}
 
+		// verified
 		// read the shared variable steering
 		public void setMotorPower(float avg_pwr) {
 			// limit steering: [-50, 50]
