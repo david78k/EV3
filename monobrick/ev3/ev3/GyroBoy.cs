@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
-using System.Timers;
+using System.Diagnostics;
+//using System.Timers;
 
 namespace ev3
 {
@@ -35,7 +36,7 @@ namespace ev3
 		bool nowOutOfBound = false;
 		bool prevOutOfBound = false;
 		int outOfBoundCount = 0;
-		int outOfBound = 0;
+//		int outOfBound = 0;
 
 		float ang = 0;
 //		float mean_ang = 0;
@@ -51,6 +52,8 @@ namespace ev3
 		const string FORMAT = "0.00"; // precision
 
 		bool complete = false;
+
+		Stopwatch stopwatch;
 
 		private EV3Brick ev3 = new EV3Brick();
 
@@ -87,6 +90,7 @@ namespace ev3
 			}
 		}
 
+		// verified
 		void balance() {
 			Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
 			Console.WriteLine ("iter\tspeed\tang_vel\tang"
@@ -106,19 +110,19 @@ namespace ev3
 				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
 				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
 
-				// ReadGyro
+				// ReadGyro: verified
 				float ang_vel = readGyro ();
 
-				// CombineSensorValues
+				// CombineSensorValues: verified
 				float sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
 
-				// PID
+				// PID: verified
 				// input: sensor values
 				// output: average power
 				float avg_pwr = pid (sensor_values);
 //				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
 
-				// Errors
+				// Errors: verified
 				// input: PID output
 				errors (avg_pwr);
 
@@ -128,13 +132,14 @@ namespace ev3
 					+ "\t" + motor_speed.ToString(FORMAT) + "\t"
 				); 
 
-				// SetMotorPower
+				// SetMotorPower: verified
 				// input: pid output
 				setMotorPower (avg_pwr);
 
-				// Wait
+				// Wait: verified
 				// Timer >= dt, elapsedTime
-				// timer.reset();
+				if(stopwatch.ElapsedMilliseconds >= dt * 1000f)
+					stopwatch.Reset();
 			}
 
 			complete = true;
@@ -157,7 +162,8 @@ namespace ev3
 			mean = calibrate ();
 
 			// reset timer 
-			System.Timers.Timer timer = new System.Timers.Timer ();
+			stopwatch = Stopwatch.StartNew ();
+//			System.Timers.Timer timer = new System.Timers.Timer ();
 //			timer.AutoReset ();
 		}
 
@@ -261,7 +267,7 @@ namespace ev3
 			float curr_err = sensor_values - ref_val;
 			acc_err += curr_err * dt;
 			float dif_err = (curr_err - prev_err) / dt;
-//			prev_err = curr_err;
+			prev_err = curr_err;
 
 			return curr_err * Kp
 				+ acc_err * Ki
@@ -307,16 +313,19 @@ namespace ev3
 //			);
 		}
 
+		// verified except the interrupting balance loop
 		public void errors(float avg_pwr) {
-			nowOutOfBound = (Math.Abs (avg_pwr) > 100);
+			nowOutOfBound = (Math.Abs (avg_pwr) > 100f);
+
+			// read cur_err
 
 			if (nowOutOfBound && prevOutOfBound) {
-				outOfBound++;
+				outOfBoundCount++;
 			} else {
-				outOfBound = 0;
+				outOfBoundCount = 0;
 			}
 
-			if (outOfBound > 20) {
+			if (outOfBoundCount > 20) {
 				Thread.Sleep (100);
 				ev3.offMotorA ();
 				ev3.offMotorD ();
