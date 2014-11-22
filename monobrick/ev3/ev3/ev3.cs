@@ -8,8 +8,10 @@ using IronPython.Hosting;
 
 namespace ev3 {
 	public class EV3Program{
-		private const string connectionType = "/dev/tty.EV3-SerialPort";
-		private const string pythonPath = "/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/";
+        // for Mac
+        //private const string pythonPath = "/System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/";
+        // for windows
+        private const string pythonPath = "c:/Python34/";
 
 		static void Main(string[] args)
 		{
@@ -222,7 +224,7 @@ namespace ev3 {
 		void linefollow() {
 			Console.WriteLine ("Starting line follow ...");
 
-			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(EV3Brick.connectionType);
 
 			try{
 				Console.WriteLine("Opening connection... ");
@@ -318,7 +320,7 @@ namespace ev3 {
 			Console.WriteLine ("Hello");
 
 			//		var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>("usb");
-			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+			var ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(EV3Brick.connectionType);
 
 			try{
 				Console.WriteLine("Opening connection... ");
@@ -345,7 +347,7 @@ namespace ev3 {
 		}
 
 		void firstProgram() {
-			var brick = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType); 
+            var brick = new Brick<Sensor, Sensor, Sensor, Sensor>(EV3Brick.connectionType); 
 			try{ 			 
 				sbyte speed = 0;  
 				brick.Connection.Open();  

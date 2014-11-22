@@ -7,7 +7,10 @@ namespace ev3
 {
 	public class EV3Brick
 	{
-		private const string connectionType = "/dev/tty.EV3-SerialPort";
+        // for mac
+        //private const string connectionType = "/dev/tty.EV3-SerialPort";
+        // for windows: depends on system, com6, com4
+        public const string connectionType = "com4";
 		private Brick<Sensor,Sensor,Sensor,Sensor> ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
 
 		public EV3Brick ()
