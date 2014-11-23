@@ -6,11 +6,11 @@ using MonoBrick.EV3;
 namespace ev3
 {
 	public class EV3Brick
-	{
+    {
         // for mac
         //private const string connectionType = "/dev/tty.EV3-SerialPort";
-        // for windows: depends on system, com6, com4
-        public const string connectionType = "com4";
+        // for windows: depending on the system, com3 (Standard Serial over Bluetooth link), com6
+        public const string connectionType = "com3";
 		private Brick<Sensor,Sensor,Sensor,Sensor> ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
 
 		public EV3Brick ()
