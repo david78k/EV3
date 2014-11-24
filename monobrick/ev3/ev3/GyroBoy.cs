@@ -16,13 +16,13 @@ namespace ev3
 		const float gain_motor_speed = 75;	// for y_hat
 		const float gain_motor_position = 350;	// for y
 
-		const int max_iter = 20;
+		const int max_iter = 10;
 		const int drive_sleep = 7000; // milliseconds
 
-		bool sound = false;
-//		bool sound = true;
+		//bool sound = false;
+        bool sound = true;
 
-		float refpos = 0;	// reference position
+        float refpos = 0;	// reference position
 		const int sample_time = 22;	// sample time in milliseconds (ms)
 		const float dt = (sample_time - 2)/1000f;	// verified
 		float speed = 0;
@@ -107,47 +107,67 @@ namespace ev3
 //				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
 			);
 
-			int iter = 0;
+            Stopwatch totalwatch = Stopwatch.StartNew();
+            Stopwatch functionwatch = Stopwatch.StartNew();
+            int iter = 0;
 
-			while (iter++ < max_iter) {
+            stopwatch.Restart();
+
+            while (iter++ < max_iter) {
 				// Position: verified
 				refpos = refpos + (dt * speed * 0.002f);
 
-				// ReadEncoders: verified
+                // ReadEncoders: verified
+                //functionwatch.Restart();
 				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
 				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
+                //Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-				// ReadGyro: verified
-				float ang_vel = readGyro ();
+                // ReadGyro: verified
+                //functionwatch.Restart();
+                float ang_vel = readGyro();
+                //Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-				// CombineSensorValues: verified
-				float sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
+                // CombineSensorValues: verified
+                //functionwatch.Restart();
+                float sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
+                //Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-				// PID: verified
-				// input: sensor values
-				// output: average power
-				float avg_pwr = pid (sensor_values);
+                // PID: verified
+                // input: sensor values
+                // output: average power
+                //functionwatch.Restart();
+                float avg_pwr = pid (sensor_values);
 //				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
+                //Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 				// Errors: verified
 				// input: PID output
+                //functionwatch.Restart();
 				errors (avg_pwr);
+                //Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
+                /*
 				Console.Write (iter + "\t" + speed + "\t" + ang_vel.ToString(FORMAT) + "\t" + ang.ToString(FORMAT)
 					+ "\t" + sensor_values.ToString(FORMAT) + "\t" + avg_pwr.ToString(FORMAT) 
 					+ "\t" + (motor_position - refpos).ToString(FORMAT) + "\t" + refpos.ToString(FORMAT)
 					+ "\t" + motor_speed.ToString(FORMAT) + "\t"
 				); 
+                */
 
-				// SetMotorPower: verified
-				// input: pid output
-				setMotorPower (avg_pwr);
+                // SetMotorPower: verified
+                // input: pid output
+                //functionwatch.Restart();
+                setMotorPower(avg_pwr);
+                //Console.WriteLine(functionwatch.ElapsedMilliseconds + "ms");
 
-				// Wait: verified
-				// Timer >= dt, elapsedTime
-				if(stopwatch.ElapsedMilliseconds >= dt * 1000f)
-					stopwatch.Reset();
-			}
+                // Wait: verified
+                // Timer >= dt, elapsedTime
+                long elapsedTime = stopwatch.ElapsedMilliseconds;
+                Console.WriteLine(elapsedTime + " " + totalwatch.ElapsedMilliseconds);
+				if(elapsedTime >= dt * 1000f)
+                    stopwatch.Restart();
+            }
 
 			complete = true;
 		}
@@ -162,21 +182,23 @@ namespace ev3
 				enc_val [i] = 0;
 			}
 
-			ev3.resetMotorATachoCount ();
-			ev3.resetMotorDTachoCount ();
+            stopwatch = Stopwatch.StartNew();
+            ev3.resetMotorATachoCount ();
+			ev3.resetMotorDTachoCount();
+            Console.WriteLine("Reset tacho count: " + (stopwatch.ElapsedMilliseconds/2f).ToString(FORMAT) + "ms");
 
-			Thread.Sleep (100);
+            Thread.Sleep (100);
 
-			// verified
-			mean = calibrate ();
+            // verified
+            stopwatch.Restart();
+            mean = calibrate ();
+            Console.WriteLine(stopwatch.ElapsedMilliseconds + "ms");
 
 			speed = 0;
 			steering = 0;
 
-			// reset timer 
-			stopwatch = Stopwatch.StartNew ();
-//			System.Timers.Timer timer = new System.Timers.Timer ();
-//			timer.AutoReset ();
+            // reset timer 
+            stopwatch.Reset();
 		}
 
 		/**
@@ -194,17 +216,19 @@ namespace ev3
 			Thread.Sleep (100);
 			mean = 0;
 
-			int count = 1;
+			int count = 20;
 
 			// gyro rate
 			for (int i = 0; i < count; i++) {
 				mean += gyroRate ();
-				Console.WriteLine ("gyroRate mean: " + mean);
+				//Console.WriteLine ("gyroRate mean: " + mean);
 				Thread.Sleep (5);
 			}
 			mean = mean / count;
 
-			Thread.Sleep (100);
+            //Console.WriteLine ("gyroRate mean: " + mean);
+
+            Thread.Sleep (100);
 			// Play tone: frequency 440Hz, volume 10
 			if(sound)
 				ev3.sound (10, 440, (int)(0.1 * 1000));
@@ -234,7 +258,10 @@ namespace ev3
 		// verified
 		// change ang and return ang_vel
 		float readGyro() {
+            Stopwatch gyrowatch = Stopwatch.StartNew();
 			float curr_val = gyroRate ();
+            Console.Write("gyro Rate: " + (gyrowatch.ElapsedMilliseconds/5f).ToString(FORMAT) + "ms ");
+
 			// EMA
 			mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
 			float ang_vel = curr_val - mean;
@@ -319,11 +346,8 @@ namespace ev3
 //			ev3.setPowerMotorD ((int)speedD);
 			ev3.onMotorA ((int)speedA);
 			ev3.onMotorD ((int)speedD);
-			Console.WriteLine (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
-				+ "\t" + extra_pwr.ToString(FORMAT) + "\t" + pwr_b.ToString(FORMAT) + "\t" + pwr_c.ToString(FORMAT));
-//			Console.WriteLine ("speedA = " + speedA + ", speedD = " + speedD
-//				+ ", extra_pwr = " + extra_pwr + ", pwr_b = " + pwr_b + ", pwr_c = " + pwr_c
-//			);
+			//Console.WriteLine (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
+			//	+ "\t" + extra_pwr.ToString(FORMAT) + "\t" + pwr_b.ToString(FORMAT) + "\t" + pwr_c.ToString(FORMAT));
 		}
 
 		// verified except the interrupting balance loop

@@ -35,11 +35,11 @@ namespace ev3 {
 		}
 
 		void testSegway() {
-//			Segway sw = new Segway ();
-//			Sejway sw = new Sejway ();
-			GyroBoy sw = new GyroBoy ();
-//			Segoway sw = new Segoway ();
-			sw.start ();
+            //Segway sw = new Segway();
+            //Sejway sw = new Sejway ();
+            GyroBoy sw = new GyroBoy();
+            //Segoway sw = new Segoway();
+            sw.start ();
 		}
 
 		void testNN() {
