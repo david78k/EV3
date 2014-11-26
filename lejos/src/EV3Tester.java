@@ -20,7 +20,7 @@ public class EV3Tester {
 	private static SampleProvider angleProvider;
 	private static OdometryPoseProvider opp;
 
-	@Test
+//	@Test
 	public void test() {
 //		fail("Not yet implemented");
 		EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
@@ -29,6 +29,11 @@ public class EV3Tester {
 		// SegowayPilotDemo demo;
 	}
 
+	public void testMotors() {
+		
+	}
+	
+	@Test
 	public void testSensors() {
 		p = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
 //		lejos.hardware.port.Port port = LocalEV3.get().getPort("S2");
