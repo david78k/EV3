@@ -1,28 +1,39 @@
+import static org.junit.Assert.*;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.robotics.SampleProvider;
+import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
+import lejos.utility.Delay;
+
+import org.junit.Test;
 
 
 public class EV3Tester {
-
+	
 	private DifferentialPilot p;
 	private EV3GyroSensor gyro;
-	private SampleProvider angleProvider;
+	private static SampleProvider angleProvider;
+	private static OdometryPoseProvider opp;
 
-	public static void main(String[] args) {
+	@Test
+	public void test() {
+//		fail("Not yet implemented");
 		EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 //		Motor leftmotor = 
 		DifferentialPilot pilot;
 		// SegowayPilotDemo demo;
 	}
-	
-	public void test() {
+
+	public void testSensors() {
 		p = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
-		lejos.hardware.port.Port port = LocalEV3.get().getPort("S2");
-		gyro = new EV3GyroSensor(port);
+//		lejos.hardware.port.Port port = LocalEV3.get().getPort("S2");
+		Port port2 = SensorPort.S2;
+		gyro = new EV3GyroSensor(port2);
 		angleProvider = gyro.getAngleMode();
 		p.setTravelSpeed(30);
 		p.setRotateSpeed(360);
@@ -42,7 +53,7 @@ public class EV3Tester {
 		report("R -180");
 	}
 
-	public static void report(String message) {
+	public void report(String message) {
 		Delay.msDelay(100);
 		float heading = opp.getPose().getHeading();
 		float[] angle = { 0 };
