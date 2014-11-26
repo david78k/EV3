@@ -90,9 +90,9 @@ namespace ev3
 			while (!complete) {
 				speed = 0;
 				Thread.Sleep (drive_sleep);
-				speed = 20;
-				Thread.Sleep (drive_sleep);
 				speed = -20;
+				Thread.Sleep (drive_sleep);
+				speed = 20;
 				Thread.Sleep (drive_sleep);
 			}
 		}

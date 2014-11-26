@@ -7,8 +7,12 @@ namespace ev3
 {
 	public class EV3Brick
 	{
-		private const string connectionType = "/dev/tty.EV3-SerialPort";
+//		private const string connectionType = "/dev/tty.EV3-SerialPort";
+//		private const string connectionType = "192.168.1.11";
+		private const string connectionType = "usb";
+//		private const string connectionType = "wifi";
 		private Brick<Sensor,Sensor,Sensor,Sensor> ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType);
+//		private Brick<Sensor,Sensor,Sensor,Sensor> ev3 = new Brick<Sensor,Sensor,Sensor,Sensor>(connectionType, 1500);
 
 		public EV3Brick ()
 		{
