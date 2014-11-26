@@ -1,0 +1,40 @@
+Connected: True
+initializing ...
+calibrating ...
+gyroRate mean: 0
+refpos = 0, dt = 0.02, Kp = 0.5, Ki = 11, Kd = 0.005
+iter    speed   ang_vel ang     sensor  avg_pwr offset  refpos  mspeed  speedA  speedD  extra   pwr_b   pwr_c
+driving ...
+1       0       0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
+2       0       0.00    0.00    -0.25   -0.24   0.00    0.00    0.00    -0.19   -0.19   0.00    -0.24   -0.24
+3       0       0.00    0.00    -3.19   -3.08   0.00    0.00    -0.03   -2.39   -2.32   -0.05   -3.13   -3.03
+4       0       0.00    0.00    -3.19   -3.05   0.00    0.00    -0.03   -2.25   -2.41   0.10    -2.95   -3.15
+5       0       3.98    0.08    0.25    -0.42   -0.01   0.00    -0.05   -0.28   -0.36   0.05    -0.37   -0.47
+6       0       29.47   0.67    42.92   40.17   -0.01   0.00    -0.09   30.71   30.64   0.05    40.22   40.12
+7       0       11.82   0.91    26.07   22.60   -0.01   0.00    -0.11   16.72   17.79   -0.70   21.90   23.30
+8       0       2.61    0.96    61.43   66.84   0.04    0.00    0.25    50.77   51.31   -0.35   66.49   67.19
+9       0       -7.56   0.81    78.99   88.55   0.08    0.00    0.53    67.01   68.23   -0.80   87.75   89.35
+10      0       -36.22  0.08    118.86  140.21  0.20    0.00    1.25    106.08  108.06  -1.30   138.91  141.51
+11      0       -11.17  -0.14   267.60  300.67  0.33    0.00    2.25    228.23  230.98  -1.80   298.87  302.47
+12      0       1.82    -0.11   436.41  486.10  0.49    0.00    3.54    372.08  370.33  1.15    487.25  484.95
+13      0       4.01    -0.02   409.17  513.49  0.46    0.00    3.23    391.59  392.66  -0.70   512.79  514.19
+
+Unhandled Exception: System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolea
+n parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Int16.Parse(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt16(String value)
+   at ev3.EV3Brick.getAngularVelocity() in C:\Users\david78k\Documents\GitHub\EV3\monobrick\ev3\ev3\EV3Brick.cs:line 126
+
+   at ev3.GyroBoy.gyroRate() in C:\Users\david78k\Documents\GitHub\EV3\monobrick\ev3\ev3\GyroBoy.cs:line 229
+   at ev3.GyroBoy.readGyro() in C:\Users\david78k\Documents\GitHub\EV3\monobrick\ev3\ev3\GyroBoy.cs:line 237
+   at ev3.GyroBoy.balance() in C:\Users\david78k\Documents\GitHub\EV3\monobrick\ev3\ev3\GyroBoy.cs:line 121
+   at System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object
+state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, B
+oolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.ThreadHelper.ThreadStart()
+Press any key to continue . . .

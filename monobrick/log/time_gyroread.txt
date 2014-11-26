@@ -1,0 +1,23 @@
+Opening connection...
+Connected: True
+initializing ...
+Reset tacho count: 1.50ms
+calibrating ...
+4081ms
+driving ...
+refpos = 0, dt = 0.02, Kp = 0.5, Ki = 11, Kd = 0.005
+iter    speed   ang_vel ang     sensor  avg_pwr offset  refpos  mspeed  speedA  speedD  extra   pwr_b   pwr_c
+gyro Rate: 34.80ms 391 391
+gyro Rate: 42.80ms 428 820
+gyro Rate: 35.00ms 389 1210
+gyro Rate: 35.60ms 389 1600
+gyro Rate: 35.00ms 428 2029
+gyro Rate: 35.40ms 389 2419
+gyro Rate: 35.40ms 390 2810
+gyro Rate: 35.00ms 386 3197
+gyro Rate: 35.00ms 429 3627
+gyro Rate: 35.00ms 388 4016
+Closing connection...
+Connected: False
+Connection closed.
+Press any key to continue . . .

@@ -1,0 +1,40 @@
+Opening connection...
+Connected: True
+initializing ...
+Reset tacho count: 3ms
+calibrating ...
+4122ms
+driving ...
+refpos = 0, dt = 0.02, Kp = 0.5, Ki = 11, Kd = 0.005
+readEncoders readGyro sensor pid errors setPower
+170ms 224ms 0ms 0ms 0ms 73ms
+470 470
+144ms 175ms 0ms 0ms 0ms 71ms
+392 863
+140ms 175ms 0ms 0ms 0ms 71ms
+388 1252
+141ms 179ms 0ms 0ms 0ms 103ms
+425 1678
+140ms 174ms 0ms 0ms 0ms 73ms
+389 2068
+140ms 177ms 0ms 0ms 0ms 71ms
+390 2459
+140ms 176ms 0ms 0ms 0ms 71ms
+390 2849
+179ms 176ms 0ms 0ms 0ms 71ms
+428 3278
+146ms 174ms 0ms 0ms 0ms 71ms
+393 3672
+141ms 175ms 0ms 0ms 0ms 72ms
+390 4063
+172ms 177ms 0ms 0ms 0ms 72ms
+423 4487
+141ms 175ms 0ms 0ms 0ms 71ms
+389 4877
+141ms 156ms 0ms 0ms 0ms 72ms
+370 5248
+140ms 195ms 0ms 0ms 0ms 72ms
+409 5658
+143ms 176ms 0ms 0ms 0ms 72ms
+393 6052
+142ms 175ms 0ms 0ms 0ms 71ms
