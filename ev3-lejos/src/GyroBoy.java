@@ -16,7 +16,7 @@ public class GyroBoy
 	private static final float gain_motor_speed = 75;	// for y_hat
 	private static final float gain_motor_position = 350;	// for y
 
-	private static final int max_iter = 100;
+	private static final int max_iter = 50000;
 	private static final int drive_sleep = 7000; // milliseconds
 
 	//boolean sound = false;
@@ -29,7 +29,7 @@ public class GyroBoy
 	private static final int wheel_diameter = 55; // in millimeters (mm)
 	private static final float radius = wheel_diameter / 2000f; // verified
 
-	private static final int max_index = 7;
+	private static final int max_index = 3;
 	float[] enc_val = new float[max_index];
 	int enc_index = 0;
 
@@ -190,6 +190,9 @@ public class GyroBoy
 			// total time with some prints = 1916/100 = 19.16ms
 			// total time without prints = 432/100 = 4.32ms
 			// total time without prints = 559/100 = 5.59ms
+			// total time without prints = 898/100 = 8.98ms
+			// total time without prints = 532/100 = 5.32ms
+			// total time without prints = 1678/500 = 3.36ms
 
 			complete = true;
 		}
@@ -416,6 +419,7 @@ public class GyroBoy
 
 			sleep (4000);
 			// stop
+			complete = true;
 		} else {
 			prevOutOfBound = nowOutOfBound;
 		}
