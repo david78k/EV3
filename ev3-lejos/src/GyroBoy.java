@@ -1,4 +1,10 @@
-﻿import lejos.hardware.Sound;
+﻿import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
+import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -13,6 +19,7 @@ public class GyroBoy
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
+	File logfile = new File("/home/root/gyroboy.log");
 
 	private static final float Kp = 0.5f;
 	private static final float Ki = 11;
@@ -54,13 +61,21 @@ public class GyroBoy
 	private static final float radius_const = 57.3f;
 	float acc_err = 0, prev_err = 0;
 
-	private static final String FORMAT = "0.00"; // precision
-
 	boolean complete = false;
 
 	Stopwatch stopwatch = new Stopwatch();
 	Thread balancer = new Thread (new Balancer());
 	Thread driver = new Thread (new Driver());
+	PrintWriter writer;
+	
+	public GyroBoy() {
+		try {
+			writer = new PrintWriter(logfile);
+		} catch (FileNotFoundException e) {
+			System.out.println("Can't find " + logfile);
+//			e.printStackTrace();
+		}
+	}
 	
 	public static void main(String[] args) {
 		GyroBoy gboy = new GyroBoy();
@@ -83,6 +98,8 @@ public class GyroBoy
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+//		Button.ESCAPE.waitForPressAndRelease();
 	}
 
 	// verified
@@ -90,6 +107,7 @@ public class GyroBoy
 	class Driver implements Runnable {
 		public void run() {
 			System.out.println ("driving ...");
+			writer.println ("driving ...");
 
 			//			while (true) {
 			while (!complete) {
@@ -106,14 +124,14 @@ public class GyroBoy
 	// verified
 	class Balancer implements Runnable{
 		public void run() {
-			/*System.out.println("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
-			System.out.println ("iter\tspeed\tang_vel\tang"
+			writer.println("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
+			/*writer.println ("iter\tspeed\tang_vel\tang"
 					+ "\tsensor\tavg_pwr\toffset\trefpos"
 					+ "\tmspeed"
-					+ "\tspeedA\tspeedD\textra\tpwr_b\tpwr_c"
+					+ "\tpowerA\tpowerD\textra\tpwr_b\tpwr_c"
 					//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
-					);
-*/
+					);*/
+
 			Stopwatch totalwatch = new Stopwatch();
 			Stopwatch functionwatch = new Stopwatch();
 			int iter = 0;
@@ -178,8 +196,11 @@ public class GyroBoy
 			}
 			int totaltime = totalwatch.elapsed();
 			System.out.println("Iteration:" + iter);
+			writer.println("Iteration:" + iter);
 			System.out.println("TotalTime:" + totaltime + "ms");
+			writer.println("TotalTime:" + totaltime + "ms");
 			System.out.printf("AvgTime:%.2fms\n", 1f*totaltime/iter);
+			writer.printf("AvgTime:%.2fms\n", 1f*totaltime/iter);
 			// total time with prints = 4546/100 = 45.46ms
 			// total time with some prints = 1916/100 = 19.16ms
 			// total time without prints = 432/100 = 4.32ms
@@ -196,6 +217,7 @@ public class GyroBoy
 	// verified
 	void initialize() {
 		System.out.println ("initializing ...");
+		writer.println ("initializing ...");
 		//			dt = (sample_time - 2)/1000;
 
 		// erase array
@@ -231,6 +253,7 @@ public class GyroBoy
 	 */
 	float calibrate() {
 		System.out.println ("calibrating ...");
+		writer.println ("calibrating ...");
 
 		// Play tone: frequency 440Hz, volume 10
 		// duration 0.1sec, play type 0
@@ -251,6 +274,7 @@ public class GyroBoy
 		mean = mean / count;
 
 		System.out.printf ("gyroRate:%.2f\n", mean);
+		writer.printf ("gyroRate:%.2f\n", mean);
 
 		sleep (100);
 		// Play tone: frequency 440Hz, volume 10
@@ -397,6 +421,7 @@ public class GyroBoy
 
 		if (outOfBoundCount > 20) {
 			System.out.printf("avg_pwr:%.2f\n", avg_pwr);
+			writer.printf("avg_pwr:%.2f\n", avg_pwr);
 			
 			sleep (100);
 //			ev3.offMotorA ();
@@ -406,6 +431,7 @@ public class GyroBoy
 			
 			// diplay ERROR
 			System.out.println("ERROR");
+			writer.println("ERROR");
 			
 			Sound.playTone(800, 100, 50);
 			Sound.playTone(600, 100, 50);
@@ -432,6 +458,8 @@ public class GyroBoy
 		} catch (InterruptedException e) {
 //			e.printStackTrace();
 //			System.out.println("sleep interrupted");
+			e.printStackTrace(writer);
+			writer.flush();
 		}
 	}
 }
