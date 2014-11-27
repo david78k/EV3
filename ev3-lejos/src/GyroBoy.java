@@ -66,8 +66,6 @@ public class GyroBoy
 	Thread balancer = new Thread (new Balancer());
 	Thread driver = new Thread (new Driver());
 	
-//	public GyroBoy (){}
-
 	public static void main(String[] args) {
 		GyroBoy gboy = new GyroBoy();
 		gboy.start();
@@ -101,9 +99,9 @@ public class GyroBoy
 			while (!complete) {
 				speed = 0;
 				sleep (drive_sleep);
-				speed = -20;
-				sleep (drive_sleep);
 				speed = 20;
+				sleep (drive_sleep);
+				speed = -20;
 				sleep (drive_sleep);
 			}
 		}
@@ -134,7 +132,7 @@ public class GyroBoy
 				//functionwatch.Restart();
 				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
 //				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
-				float motor_position = (radius * (leftMotor.getPower() + rightMotor.getTachoCount())/ 2.0f) / radius_const;
+				float motor_position = (radius * (leftMotor.getTachoCount() + rightMotor.getTachoCount())/ 2.0f) / radius_const;
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 				// ReadGyro: verified
@@ -182,8 +180,10 @@ public class GyroBoy
 				if(elapsedTime >= dt * 1000f)
 					stopwatch.reset();
 			}
+			int totaltime = totalwatch.elapsed();
 			System.out.println("Iteration: " + iter);
-			System.out.println("Total time: " + totalwatch.elapsed() + "ms");
+			System.out.println("Total time: " + totaltime + "ms");
+			System.out.println("Avg time: " + 1f*totaltime/iter + "ms");
 			// total time with prints = 4546/100 = 45.46ms
 			// total time with some prints = 1916/100 = 19.16ms
 			// total time without prints = 432/100 = 4.32ms
@@ -191,6 +191,7 @@ public class GyroBoy
 			// total time without prints = 898/100 = 8.98ms
 			// total time without prints = 532/100 = 5.32ms
 			// total time without prints = 1678/500 = 3.36ms
+			// total time without prints = 8009/2485 = 3.22ms
 
 			complete = true;
 		}
@@ -209,6 +210,7 @@ public class GyroBoy
 //		stopwatch = Stopwatch.StartNew();
 //		ev3.resetMotorATachoCount ();
 //		ev3.resetMotorDTachoCount();
+		stopwatch.reset();
 		leftMotor.resetTachoCount();
 		rightMotor.resetTachoCount();
 		System.out.println("Reset tacho count: " + (stopwatch.elapsed()) + "ms");
