@@ -35,11 +35,11 @@ public class GyroBoy
 	boolean sound = true;
 
 	float refpos = 0;	// reference position
-	private static final int sample_time = 22;	// sample time in milliseconds (ms), default 22
-	private static final float dt = (sample_time - 2)/1000f;	// verified, 0.02
+	private static final int sample_time = 30;	// 30 good, sample time in milliseconds (ms), default 20
+	private static final float dt = sample_time/1000f;	// verified, default 0.02
 	float speed = 0;
 	private static final int wheel_diameter = 55; // in millimeters (mm), default 55
-	private static final float radius = wheel_diameter / 2000f; // verified, 0.0275
+	private static final float radius = wheel_diameter / 2000f; // verified, default 0.0275
 
 	private static final int max_index = 7;
 	float[] enc_val = new float[max_index];
