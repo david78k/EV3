@@ -17,8 +17,9 @@ public class EV3Tester {
 
 	public static void main(String[] args) {
 		EV3Tester tester = new EV3Tester();
-		tester.testGyro();
+//		tester.testGyro();
 //		tester.testMotors();
+		tester.testSensors();
 	}
 	
 	public void testMotors() {
@@ -38,6 +39,8 @@ public class EV3Tester {
 	}
 	
 	public void testSensors() {
+		System.out.println("Testing DiffPilot...");
+		
 		p = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
 //		lejos.hardware.port.Port port = LocalEV3.get().getPort("S2");
 		Port port2 = SensorPort.S2;
@@ -49,15 +52,16 @@ public class EV3Tester {
 		opp = new OdometryPoseProvider(p);
 		gyro.reset();
 		Sound.beepSequenceUp();
-		report("START acceleration " + accel);
-		p.rotate(45);
+		p.forward();
+//		report("START acceleration " + accel);
+		/*p.rotate(45);
 		report("R 45");
 		p.rotate(90);
 		report("R 90");
 		p.rotate(45);
 		report("R 45");
 		p.rotate(-180);
-		report("R -180");
+		report("R -180");*/
 	}
 
 	public void report(String message) {
