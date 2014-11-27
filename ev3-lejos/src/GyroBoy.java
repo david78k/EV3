@@ -7,6 +7,9 @@ import lejos.utility.Stopwatch;
 
 public class GyroBoy
 {
+	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
+	private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
+
 	private static final float Kp = 0.5f;
 	private static final float Ki = 11;
 	private static final float Kd = 0.005f;
@@ -16,8 +19,8 @@ public class GyroBoy
 	private static final float gain_motor_speed = 75;	// for y_hat
 	private static final float gain_motor_position = 350;	// for y
 
-	private static final int max_iter = 50000;
-	private static final int drive_sleep = 7000; // milliseconds
+	private static final int max_iter = 500; // 50000 for sleep 7 seconds
+	private static final int drive_sleep = 7000; // milliseconds, default = 7000
 
 	//boolean sound = false;
 	boolean sound = true;
@@ -29,7 +32,7 @@ public class GyroBoy
 	private static final int wheel_diameter = 55; // in millimeters (mm)
 	private static final float radius = wheel_diameter / 2000f; // verified
 
-	private static final int max_index = 3;
+	private static final int max_index = 7;
 	float[] enc_val = new float[max_index];
 	int enc_index = 0;
 
@@ -54,10 +57,8 @@ public class GyroBoy
 	boolean complete = false;
 
 	Stopwatch stopwatch = new Stopwatch();
-
-//	private EV3Brick ev3 = new EV3Brick();
-	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
-    private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
+	Thread balancer = new Thread (new Balancer());
+	Thread driver = new Thread (new Driver());
 	
 	public GyroBoy ()
 	{
@@ -70,26 +71,20 @@ public class GyroBoy
 	
 	// verified
 	public void start() {
-//		ev3.connect ();
-
 		// verified
 		initialize ();
 
 		// verified
-		Thread t1 = new Thread (new Balancer());
-		t1.start ();
+		balancer.start (); 
 		// verified
-		Thread t2 = new Thread (new Driver());
-		t2.start ();
+		driver.start ();
 
 		try {
-			t1.join ();
-			t2.join ();
+			balancer.join ();
+			driver.join ();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
-//		ev3.disconnect ();
 	}
 
 	// verified
@@ -403,7 +398,8 @@ public class GyroBoy
 			pilot.quickStop();
 			
 			// diplay ERROR
-
+			System.out.println("ERROR");
+			
 			Sound.playTone(800, 100, 50);
 			Sound.playTone(600, 100, 50);
 			Sound.playTone(300, 100, 50);
@@ -416,6 +412,7 @@ public class GyroBoy
 			//				ev3.offMotorC ();
 
 			// interrupt balance loop
+			balancer.interrupt(); 
 
 			sleep (4000);
 			// stop
