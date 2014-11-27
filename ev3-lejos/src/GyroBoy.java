@@ -1,20 +1,18 @@
 ﻿import lejos.hardware.Sound;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.Motor;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.robotics.EncoderMotor;
-import lejos.robotics.navigation.DifferentialPilot;
 import lejos.utility.Stopwatch;
 
 public class GyroBoy
 {
+	boolean DEBUG = true;
+
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
-	EncoderMotor leftMotor = (EncoderMotor) new NXTMotor(MotorPort.A); 
-	EncoderMotor rightMotor = (EncoderMotor) new NXTMotor(MotorPort.D); 
-//	private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
+	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
+	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
 
 	private static final float Kp = 0.5f;
 	private static final float Ki = 11;
@@ -35,7 +33,7 @@ public class GyroBoy
 	private static final int sample_time = 22;	// sample time in milliseconds (ms)
 	private static final float dt = (sample_time - 2)/1000f;	// verified
 	float speed = 0;
-	private static final int wheel_diameter = 55; // in millimeters (mm)
+	private static final int wheel_diameter = 55; // in millimeters (mm), originally 55
 	private static final float radius = wheel_diameter / 2000f; // verified
 
 	private static final int max_index = 7;
@@ -47,16 +45,14 @@ public class GyroBoy
 	int outOfBoundCount = 0;
 	//		int outOfBound = 0;
 
-	float ang = 0;
-	//		float mean_ang = 0;
+	float ang = 0, mean_ang = 0;
 	float mean = 0;
 	int steering = 0;
 	float old_steering = 0;
-	int max_acceleration = 0;
+//	int max_acceleration = 0;
 
 	private static final float radius_const = 57.3f;
-	float acc_err = 0;
-	float prev_err = 0;
+	float acc_err = 0, prev_err = 0;
 
 	private static final String FORMAT = "0.00"; // precision
 
@@ -181,9 +177,9 @@ public class GyroBoy
 					stopwatch.reset();
 			}
 			int totaltime = totalwatch.elapsed();
-			System.out.println("Iteration: " + iter);
-			System.out.println("Total time: " + totaltime + "ms");
-			System.out.println("Avg time: " + 1f*totaltime/iter + "ms");
+			System.out.println("Iteration:" + iter);
+			System.out.println("TotalTime:" + totaltime + "ms");
+			System.out.println("AvgTime:" + 1f*totaltime/iter + "ms");
 			// total time with prints = 4546/100 = 45.46ms
 			// total time with some prints = 1916/100 = 19.16ms
 			// total time without prints = 432/100 = 4.32ms
@@ -213,14 +209,14 @@ public class GyroBoy
 		stopwatch.reset();
 		leftMotor.resetTachoCount();
 		rightMotor.resetTachoCount();
-		System.out.println("Reset tacho count: " + (stopwatch.elapsed()) + "ms");
+//		System.out.println("Reset tacho count: " + (stopwatch.elapsed()) + "ms");
 
 		sleep (100);
 
 		// verified
 		stopwatch.reset();
 		mean = calibrate ();
-		System.out.println(stopwatch.elapsed() + "ms");
+//		System.out.println(stopwatch.elapsed() + "ms");
 
 		speed = 0;
 		steering = 0;
@@ -254,7 +250,7 @@ public class GyroBoy
 		}
 		mean = mean / count;
 
-		//System.out.println ("gyroRate mean: " + mean);
+		System.out.println ("gyroRate:" + mean);
 
 		sleep (100);
 		// Play tone: frequency 440Hz, volume 10
@@ -301,8 +297,8 @@ public class GyroBoy
 		ang = ang + dt * ang_vel;
 
 		// what is this part? in lighter color
-		//			mean_ang = mean_ang * 0.999f + ang * (1f - 0.999f);
-		//			ang = ang - mean_ang;
+		mean_ang = mean_ang * 0.999f + ang * 0.001f;
+		ang = ang - mean_ang;
 
 		return ang_vel;
 	}
@@ -352,23 +348,23 @@ public class GyroBoy
 	// read the shared variable steering
 	public void setMotorPower(float avg_pwr) {
 		// limit steering: [-50, 50]
-		float new_steering = steering;
+		int new_steering = steering; // always 0
 		if (steering > 50)
 			new_steering = 50;
 		if (steering < -50)
 			new_steering = -50;
 
 		float extra_pwr = 0;
-		if (new_steering == 0) {
+		if (new_steering == 0) { // always this case
 			int sync_0 = 0;
 
-			if (old_steering != 0) {
+			if (old_steering != 0) { // always skipped
 //				sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
-				sync_0 = leftMotor.getTachoCount() - rightMotor.getTachoCount();
+				sync_0 = rightMotor.getTachoCount() - leftMotor.getTachoCount();
 			}
 //			extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
-			extra_pwr = (leftMotor.getTachoCount () - rightMotor.getTachoCount() - sync_0) * 0.05f;
-		} else {
+			extra_pwr = (rightMotor.getTachoCount () - leftMotor.getTachoCount() - sync_0) * 0.05f;
+		} else { // never reached
 			extra_pwr = new_steering * (-0.5f);
 		}
 
@@ -400,6 +396,8 @@ public class GyroBoy
 		}
 
 		if (outOfBoundCount > 20) {
+			System.out.println("avg_pwr:" + avg_pwr);
+			
 			sleep (100);
 //			ev3.offMotorA ();
 //			ev3.offMotorD ();
@@ -432,7 +430,8 @@ public class GyroBoy
 		try {
 			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+//			System.out.println("sleep interrupted");
 		}
 	}
 }
