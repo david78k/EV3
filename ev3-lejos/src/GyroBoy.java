@@ -179,7 +179,7 @@ public class GyroBoy
 			int totaltime = totalwatch.elapsed();
 			System.out.println("Iteration:" + iter);
 			System.out.println("TotalTime:" + totaltime + "ms");
-			System.out.println("AvgTime:" + 1f*totaltime/iter + "ms");
+			System.out.printf("AvgTime:%.2fms\n", 1f*totaltime/iter);
 			// total time with prints = 4546/100 = 45.46ms
 			// total time with some prints = 1916/100 = 19.16ms
 			// total time without prints = 432/100 = 4.32ms
@@ -250,7 +250,7 @@ public class GyroBoy
 		}
 		mean = mean / count;
 
-		System.out.println ("gyroRate:" + mean);
+		System.out.printf ("gyroRate:%.2f\n", mean);
 
 		sleep (100);
 		// Play tone: frequency 440Hz, volume 10
@@ -396,7 +396,7 @@ public class GyroBoy
 		}
 
 		if (outOfBoundCount > 20) {
-			System.out.println("avg_pwr:" + avg_pwr);
+			System.out.printf("avg_pwr:%.2f\n", avg_pwr);
 			
 			sleep (100);
 //			ev3.offMotorA ();
