@@ -1,4 +1,9 @@
-﻿import lejos.utility.Stopwatch;
+﻿import lejos.hardware.Sound;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.robotics.navigation.DifferentialPilot;
+import lejos.utility.Stopwatch;
 
 public class GyroBoy
 {
@@ -48,10 +53,12 @@ public class GyroBoy
 
 	boolean complete = false;
 
-	Stopwatch stopwatch;
+	Stopwatch stopwatch = new Stopwatch();
 
 //	private EV3Brick ev3 = new EV3Brick();
-
+	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
+    private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
+	
 	public GyroBoy ()
 	{
 	}
@@ -89,11 +96,11 @@ public class GyroBoy
 			//			while (true) {
 			while (!complete) {
 				speed = 0;
-				Thread.sleep (drive_sleep);
+				sleep (drive_sleep);
 				speed = -20;
-				Thread.sleep (drive_sleep);
+				sleep (drive_sleep);
 				speed = 20;
-				Thread.sleep (drive_sleep);
+				sleep (drive_sleep);
 			}
 		}
 	}
@@ -109,11 +116,11 @@ public class GyroBoy
 					//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
 					);
 
-			Stopwatch totalwatch = Stopwatch.StartNew();
-			Stopwatch functionwatch = Stopwatch.StartNew();
+			Stopwatch totalwatch = new Stopwatch();
+			Stopwatch functionwatch = new Stopwatch();
 			int iter = 0;
 
-			stopwatch.Restart();
+			stopwatch.reset();
 
 			while (iter++ < max_iter) {
 				// Position: verified
@@ -121,8 +128,10 @@ public class GyroBoy
 
 				// ReadEncoders: verified
 				//functionwatch.Restart();
-				float motor_speed = (radius * getMotorSpeed ()) / radius_private static final;
-				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_private static final;
+				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
+//				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
+				float motor_position = (radius * (pilot.getAngleIncrement())) / radius_const;
+//				float motor_position = (radius * (pilot.getMovement().getArcRadius()) / radius_const;
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 				// ReadGyro: verified
@@ -165,10 +174,10 @@ public class GyroBoy
 
 				// Wait: verified
 				// Timer >= dt, elapsedTime
-				long elapsedTime = stopwatch.ElapsedMilliseconds;
-				System.out.println(elapsedTime + " " + totalwatch.ElapsedMilliseconds);
+				int elapsedTime = stopwatch.elapsed();
+				System.out.println(elapsedTime + " " + totalwatch.elapsed());
 				if(elapsedTime >= dt * 1000f)
-					stopwatch.Restart();
+					stopwatch.reset();
 			}
 
 			complete = true;
@@ -185,23 +194,24 @@ public class GyroBoy
 			enc_val [i] = 0;
 		}
 
-		stopwatch = Stopwatch.StartNew();
-		ev3.resetMotorATachoCount ();
-		ev3.resetMotorDTachoCount();
-		System.out.println("Reset tacho count: " + (stopwatch.ElapsedMilliseconds/2f).ToString(FORMAT) + "ms");
+//		stopwatch = Stopwatch.StartNew();
+//		ev3.resetMotorATachoCount ();
+//		ev3.resetMotorDTachoCount();
+		pilot.reset();
+		System.out.println("Reset tacho count: " + (stopwatch.elapsed()/2f) + "ms");
 
-		Thread.sleep (100);
+		sleep (100);
 
 		// verified
-		stopwatch.Restart();
+		stopwatch.reset();
 		mean = calibrate ();
-		System.out.println(stopwatch.ElapsedMilliseconds + "ms");
+		System.out.println(stopwatch.elapsed() + "ms");
 
 		speed = 0;
 		steering = 0;
 
 		// reset timer 
-		stopwatch.Reset();
+		stopwatch.reset();
 	}
 
 	/**
@@ -214,9 +224,9 @@ public class GyroBoy
 		// Play tone: frequency 440Hz, volume 10
 		// duration 0.1sec, play type 0
 		if(sound)
-			ev3.sound (10, 440, (int)(0.1 * 1000));
+			Sound.playTone(440, 100, 10);
 
-		Thread.sleep (100);
+		sleep (100);
 		mean = 0;
 
 		int count = 20;
@@ -225,21 +235,21 @@ public class GyroBoy
 		for (int i = 0; i < count; i++) {
 			mean += gyroRate ();
 			//System.out.println ("gyroRate mean: " + mean);
-			Thread.sleep (5);
+			sleep (5);
 		}
 		mean = mean / count;
 
 		//System.out.println ("gyroRate mean: " + mean);
 
-		Thread.sleep (100);
+		sleep (100);
 		// Play tone: frequency 440Hz, volume 10
 		if(sound)
-			ev3.sound (10, 440, (int)(0.1 * 1000));
+			Sound.playTone(440, 100, 10);
 
-		Thread.sleep (100);
+		sleep (100);
 		// Play tone
 		if(sound)
-			ev3.sound (10, 440, (int)(0.1 * 1000));
+			Sound.playTone(440, 100, 10);
 
 		return mean;
 	}
@@ -366,7 +376,7 @@ public class GyroBoy
 		}
 
 		if (outOfBoundCount > 20) {
-			Thread.sleep (100);
+			sleep (100);
 			ev3.offMotorA ();
 			ev3.offMotorD ();
 
@@ -382,10 +392,18 @@ public class GyroBoy
 
 			// interrupt balance loop
 
-			Thread.sleep (4000);
+			sleep (4000);
 			// stop
 		} else {
 			prevOutOfBound = nowOutOfBound;
+		}
+	}
+	
+	private void sleep(int milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 }
