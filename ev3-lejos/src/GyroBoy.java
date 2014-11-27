@@ -16,7 +16,7 @@ public class GyroBoy
 	private static final float gain_motor_speed = 75;	// for y_hat
 	private static final float gain_motor_position = 350;	// for y
 
-	private static final int max_iter = 10;
+	private static final int max_iter = 100;
 	private static final int drive_sleep = 7000; // milliseconds
 
 	//boolean sound = false;
@@ -63,6 +63,11 @@ public class GyroBoy
 	{
 	}
 
+	public static void main(String[] args) {
+		GyroBoy gboy = new GyroBoy();
+		gboy.start();
+	}
+	
 	// verified
 	public void start() {
 //		ev3.connect ();
@@ -277,7 +282,7 @@ public class GyroBoy
 	float readGyro() {
 		Stopwatch gyrowatch = new Stopwatch();
 		float curr_val = gyroRate ();
-		System.out.print("gyro Rate: " + (gyrowatch.elapsed()/5f) + "ms ");
+		System.out.print("gyro Rate: " + (gyrowatch.elapsed()) + "ms ");
 
 		// EMA
 		mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
