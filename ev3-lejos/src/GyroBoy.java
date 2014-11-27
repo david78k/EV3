@@ -1,6 +1,5 @@
 ﻿import lejos.utility.Stopwatch;
 
-
 public class GyroBoy
 {
 	private static final float Kp = 0.5f;
@@ -41,17 +40,17 @@ public class GyroBoy
 	float old_steering = 0;
 	int max_acceleration = 0;
 
-	private static final float radius_private static final = 57.3f;
+	private static final float radius_const = 57.3f;
 	float acc_err = 0;
 	float prev_err = 0;
 
-	private static final string FORMAT = "0.00"; // precision
+	private static final String FORMAT = "0.00"; // precision
 
 	boolean complete = false;
 
 	Stopwatch stopwatch;
 
-	private EV3Brick ev3 = new EV3Brick();
+//	private EV3Brick ev3 = new EV3Brick();
 
 	public GyroBoy ()
 	{
@@ -59,118 +58,126 @@ public class GyroBoy
 
 	// verified
 	public void start() {
-		ev3.connect ();
+//		ev3.connect ();
 
 		// verified
 		initialize ();
 
 		// verified
-		Thread t1 = new Thread (new ThreadStart (balance));
-		t1.Start ();
+		Thread t1 = new Thread (new Balancer());
+		t1.start ();
 		// verified
-		Thread t2 = new Thread (new ThreadStart (drive));
-		t2.Start ();
+		Thread t2 = new Thread (new Driver());
+		t2.start ();
 
-		t1.Join ();
-		t2.Join ();
+		try {
+			t1.join ();
+			t2.join ();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-		ev3.disconnect ();
+//		ev3.disconnect ();
 	}
 
 	// verified
 	// controls speed and steering
-	void drive() {
-		Console.WriteLine ("driving ...");
+	class Driver implements Runnable {
+		public void run() {
+			System.out.println ("driving ...");
 
-		//			while (true) {
-		while (!complete) {
-			speed = 0;
-			Thread.Sleep (drive_sleep);
-			speed = -20;
-			Thread.Sleep (drive_sleep);
-			speed = 20;
-			Thread.Sleep (drive_sleep);
+			//			while (true) {
+			while (!complete) {
+				speed = 0;
+				Thread.sleep (drive_sleep);
+				speed = -20;
+				Thread.sleep (drive_sleep);
+				speed = 20;
+				Thread.sleep (drive_sleep);
+			}
 		}
 	}
 
 	// verified
-	void balance() {
-		Console.WriteLine("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
-		Console.WriteLine ("iter\tspeed\tang_vel\tang"
-				+ "\tsensor\tavg_pwr\toffset\trefpos"
-				+ "\tmspeed"
-				+ "\tspeedA\tspeedD\textra\tpwr_b\tpwr_c"
-				//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
-				);
+	class Balancer implements Runnable{
+		public void run() {
+			System.out.println("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
+			System.out.println ("iter\tspeed\tang_vel\tang"
+					+ "\tsensor\tavg_pwr\toffset\trefpos"
+					+ "\tmspeed"
+					+ "\tspeedA\tspeedD\textra\tpwr_b\tpwr_c"
+					//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
+					);
 
-		Stopwatch totalwatch = Stopwatch.StartNew();
-		Stopwatch functionwatch = Stopwatch.StartNew();
-		int iter = 0;
+			Stopwatch totalwatch = Stopwatch.StartNew();
+			Stopwatch functionwatch = Stopwatch.StartNew();
+			int iter = 0;
 
-		stopwatch.Restart();
+			stopwatch.Restart();
 
-		while (iter++ < max_iter) {
-			// Position: verified
-			refpos = refpos + (dt * speed * 0.002f);
+			while (iter++ < max_iter) {
+				// Position: verified
+				refpos = refpos + (dt * speed * 0.002f);
 
-			// ReadEncoders: verified
-			//functionwatch.Restart();
-			float motor_speed = (radius * getMotorSpeed ()) / radius_private static final;
-			float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_private static final;
-			//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
+				// ReadEncoders: verified
+				//functionwatch.Restart();
+				float motor_speed = (radius * getMotorSpeed ()) / radius_private static final;
+				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_private static final;
+				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-			// ReadGyro: verified
-			//functionwatch.Restart();
-			float ang_vel = readGyro();
-			//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
+				// ReadGyro: verified
+				//functionwatch.Restart();
+				float ang_vel = readGyro();
+				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-			// CombineSensorValues: verified
-			//functionwatch.Restart();
-			float sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
-			//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
+				// CombineSensorValues: verified
+				//functionwatch.Restart();
+				float sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
+				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-			// PID: verified
-			// input: sensor values
-			// output: average power
-			//functionwatch.Restart();
-			float avg_pwr = pid (sensor_values);
-			//				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
-			//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
+				// PID: verified
+				// input: sensor values
+				// output: average power
+				//functionwatch.Restart();
+				float avg_pwr = pid (sensor_values);
+				//				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
+				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-			// Errors: verified
-			// input: PID output
-			//functionwatch.Restart();
-			errors (avg_pwr);
-			//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
+				// Errors: verified
+				// input: PID output
+				//functionwatch.Restart();
+				errors (avg_pwr);
+				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-			/*
+				/*
 				Console.Write (iter + "\t" + speed + "\t" + ang_vel.ToString(FORMAT) + "\t" + ang.ToString(FORMAT)
 					+ "\t" + sensor_values.ToString(FORMAT) + "\t" + avg_pwr.ToString(FORMAT) 
 					+ "\t" + (motor_position - refpos).ToString(FORMAT) + "\t" + refpos.ToString(FORMAT)
 					+ "\t" + motor_speed.ToString(FORMAT) + "\t"
 				); 
-			 */
+				 */
 
-			// SetMotorPower: verified
-			// input: pid output
-			//functionwatch.Restart();
-			setMotorPower(avg_pwr);
-			//Console.WriteLine(functionwatch.ElapsedMilliseconds + "ms");
+				// SetMotorPower: verified
+				// input: pid output
+				//functionwatch.Restart();
+				setMotorPower(avg_pwr);
+				//System.out.println(functionwatch.ElapsedMilliseconds + "ms");
 
-			// Wait: verified
-			// Timer >= dt, elapsedTime
-			long elapsedTime = stopwatch.ElapsedMilliseconds;
-			Console.WriteLine(elapsedTime + " " + totalwatch.ElapsedMilliseconds);
-			if(elapsedTime >= dt * 1000f)
-				stopwatch.Restart();
+				// Wait: verified
+				// Timer >= dt, elapsedTime
+				long elapsedTime = stopwatch.ElapsedMilliseconds;
+				System.out.println(elapsedTime + " " + totalwatch.ElapsedMilliseconds);
+				if(elapsedTime >= dt * 1000f)
+					stopwatch.Restart();
+			}
+
+			complete = true;
 		}
-
-		complete = true;
 	}
 
 	// verified
 	void initialize() {
-		Console.WriteLine ("initializing ...");
+		System.out.println ("initializing ...");
 		//			dt = (sample_time - 2)/1000;
 
 		// erase array
@@ -181,14 +188,14 @@ public class GyroBoy
 		stopwatch = Stopwatch.StartNew();
 		ev3.resetMotorATachoCount ();
 		ev3.resetMotorDTachoCount();
-		Console.WriteLine("Reset tacho count: " + (stopwatch.ElapsedMilliseconds/2f).ToString(FORMAT) + "ms");
+		System.out.println("Reset tacho count: " + (stopwatch.ElapsedMilliseconds/2f).ToString(FORMAT) + "ms");
 
-		Thread.Sleep (100);
+		Thread.sleep (100);
 
 		// verified
 		stopwatch.Restart();
 		mean = calibrate ();
-		Console.WriteLine(stopwatch.ElapsedMilliseconds + "ms");
+		System.out.println(stopwatch.ElapsedMilliseconds + "ms");
 
 		speed = 0;
 		steering = 0;
@@ -202,14 +209,14 @@ public class GyroBoy
 	 * average of 20 gyroRate values
 	 */
 	float calibrate() {
-		Console.WriteLine ("calibrating ...");
+		System.out.println ("calibrating ...");
 
 		// Play tone: frequency 440Hz, volume 10
 		// duration 0.1sec, play type 0
 		if(sound)
 			ev3.sound (10, 440, (int)(0.1 * 1000));
 
-		Thread.Sleep (100);
+		Thread.sleep (100);
 		mean = 0;
 
 		int count = 20;
@@ -217,19 +224,19 @@ public class GyroBoy
 		// gyro rate
 		for (int i = 0; i < count; i++) {
 			mean += gyroRate ();
-			//Console.WriteLine ("gyroRate mean: " + mean);
-			Thread.Sleep (5);
+			//System.out.println ("gyroRate mean: " + mean);
+			Thread.sleep (5);
 		}
 		mean = mean / count;
 
-		//Console.WriteLine ("gyroRate mean: " + mean);
+		//System.out.println ("gyroRate mean: " + mean);
 
-		Thread.Sleep (100);
+		Thread.sleep (100);
 		// Play tone: frequency 440Hz, volume 10
 		if(sound)
 			ev3.sound (10, 440, (int)(0.1 * 1000));
 
-		Thread.Sleep (100);
+		Thread.sleep (100);
 		// Play tone
 		if(sound)
 			ev3.sound (10, 440, (int)(0.1 * 1000));
@@ -282,7 +289,7 @@ public class GyroBoy
 			compare_index = 0;
 
 		enc_val[enc_index] = (ev3.getMotorADegree() + ev3.getMotorDDegree())/2.0f;
-		//			Console.WriteLine (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
+		//			System.out.println (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
 
 		return ((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
 	}
@@ -342,13 +349,13 @@ public class GyroBoy
 		//			ev3.setPowerMotorD ((int)speedD);
 		ev3.onMotorA ((int)speedA);
 		ev3.onMotorD ((int)speedD);
-		//Console.WriteLine (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
+		//System.out.println (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
 		//	+ "\t" + extra_pwr.ToString(FORMAT) + "\t" + pwr_b.ToString(FORMAT) + "\t" + pwr_c.ToString(FORMAT));
 	}
 
 	// verified except the interrupting balance loop
 	public void errors(float avg_pwr) {
-		nowOutOfBound = (Math.Abs (avg_pwr) > 100f);
+		nowOutOfBound = (Math.abs (avg_pwr) > 100f);
 
 		// read cur_err
 
@@ -359,7 +366,7 @@ public class GyroBoy
 		}
 
 		if (outOfBoundCount > 20) {
-			Thread.Sleep (100);
+			Thread.sleep (100);
 			ev3.offMotorA ();
 			ev3.offMotorD ();
 
@@ -375,7 +382,7 @@ public class GyroBoy
 
 			// interrupt balance loop
 
-			Thread.Sleep (4000);
+			Thread.sleep (4000);
 			// stop
 		} else {
 			prevOutOfBound = nowOutOfBound;
