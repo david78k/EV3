@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="lejos/src"/>
+	<classpathentry kind="src" path="monobrick/ev3/ev3"/>
+	<classpathentry kind="src" path="rcx"/>
+	<classpathentry kind="src" path="samples/ev3pcsamples/src"/>
+	<classpathentry kind="src" path="samples/ev3samples/src"/>
+	<classpathentry kind="src" path="samples/org.lejos.ev3.example/src"/>
+	<classpathentry kind="src" path="samples/org.lejos.ev3.pcexample/src"/>
+	<classpathentry kind="lib" path="lejos/RemoteControl.jar"/>
+	<classpathentry kind="lib" path="lib/ev3/dbusjava.jar"/>
+	<classpathentry kind="lib" path="lib/ev3/ev3classes.jar"/>
+	<classpathentry kind="lib" path="lib/pc/3rdparty/commons-cli.jar"/>
+	<classpathentry kind="lib" path="lib/pc/3rdparty/jcommon.jar"/>
+	<classpathentry kind="lib" path="lib/pc/3rdparty/jfreechart.jar"/>
+	<classpathentry kind="lib" path="lib/pc/3rdparty/jsch-0.1.50.jar"/>
+	<classpathentry kind="lib" path="lib/pc/ev3tools.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
