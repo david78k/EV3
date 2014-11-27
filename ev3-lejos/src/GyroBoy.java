@@ -262,18 +262,22 @@ public class GyroBoy
 		float filter = 0;
 
 		// get 5 samples
+		float[] sample = new float[5];
+		int offset = 0;
+		gyro.getAngleMode().fetchSample(sample, offset );
 		for(int i = 0; i < 5; i ++)
-			filter = ev3.getAngularVelocity () + filter;
-
+			filter += sample[i];
+//			filter = ev3.getAngularVelocity () + filter;
+		
 		return filter / 5f;
 	}
 
 	// verified
 	// change ang and return ang_vel
 	float readGyro() {
-		Stopwatch gyrowatch = Stopwatch.StartNew();
+		Stopwatch gyrowatch = new Stopwatch();
 		float curr_val = gyroRate ();
-		Console.Write("gyro Rate: " + (gyrowatch.ElapsedMilliseconds/5f).ToString(FORMAT) + "ms ");
+		System.out.print("gyro Rate: " + (gyrowatch.elapsed()/5f) + "ms ");
 
 		// EMA
 		mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
@@ -298,7 +302,8 @@ public class GyroBoy
 		if (max_index <= compare_index)
 			compare_index = 0;
 
-		enc_val[enc_index] = (ev3.getMotorADegree() + ev3.getMotorDDegree())/2.0f;
+		enc_val[enc_index] = pilot.getMovement().getAngleTurned();
+//		enc_val[enc_index] = (ev3.getMotorADegree() + ev3.getMotorDDegree())/2.0f;
 		//			System.out.println (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
 
 		return ((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
@@ -315,7 +320,7 @@ public class GyroBoy
 	// verified, but missing prev_err = curr_err
 	//		public float pid(float sensor_values, float curr_err, float acc_err, float dif_err, float prev_err) {
 	public float pid(float sensor_values) {
-		private static final float ref_val = 0;
+		final float ref_val = 0;
 
 		float curr_err = sensor_values - ref_val;
 		acc_err += curr_err * dt;
@@ -342,9 +347,9 @@ public class GyroBoy
 			int sync_0 = 0;
 
 			if (old_steering != 0) {
-				sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
+//				sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
 			}
-			extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
+//			extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
 		} else {
 			extra_pwr = new_steering * (-0.5f);
 		}
@@ -357,8 +362,10 @@ public class GyroBoy
 		float speedD = (pwr_c * 0.021f / radius);
 		//			ev3.setPowerMotorA ((int)speedA);
 		//			ev3.setPowerMotorD ((int)speedD);
-		ev3.onMotorA ((int)speedA);
-		ev3.onMotorD ((int)speedD);
+//		ev3.onMotorA ((int)speedA);
+//		ev3.onMotorD ((int)speedD);
+		pilot.setTravelSpeed(speedA);
+		
 		//System.out.println (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
 		//	+ "\t" + extra_pwr.ToString(FORMAT) + "\t" + pwr_b.ToString(FORMAT) + "\t" + pwr_c.ToString(FORMAT));
 	}
@@ -377,14 +384,18 @@ public class GyroBoy
 
 		if (outOfBoundCount > 20) {
 			sleep (100);
-			ev3.offMotorA ();
-			ev3.offMotorD ();
-
+//			ev3.offMotorA ();
+//			ev3.offMotorD ();
+			pilot.quickStop();
+			
 			// diplay ERROR
 
-			ev3.sound (50, 800, 100);
-			ev3.sound (50, 600, 100);
-			ev3.sound (50, 300, 100);
+			Sound.playTone(800, 100, 50);
+			Sound.playTone(600, 100, 50);
+			Sound.playTone(300, 100, 50);
+//			ev3.sound (50, 800, 100);
+//			ev3.sound (50, 600, 100);
+//			ev3.sound (50, 300, 100);
 
 			// B+C
 			//				ev3.offMotorB ();
