@@ -212,8 +212,7 @@ public class GyroBoy
 			// total time without prints = 8009/2485 = 3.22ms
 
 			writer.println (header);
-			writer.printf ("%d\t%2.f\t%.2f\t%.2f"
-					+ "\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+			writer.printf ("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
 					iter, speed, ang_vel, ang
 					, sensor_values, avg_pwr, (motor_position - refpos)
 					, refpos, motor_speed
