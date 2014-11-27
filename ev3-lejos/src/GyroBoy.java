@@ -179,11 +179,14 @@ public class GyroBoy
 
 				// Wait: verified
 				// Timer >= dt, elapsedTime
-				int elapsedTime = stopwatch.elapsed();
+				int elapsedTime = stopwatch.elapsed(); // 72ms
 				System.out.println(elapsedTime + " " + totalwatch.elapsed());
+				// total time = 4546/100 = 45.46ms
 				if(elapsedTime >= dt * 1000f)
 					stopwatch.reset();
 			}
+			System.out.println("Iteration: " + iter);
+			System.out.println("Total time: " + totalwatch.elapsed() + "ms");
 
 			complete = true;
 		}
@@ -282,7 +285,7 @@ public class GyroBoy
 	float readGyro() {
 		Stopwatch gyrowatch = new Stopwatch();
 		float curr_val = gyroRate ();
-		System.out.print("gyro Rate: " + (gyrowatch.elapsed()) + "ms ");
+		System.out.print("gyro Rate: " + (gyrowatch.elapsed()) + "ms "); // 2ms
 
 		// EMA
 		mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
