@@ -19,8 +19,8 @@ public class GyroBoy
 	private static final float gain_motor_speed = 75;	// for y_hat
 	private static final float gain_motor_position = 350;	// for y
 
-	private static final int max_iter = 500; // 50000 for sleep 7 seconds
-	private static final int drive_sleep = 7000; // milliseconds, default = 7000
+	private static final int max_iter = 50000; // 50000 for sleep 7 seconds
+	private static final int drive_sleep = 3000; // milliseconds, default = 7000
 
 	//boolean sound = false;
 	boolean sound = true;
@@ -122,7 +122,7 @@ public class GyroBoy
 
 			stopwatch.reset();
 
-			while (++iter < max_iter) {
+			while (++iter < max_iter && !complete) {
 				// Position: verified
 				refpos = refpos + (dt * speed * 0.002f);
 
@@ -412,11 +412,11 @@ public class GyroBoy
 			//				ev3.offMotorC ();
 
 			// interrupt balance loop
+			complete = true;
 			balancer.interrupt(); 
 
 			sleep (4000);
 			// stop
-			complete = true;
 		} else {
 			prevOutOfBound = nowOutOfBound;
 		}
