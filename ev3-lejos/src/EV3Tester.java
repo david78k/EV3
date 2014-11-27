@@ -1,6 +1,5 @@
 import lejos.hardware.Sound;
 import lejos.hardware.motor.Motor;
-import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.robotics.SampleProvider;
@@ -18,13 +17,12 @@ public class EV3Tester {
 	private EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2); // 2424ms
 	private static SampleProvider angleProvider;
 	private static OdometryPoseProvider opp;
-	private Port port2 = SensorPort.S2;
 	private Stopwatch watch = new Stopwatch();
 	
 	public static void main(String[] args) {
 		EV3Tester tester = new EV3Tester();
-		tester.testGyro();
-//		tester.testMotors();
+//		tester.testGyro();
+		tester.testMotors();
 //		tester.testDifferentialPilot();
 
 		tester.sleep(wait);
@@ -32,9 +30,33 @@ public class EV3Tester {
 	
 	public void testMotors() {
 		System.out.println("Testing Motors...");
+		
+		watch.reset();
 		DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
-		pilot.backward();
+		System.out.println(watch.elapsed() + "ms"); // 1000, 1024, 1204ms
+		System.out.println("DiffPilot ready."); 
+		sleep(3); // in seconds
+		
+		watch.reset();
+		pilot.setTravelSpeed(1);
 		pilot.forward();
+		System.out.println(watch.elapsed() + "ms"); // 81, 22, 19, 21ms
+		System.out.println("forward."); 
+		sleep(3); // in seconds
+
+		watch.reset();
+		pilot.setTravelSpeed(1);
+		pilot.backward();
+		System.out.println(watch.elapsed() + "ms"); // 23, 85, 70, 83ms
+		System.out.println("backward."); 
+		sleep(3); // in seconds
+		
+		watch.reset();
+		pilot.quickStop();
+		System.out.println(watch.elapsed() + "ms"); // 127, 136, 160, 107ms
+		System.out.println("stopped."); 
+		sleep(3); // in seconds
+		
 		// SegowayPilotDemo demo;
 //		fail("Not yet implemented");
 	}
