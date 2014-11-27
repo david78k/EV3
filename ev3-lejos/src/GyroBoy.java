@@ -125,17 +125,18 @@ public class GyroBoy
 	class Balancer implements Runnable{
 		public void run() {
 			writer.println("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
-			/*writer.println ("iter\tspeed\tang_vel\tang"
+			String header = ("iter\tspeed\tang_vel\tang"
 					+ "\tsensor\tavg_pwr\toffset\trefpos"
 					+ "\tmspeed"
 					+ "\tpowerA\tpowerD\textra\tpwr_b\tpwr_c"
 					//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
-					);*/
+					);
+//			writer.println (header);
 
 			Stopwatch totalwatch = new Stopwatch();
 			Stopwatch functionwatch = new Stopwatch();
 			int iter = 0;
-
+			float motor_speed = 0, motor_position = 0, ang_vel = 0, sensor_values = 0, avg_pwr = 0;
 			stopwatch.reset();
 
 			while (++iter < max_iter && !complete) {
@@ -144,26 +145,26 @@ public class GyroBoy
 
 				// ReadEncoders: verified
 				//functionwatch.Restart();
-				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
+				motor_speed = (radius * getMotorSpeed ()) / radius_const;
 //				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
-				float motor_position = (radius * (leftMotor.getTachoCount() + rightMotor.getTachoCount())/ 2.0f) / radius_const;
+				motor_position = (radius * (leftMotor.getTachoCount() + rightMotor.getTachoCount())/ 2.0f) / radius_const;
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 				// ReadGyro: verified
 				//functionwatch.Restart();
-				float ang_vel = readGyro();
+				ang_vel = readGyro();
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 				// CombineSensorValues: verified
 				//functionwatch.Restart();
-				float sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
+				sensor_values = combineSensorValues (ang_vel, motor_position, motor_speed);
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 				// PID: verified
 				// input: sensor values
 				// output: average power
 				//functionwatch.Restart();
-				float avg_pwr = pid (sensor_values);
+				avg_pwr = pid (sensor_values);
 				//				float avg_pwr = pid (sensor_values, curr_err, acc_err, dif_err, prev_err);
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
@@ -210,6 +211,15 @@ public class GyroBoy
 			// total time without prints = 1678/500 = 3.36ms
 			// total time without prints = 8009/2485 = 3.22ms
 
+			writer.println (header);
+			writer.printf ("%d\t%2.f\t%.2f\t%.2f"
+					+ "\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+					iter, speed, ang_vel, ang
+					, sensor_values, avg_pwr, (motor_position - refpos)
+					, refpos, motor_speed
+				);
+			writer.flush();
+			
 			complete = true;
 		}
 	}
@@ -422,6 +432,11 @@ public class GyroBoy
 		if (outOfBoundCount > 20) {
 			System.out.printf("avg_pwr:%.2f\n", avg_pwr);
 			writer.printf("avg_pwr:%.2f\n", avg_pwr);
+			/*writer.printf (iter + "\t" + speed + "\t" + ang_vel + "\t" + ang
+					+ "\t" + sensor_values + "\t" + avg_pwr 
+					+ "\t" + (motor_position - refpos) + "\t" + refpos
+					+ "\t" + motor_speed + "\t"
+				);*/
 			
 			sleep (100);
 //			ev3.offMotorA ();
