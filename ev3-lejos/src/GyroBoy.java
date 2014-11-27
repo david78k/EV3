@@ -1,9 +1,7 @@
-﻿import java.io.BufferedWriter;
-import java.io.File;
+﻿import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
@@ -111,8 +109,8 @@ public class GyroBoy
 
 			//			while (true) {
 			while (!complete) {
-				speed = 0;
-				sleep (drive_sleep);
+//				speed = 0;
+//				sleep (drive_sleep);
 				speed = 20;
 				sleep (drive_sleep);
 				speed = -20;
@@ -131,7 +129,7 @@ public class GyroBoy
 					+ "\tpowerA\tpowerD\textra\tpwr_b\tpwr_c"
 					//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
 					);
-//			writer.println (header);
+			writer.println (header);
 
 			Stopwatch totalwatch = new Stopwatch();
 			Stopwatch functionwatch = new Stopwatch();
@@ -174,13 +172,11 @@ public class GyroBoy
 				errors (avg_pwr);
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-				/*
-				Console.Write (iter + "\t" + speed + "\t" + ang_vel.ToString(FORMAT) + "\t" + ang.ToString(FORMAT)
-					+ "\t" + sensor_values.ToString(FORMAT) + "\t" + avg_pwr.ToString(FORMAT) 
-					+ "\t" + (motor_position - refpos).ToString(FORMAT) + "\t" + refpos.ToString(FORMAT)
-					+ "\t" + motor_speed.ToString(FORMAT) + "\t"
-				); 
-				 */
+				writer.printf ("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+						iter, speed, ang_vel, ang
+						, sensor_values, avg_pwr, (motor_position - refpos)
+						, refpos, motor_speed
+					);
 
 				// SetMotorPower: verified
 				// input: pid output
@@ -192,8 +188,9 @@ public class GyroBoy
 				// Timer >= dt, elapsedTime
 				int elapsedTime = stopwatch.elapsed(); // 72ms
 //				System.out.println(elapsedTime + " " + totalwatch.elapsed());
-				if(elapsedTime >= dt * 1000f)
-					stopwatch.reset();
+				if(elapsedTime < (int)(dt * 1000f))
+					sleep((int)(dt * 1000f) - elapsedTime);
+				stopwatch.reset();
 			}
 			int totaltime = totalwatch.elapsed();
 			System.out.println("Iteration:" + iter);
