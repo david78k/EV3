@@ -26,7 +26,7 @@ public class GyroBoy
 	private static final float gain_motor_position = 350;	// for y
 
 	private static final int max_iter = 50000; // 50000 for sleep 7 seconds
-	private static final int drive_sleep = 3000; // milliseconds, default = 7000
+	private static final int drive_sleep = 7000; // milliseconds, default = 7000
 
 	//boolean sound = false;
 	boolean sound = true;
@@ -66,9 +66,7 @@ public class GyroBoy
 	Thread balancer = new Thread (new Balancer());
 	Thread driver = new Thread (new Driver());
 	
-	public GyroBoy ()
-	{
-	}
+//	public GyroBoy (){}
 
 	public static void main(String[] args) {
 		GyroBoy gboy = new GyroBoy();
@@ -136,8 +134,7 @@ public class GyroBoy
 				//functionwatch.Restart();
 				float motor_speed = (radius * getMotorSpeed ()) / radius_const;
 //				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
-				float motor_position = (radius * (pilot.getAngleIncrement())) / radius_const;
-//				float motor_position = (radius * (pilot.getMovement().getArcRadius()) / radius_const;
+				float motor_position = (radius * (leftMotor.getPower() + rightMotor.getTachoCount())/ 2.0f) / radius_const;
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 				// ReadGyro: verified
@@ -212,7 +209,8 @@ public class GyroBoy
 //		stopwatch = Stopwatch.StartNew();
 //		ev3.resetMotorATachoCount ();
 //		ev3.resetMotorDTachoCount();
-		pilot.reset();
+		leftMotor.resetTachoCount();
+		rightMotor.resetTachoCount();
 		System.out.println("Reset tacho count: " + (stopwatch.elapsed()) + "ms");
 
 		sleep (100);
@@ -317,8 +315,8 @@ public class GyroBoy
 		if (max_index <= compare_index)
 			compare_index = 0;
 
-		enc_val[enc_index] = pilot.getMovement().getAngleTurned();
 //		enc_val[enc_index] = (ev3.getMotorADegree() + ev3.getMotorDDegree())/2.0f;
+		enc_val[enc_index] = (leftMotor.getTachoCount() + rightMotor.getTachoCount())/2.0f;
 		//			System.out.println (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
 
 		return ((enc_val [enc_index] - enc_val [compare_index]) / (max_index * dt));
@@ -363,8 +361,10 @@ public class GyroBoy
 
 			if (old_steering != 0) {
 //				sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
+				sync_0 = leftMotor.getTachoCount() - rightMotor.getTachoCount();
 			}
 //			extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
+			extra_pwr = (leftMotor.getTachoCount () - rightMotor.getTachoCount() - sync_0) * 0.05f;
 		} else {
 			extra_pwr = new_steering * (-0.5f);
 		}
@@ -377,9 +377,8 @@ public class GyroBoy
 		float powerD = (pwr_c * 0.021f / radius);
 		//			ev3.setPowerMotorA ((int)speedA);
 		//			ev3.setPowerMotorD ((int)speedD);
-//		ev3.onMotorA ((int)speedA);
-//		ev3.onMotorD ((int)speedD);
-		pilot.setTravelSpeed(powerA);
+		leftMotor.setPower((int)powerA);
+		rightMotor.setPower((int)powerD);
 		
 		//System.out.println (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
 		//	+ "\t" + extra_pwr.ToString(FORMAT) + "\t" + pwr_b.ToString(FORMAT) + "\t" + pwr_c.ToString(FORMAT));
@@ -401,7 +400,8 @@ public class GyroBoy
 			sleep (100);
 //			ev3.offMotorA ();
 //			ev3.offMotorD ();
-			pilot.quickStop();
+			leftMotor.stop();
+			rightMotor.stop();
 			
 			// diplay ERROR
 			System.out.println("ERROR");
