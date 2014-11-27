@@ -1,3 +1,5 @@
+*.jar
+
 /bin/
 
 monobrick/ev3/ev3/obj/x86/Debug/ev3.pdb
