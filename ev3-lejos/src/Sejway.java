@@ -1,4 +1,11 @@
-import lejos.nxt.*;
+import lejos.hardware.Button;
+import lejos.hardware.lcd.LCD;
+import lejos.hardware.motor.Motor;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.robotics.navigation.DifferentialPilot;
+
+//import lejos.nxt.*;
 
 /**
  * A controller for a self-balancing Lego robot with a light sensor
@@ -11,10 +18,8 @@ import lejos.nxt.*;
  * @version 26-2-13 by Ole Caprani for leJOS version 0.9.1
  */
 
-
 public class Sejway 
 {
-
     // PID constants
     final int KP = 28;
     final int KI = 4;
@@ -26,31 +31,35 @@ public class Sejway
     int prev_error;
     float int_error;
 	
-    LightSensor ls;
-	
+//    LightSensor ls;
+    EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
+    private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
+    
     public Sejway() 
     {
-        ls = new LightSensor(SensorPort.S2, true);
+//        ls = new LightSensor(SensorPort.S2, true);
     }
 	
     public void getBalancePos() 
     {
-        // Wait for user to balance and press orange button
-        while (!Button.ENTER.isDown())
-        {
-        // NXTway must be balanced.
-        offset = ls.readNormalizedValue();
-        LCD.clear();
-        LCD.drawInt(offset, 2, 4);
-        LCD.refresh();
-        }
+    	// Wait for user to balance and press orange button
+    	while (!Button.ENTER.isDown())
+    	{
+    		// NXTway must be balanced.
+//    		offset = ls.readNormalizedValue();
+//    		offset = gyro.getAngleMode();
+    		LCD.clear();
+    		LCD.drawInt(offset, 2, 4);
+    		LCD.refresh();
+    	}
     }
 	
     public void pidControl() 
     {
         while (!Button.ESCAPE.isDown()) 
         {
-            int normVal = ls.readNormalizedValue();
+//            int normVal = ls.readNormalizedValue();
+        	int normVal = 0;
 
             // Proportional Error:
             int error = normVal - offset;
@@ -77,11 +86,11 @@ public class Sejway
 
 
             if (pid_val > 0) {
-                MotorPort.B.controlMotor(power, BasicMotorPort.FORWARD);
-                MotorPort.C.controlMotor(power, BasicMotorPort.FORWARD);
+//                MotorPort.B.controlMotor(power, BasicMotorPort.FORWARD);
+//                MotorPort.C.controlMotor(power, BasicMotorPort.FORWARD);
             } else {
-                MotorPort.B.controlMotor(power, BasicMotorPort.BACKWARD);
-                MotorPort.C.controlMotor(power, BasicMotorPort.BACKWARD);
+//                MotorPort.B.controlMotor(power, BasicMotorPort.BACKWARD);
+//                MotorPort.C.controlMotor(power, BasicMotorPort.BACKWARD);
             }
         }
     }
@@ -89,9 +98,9 @@ public class Sejway
     public void shutDown()
     {
         // Shut down light sensor, motors
-        Motor.B.flt();
-        Motor.C.flt();
-        ls.setFloodlight(false);
+//        Motor.B.flt();
+//        Motor.C.flt();
+//        ls.setFloodlight(false);
     }
 	
     public static void main(String[] args) 

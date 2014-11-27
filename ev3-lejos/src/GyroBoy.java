@@ -1,34 +1,36 @@
-﻿
+﻿import lejos.utility.Stopwatch;
+
+
 public class GyroBoy
 {
-	const float Kp = 0.5f;
-	const float Ki = 11;
-	const float Kd = 0.005f;
+	private static final float Kp = 0.5f;
+	private static final float Ki = 11;
+	private static final float Kd = 0.005f;
 
-	const float gain_angular_velocity = 1.3f; // for theta_hat
-	const float gain_angle = 25;		// for theta
-	const float gain_motor_speed = 75;	// for y_hat
-	const float gain_motor_position = 350;	// for y
+	private static final float gain_angular_velocity = 1.3f; // for theta_hat
+	private static final float gain_angle = 25;		// for theta
+	private static final float gain_motor_speed = 75;	// for y_hat
+	private static final float gain_motor_position = 350;	// for y
 
-	const int max_iter = 10;
-	const int drive_sleep = 7000; // milliseconds
+	private static final int max_iter = 10;
+	private static final int drive_sleep = 7000; // milliseconds
 
-	//bool sound = false;
-	bool sound = true;
+	//boolean sound = false;
+	boolean sound = true;
 
 	float refpos = 0;	// reference position
-	const int sample_time = 22;	// sample time in milliseconds (ms)
-	const float dt = (sample_time - 2)/1000f;	// verified
+	private static final int sample_time = 22;	// sample time in milliseconds (ms)
+	private static final float dt = (sample_time - 2)/1000f;	// verified
 	float speed = 0;
-	const int wheel_diameter = 55; // in millimeters (mm)
-	const float radius = wheel_diameter / 2000f; // verified
+	private static final int wheel_diameter = 55; // in millimeters (mm)
+	private static final float radius = wheel_diameter / 2000f; // verified
 
-	const int max_index = 7;
+	private static final int max_index = 7;
 	float[] enc_val = new float[max_index];
 	int enc_index = 0;
 
-	bool nowOutOfBound = false;
-	bool prevOutOfBound = false;
+	boolean nowOutOfBound = false;
+	boolean prevOutOfBound = false;
 	int outOfBoundCount = 0;
 	//		int outOfBound = 0;
 
@@ -39,13 +41,13 @@ public class GyroBoy
 	float old_steering = 0;
 	int max_acceleration = 0;
 
-	const float radius_const = 57.3f;
+	private static final float radius_private static final = 57.3f;
 	float acc_err = 0;
 	float prev_err = 0;
 
-	const string FORMAT = "0.00"; // precision
+	private static final string FORMAT = "0.00"; // precision
 
-	bool complete = false;
+	boolean complete = false;
 
 	Stopwatch stopwatch;
 
@@ -113,8 +115,8 @@ public class GyroBoy
 
 			// ReadEncoders: verified
 			//functionwatch.Restart();
-			float motor_speed = (radius * getMotorSpeed ()) / radius_const;
-			float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
+			float motor_speed = (radius * getMotorSpeed ()) / radius_private static final;
+			float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_private static final;
 			//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
 			// ReadGyro: verified
@@ -296,7 +298,7 @@ public class GyroBoy
 	// verified, but missing prev_err = curr_err
 	//		public float pid(float sensor_values, float curr_err, float acc_err, float dif_err, float prev_err) {
 	public float pid(float sensor_values) {
-		const float ref_val = 0;
+		private static final float ref_val = 0;
 
 		float curr_err = sensor_values - ref_val;
 		acc_err += curr_err * dt;

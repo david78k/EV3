@@ -6,7 +6,7 @@ namespace ev3
 	/**
 	 * for NXT using PID
 	 */
-	public class Sejway
+	public class SejwayCS
 	{
 		// PID constants
 		const int KP = 28; // originally 28
