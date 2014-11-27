@@ -1,14 +1,20 @@
 ﻿import lejos.hardware.Sound;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTMotor;
+import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.robotics.EncoderMotor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.utility.Stopwatch;
 
 public class GyroBoy
 {
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
-	private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
+	EncoderMotor leftMotor = (EncoderMotor) new NXTMotor(MotorPort.A); 
+	EncoderMotor rightMotor = (EncoderMotor) new NXTMotor(MotorPort.D); 
+//	private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
 
 	private static final float Kp = 0.5f;
 	private static final float Ki = 11;
@@ -367,13 +373,13 @@ public class GyroBoy
 		float pwr_b = avg_pwr + extra_pwr;
 		old_steering = new_steering;
 
-		float speedA = (pwr_b * 0.021f / radius);
-		float speedD = (pwr_c * 0.021f / radius);
+		float powerA = (pwr_b * 0.021f / radius);
+		float powerD = (pwr_c * 0.021f / radius);
 		//			ev3.setPowerMotorA ((int)speedA);
 		//			ev3.setPowerMotorD ((int)speedD);
 //		ev3.onMotorA ((int)speedA);
 //		ev3.onMotorD ((int)speedD);
-		pilot.setTravelSpeed(speedA);
+		pilot.setTravelSpeed(powerA);
 		
 		//System.out.println (speedA.ToString(FORMAT) + "\t" + speedD.ToString(FORMAT) 
 		//	+ "\t" + extra_pwr.ToString(FORMAT) + "\t" + pwr_b.ToString(FORMAT) + "\t" + pwr_c.ToString(FORMAT));
@@ -403,9 +409,6 @@ public class GyroBoy
 			Sound.playTone(800, 100, 50);
 			Sound.playTone(600, 100, 50);
 			Sound.playTone(300, 100, 50);
-//			ev3.sound (50, 800, 100);
-//			ev3.sound (50, 600, 100);
-//			ev3.sound (50, 300, 100);
 
 			// B+C
 			//				ev3.offMotorB ();
