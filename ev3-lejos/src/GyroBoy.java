@@ -113,21 +113,21 @@ public class GyroBoy
 	// verified
 	class Balancer implements Runnable{
 		public void run() {
-			System.out.println("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
+			/*System.out.println("refpos = " + refpos + ", dt = " + dt + ", Kp = " + Kp + ", Ki = " + Ki + ", Kd = " + Kd);
 			System.out.println ("iter\tspeed\tang_vel\tang"
 					+ "\tsensor\tavg_pwr\toffset\trefpos"
 					+ "\tmspeed"
 					+ "\tspeedA\tspeedD\textra\tpwr_b\tpwr_c"
 					//				+ "\tcurr_err\tacc_err\tdif_err\tprev_err"
 					);
-
+*/
 			Stopwatch totalwatch = new Stopwatch();
 			Stopwatch functionwatch = new Stopwatch();
 			int iter = 0;
 
 			stopwatch.reset();
 
-			while (iter++ < max_iter) {
+			while (++iter < max_iter) {
 				// Position: verified
 				refpos = refpos + (dt * speed * 0.002f);
 
@@ -180,13 +180,16 @@ public class GyroBoy
 				// Wait: verified
 				// Timer >= dt, elapsedTime
 				int elapsedTime = stopwatch.elapsed(); // 72ms
-				System.out.println(elapsedTime + " " + totalwatch.elapsed());
-				// total time = 4546/100 = 45.46ms
+//				System.out.println(elapsedTime + " " + totalwatch.elapsed());
 				if(elapsedTime >= dt * 1000f)
 					stopwatch.reset();
 			}
 			System.out.println("Iteration: " + iter);
 			System.out.println("Total time: " + totalwatch.elapsed() + "ms");
+			// total time with prints = 4546/100 = 45.46ms
+			// total time with some prints = 1916/100 = 19.16ms
+			// total time without prints = 432/100 = 4.32ms
+			// total time without prints = 559/100 = 5.59ms
 
 			complete = true;
 		}
@@ -206,7 +209,7 @@ public class GyroBoy
 //		ev3.resetMotorATachoCount ();
 //		ev3.resetMotorDTachoCount();
 		pilot.reset();
-		System.out.println("Reset tacho count: " + (stopwatch.elapsed()/2f) + "ms");
+		System.out.println("Reset tacho count: " + (stopwatch.elapsed()) + "ms");
 
 		sleep (100);
 
@@ -285,7 +288,7 @@ public class GyroBoy
 	float readGyro() {
 		Stopwatch gyrowatch = new Stopwatch();
 		float curr_val = gyroRate ();
-		System.out.print("gyro Rate: " + (gyrowatch.elapsed()) + "ms "); // 2ms
+//		System.out.print("gyro Rate: " + (gyrowatch.elapsed()) + "ms "); // 2ms
 
 		// EMA
 		mean = mean * (1f - 0.2f * dt) + (curr_val * 0.2f * dt);
