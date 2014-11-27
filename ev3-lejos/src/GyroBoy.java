@@ -271,7 +271,7 @@ public class GyroBoy
 
 	/**
 	 * verified
-	 * average of 5 samples
+	 * average of 5 samples of angular velocity
 	 */
 	float gyroRate() {
 		float filter = 0;
@@ -279,7 +279,8 @@ public class GyroBoy
 		// get 5 samples
 		float[] sample = new float[5];
 		int offset = 0;
-		gyro.getAngleMode().fetchSample(sample, offset );
+		gyro.getRateMode().fetchSample(sample, offset );
+//		gyro.getAngleMode().fetchSample(sample, offset );
 		for(int i = 0; i < 5; i ++)
 			filter += sample[i];
 //			filter = ev3.getAngularVelocity () + filter;
