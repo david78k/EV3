@@ -8,11 +8,13 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.robotics.EncoderMotor;
+import lejos.utility.DebugMessages;
 import lejos.utility.Stopwatch;
 
 public class GyroBoy
 {
-	boolean DEBUG = true;
+//	boolean DEBUG = true;
+	boolean DEBUG = false;
 
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
@@ -35,7 +37,7 @@ public class GyroBoy
 	boolean sound = true;
 
 	float refpos = 0;	// reference position
-	private static final int sample_time = 30;	// 30 good, sample time in milliseconds (ms), default 20
+	private static final int sample_time = 20;	// 15/20/25/30 good, 40 bad, sample time in milliseconds (ms), default 20
 	private static final float dt = sample_time/1000f;	// verified, default 0.02
 	float speed = 0;
 	private static final int wheel_diameter = 55; // in millimeters (mm), default 55
@@ -111,9 +113,9 @@ public class GyroBoy
 			while (!complete) {
 //				speed = 0;
 //				sleep (drive_sleep);
-				speed = 20;
-				sleep (drive_sleep);
 				speed = -20;
+				sleep (drive_sleep);
+				speed = 20;
 				sleep (drive_sleep);
 			}
 		}
@@ -172,12 +174,14 @@ public class GyroBoy
 				errors (avg_pwr);
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
-				writer.printf ("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
-						iter, speed, ang_vel, ang
-						, sensor_values, avg_pwr, (motor_position - refpos)
-						, refpos, motor_speed
-					);
-
+				if(DEBUG) {
+					writer.printf ("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+							iter, speed, ang_vel, ang
+							, sensor_values, avg_pwr, (motor_position - refpos)
+							, refpos, motor_speed
+							);
+				}
+				
 				// SetMotorPower: verified
 				// input: pid output
 				//functionwatch.Restart();
