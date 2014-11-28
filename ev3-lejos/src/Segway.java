@@ -180,9 +180,11 @@ public class Segway
 	}
 
 	public void start() {
+		initialize();
+		
 		Thread t1 = new Thread(new Balancer());
 		t1.start ();
-		while (starting_balancing_task) {}
+//		while (starting_balancing_task) {}
 		System.out.println ("Complete balancing task.");
 
 		steering = -7;
@@ -194,56 +196,64 @@ public class Segway
 			e.printStackTrace();
 		}
 
+		try {
+			Thread.sleep(10000);
+		} catch (Exception e) {
+		}
 //		System.out.println("End");
 	}
 
+	void initialize() {
+		starting_balancing_task = true;
+
+		nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
+		nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
+		nMotorEncoder[motorD] = 0;
+		nMotorEncoder[motorA] = 0;
+
+		leftMotor.resetTachoCount();
+		rightMotor.resetTachoCount();
+		
+		// Sensor setup
+		int Gyro = 2;
+		int[] SensorType = new int[5];
+		//			SensorType[Gyro] = ev3.getAngularVelocity();
+
+		int nSensorsDefined = 0;
+		gyro.reset();
+		mean_reading = 0;
+		/*
+		#ifdef HiTechnic_Gyro
+		    SensorType[Gyro] = sensorRawValue;
+		    // The following sets the average HiTechnic sensor value. If you know the average, you can avoid the calibration
+		    // next time like so: mean_reading = 593.82; (if that's your sensor average).
+		    mean_reading = calibrate_hitechnic();
+		    nSensorsDefined++;
+		#endif
+		#ifdef MindSensors_IMU
+		  int   ux,uy,uz;									// Mindsensors Sensor Measurement
+		  mean_reading = 0;
+		  SensorType[Gyro] = sensorI2CCustomFastSkipStates;
+		  wait1Msec(500);
+			MSIMUsetGyroFilter(Gyro, 0x00);
+			wait1Msec(1000);
+		  nSensorsDefined++;
+		#endif
+		if(nSensorsDefined != 1){
+		  nxtDisplayTextLine(0,"Check Sensor");
+		  nxtDisplayTextLine(1,"definition!");
+		  wait1Msec(5000);StopAllTasks();
+		}
+		 */
+		
+		//			memset(&encoder[0],0,sizeof(encoder));
+		starting_balancing_task = false;// We're done configuring. Main task now resumes.
+	}
+	 
 	class Balancer implements Runnable{
 //		private void balance() {
 		public void run() {
 			System.out.println("start balancing ...");
-			starting_balancing_task = true;
-
-			nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
-			nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
-			nMotorEncoder[motorD] = 0;
-			nMotorEncoder[motorA] = 0;
-
-			leftMotor.resetTachoCount();
-			rightMotor.resetTachoCount();
-			
-			// Sensor setup
-			int Gyro = 2;
-			int[] SensorType = new int[5];
-			//			SensorType[Gyro] = ev3.getAngularVelocity();
-
-			int nSensorsDefined = 0;
-			mean_reading = 0;
-			/*
-			#ifdef HiTechnic_Gyro
-			    SensorType[Gyro] = sensorRawValue;
-			    // The following sets the average HiTechnic sensor value. If you know the average, you can avoid the calibration
-			    // next time like so: mean_reading = 593.82; (if that's your sensor average).
-			    mean_reading = calibrate_hitechnic();
-			    nSensorsDefined++;
-			#endif
-			#ifdef MindSensors_IMU
-			  int   ux,uy,uz;									// Mindsensors Sensor Measurement
-			  mean_reading = 0;
-			  SensorType[Gyro] = sensorI2CCustomFastSkipStates;
-			  wait1Msec(500);
-				MSIMUsetGyroFilter(Gyro, 0x00);
-				wait1Msec(1000);
-			  nSensorsDefined++;
-			#endif
-			if(nSensorsDefined != 1){
-			  nxtDisplayTextLine(0,"Check Sensor");
-			  nxtDisplayTextLine(1,"definition!");
-			  wait1Msec(5000);StopAllTasks();
-			}
-			 */
-			
-			//			memset(&encoder[0],0,sizeof(encoder));
-			starting_balancing_task = false;// We're done configuring. Main task now resumes.
 
 			//	ClearTimer(T4);                 // This timer is used in the driver. Do not use it for other purposes!
 			stopwatch.reset();
@@ -344,11 +354,14 @@ public class Segway
 				//				  wait1Msec(1);
 				//				}
 				//				ClearTimer(T4);
-				try {
-					Thread.sleep ((int)(dt * 1000));
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
+				while(stopwatch.elapsed() < dt*1000) {
+					try {
+						Thread.sleep (1);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
 				}
+				stopwatch.reset();
 			}
 		}
 	}
