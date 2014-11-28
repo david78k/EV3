@@ -132,15 +132,15 @@ public class Segway
 	///////////////////////////
 
 	//MOTOR SETUP
-	int motorB = 1;
-	int motorC = 2;
+	int motorA = 1;
+	int motorD = 2;
 	int mtrNoReg = 0;
 	int[] nMotorPIDSpeedCtrl = new int[4];
-//	nMotorPIDSpeedCtrl[motorB] = mtrNoReg;
-//	nMotorPIDSpeedCtrl[motorC] = mtrNoReg;
+//	nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
+//	nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
 	int[] nMotorEncoder = new int[4];
-//	nMotorEncoder[motorC] = 0;
-//	nMotorEncoder[motorB] = 0;
+//	nMotorEncoder[motorD] = 0;
+//	nMotorEncoder[motorA] = 0;
 	int[] motor = new int[4];
 
 	//MATH private static finalANTS
@@ -183,7 +183,7 @@ public class Segway
 		while (starting_balancing_task) {}
 		System.out.println ("Complete balancing task.");
 
-		//			steering = -7;
+		steering = -7;
 		speed = 30;
 
 		try {
@@ -201,10 +201,10 @@ public class Segway
 			System.out.println("start balancing ...");
 			starting_balancing_task = true;
 
-			nMotorPIDSpeedCtrl[motorB] = mtrNoReg;
-			nMotorPIDSpeedCtrl[motorC] = mtrNoReg;
-			nMotorEncoder[motorC] = 0;
-			nMotorEncoder[motorB] = 0;
+			nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
+			nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
+			nMotorEncoder[motorD] = 0;
+			nMotorEncoder[motorA] = 0;
 
 			//		ev3.resetMotorATachoCount ();
 			//		ev3.resetMotorDTachoCount ();
@@ -244,8 +244,9 @@ public class Segway
 			starting_balancing_task = false;// We're done configuring. Main task now resumes.
 
 			//	ClearTimer(T4);                 // This timer is used in the driver. Do not use it for other purposes!
-
-			System.out.println ("iter\tu\tpid\tth\tmotorpower\td_pwr\tmotorB\tmotorC");
+			// start stopwatch
+			
+			System.out.println ("iter\tu\tpid\tth\tmotorpower\td_pwr\tmotorA\tmotorD");
 
 			int iter = 0;
 			//			while(true)
@@ -253,7 +254,8 @@ public class Segway
 			{
 
 				//READ GYRO SENSOR
-				u = ev3.getAngularVelocity ();
+//				u = ev3.getAngularVelocity ();
+				u = gyro.getAngularVelocity ();
 				Thread.sleep (2);
 				u = ev3.getAngularVelocity ();
 
@@ -283,10 +285,10 @@ public class Segway
 				y_ref = y_ref + v*dt;
 
 				//COMPUTE MOTOR ENCODER POSITION AND SPEED
-				nMotorEncoder [motorB] = ev3.getMotorADegree ();
-				nMotorEncoder [motorC] = ev3.getMotorDDegree ();
+				nMotorEncoder [motorA] = ev3.getMotorADegree ();
+				nMotorEncoder [motorD] = ev3.getMotorDDegree ();
 				n++;if(n == n_max){n = 0;}
-				encoder[n] = nMotorEncoder[motorB] + nMotorEncoder[motorC] + (int)y_ref;
+				encoder[n] = nMotorEncoder[motorA] + nMotorEncoder[motorD] + (int)y_ref;
 				n_comp = n+1;if(n_comp == n_max){n_comp = 0;}
 				y = encoder[n]*degtorad*radius/gear_down_ratio;
 				dy_dt = (encoder[n] - encoder[n_comp])/(dt*(n_max-1))*degtorad*radius/gear_down_ratio;
@@ -301,21 +303,21 @@ public class Segway
 				//ADJUST MOTOR SPEED TO STEERING AND SYNCHING
 				if(steering == 0){
 					if(last_steering != 0){
-						straight = nMotorEncoder[motorC] - nMotorEncoder[motorB];
+						straight = nMotorEncoder[motorD] - nMotorEncoder[motorA];
 					}
-					d_pwr = (int)((nMotorEncoder[motorC] - nMotorEncoder[motorB] - straight)/(radius*10/gear_down_ratio));
+					d_pwr = (int)((nMotorEncoder[motorD] - nMotorEncoder[motorA] - straight)/(radius*10/gear_down_ratio));
 				} else{d_pwr = (int)(steering/(radius*10/gear_down_ratio));}
 				last_steering = steering;
 
 				//CONTROL MOTOR POWER AND STEERING
 				motorpower = 	(int)pid;
-				motor[motorB] = motorpower + d_pwr;
-				motor[motorC] = motorpower + d_pwr;
-				//				motor[motorC] = motorpower - d_pwr;
+				motor[motorA] = motorpower + d_pwr;
+				motor[motorD] = motorpower + d_pwr;
+				//				motor[motorD] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
 				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
-						+ "\t" + d_pwr + "\t" + motor[motorB] + "\t" + motor[motorC]);
+						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
 				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 					//				  StopAllTasks();
 					System.out.println ("error");
@@ -323,10 +325,10 @@ public class Segway
 					break;
 				}
 
-				ev3.onMotorA (motor [motorB]);
-				ev3.onMotorD (motor [motorC]);
-				//				ev3.onMotorA (motor [motorB]/100);
-				//				ev3.onMotorD (motor [motorC]/100);
+				ev3.onMotorA (motor [motorA]);
+				ev3.onMotorD (motor [motorD]);
+				//				ev3.onMotorA (motor [motorA]/100);
+				//				ev3.onMotorD (motor [motorD]/100);
 
 				//				//WAIT THEN REPEAT
 				//				while(time1[T4] < dt*1000){
@@ -336,6 +338,25 @@ public class Segway
 				Thread.sleep ((int)(dt * 1000));
 			}
 		}
+	}
+
+	/**
+	 * average of samples of angular velocity
+	 */
+	float gyroRate() {
+		float filter = 0;
+
+		// get samples
+		int sample_size = gyro.getAngleMode().sampleSize();
+		int offset = 0;
+		float[] sample = new float[sample_size];
+		//			gyro.getRateMode().fetchSample(sample, offset);
+		gyro.getAngleMode().fetchSample(sample, offset);
+		for(int i = 0; i < sample_size; i ++)
+			filter += sample[i];
+		//				filter = ev3.getAngularVelocity () + filter;
+
+		return filter / sample_size;
 	}
 
 	/*#ifdef HiTechnic_Gyro
