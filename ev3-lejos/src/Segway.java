@@ -89,7 +89,7 @@ public class Segway
 	int speed = 0;
 	boolean starting_balancing_task = true;
 	private static final float wheel_diameter = 56;	// in millimeters
-	private static final int max_iter = 10;
+	private static final int max_iter = 1000;
 //	EV3Brick ev3 = new EV3Brick();
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
@@ -258,7 +258,7 @@ public class Segway
 			//	ClearTimer(T4);                 // This timer is used in the driver. Do not use it for other purposes!
 			stopwatch.reset();
 			
-			System.out.println ("iter\tu\tpid\tth\tmotorpower\td_pwr\tmotorA\tmotorD");
+//			System.out.println ("iter\tu\tpid\tth\tmotorpower\td_pwr\tmotorA\tmotorD");
 
 			int iter = 0;
 			//			while(true)
@@ -332,8 +332,8 @@ public class Segway
 				//				motor[motorD] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
-				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
-						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
+//				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
+//						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
 //				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 				if(Math.abs(th)>60 || Math.abs(motorpower) > 2000){
 					//				  StopAllTasks();
