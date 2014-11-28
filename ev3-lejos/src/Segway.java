@@ -3,6 +3,7 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.robotics.EncoderMotor;
+import lejos.utility.Stopwatch;
 
 /**
  * Segway using PID control in RobotC
@@ -93,6 +94,7 @@ public class Segway
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
+	Stopwatch stopwatch = new Stopwatch();
 	
 	//GLOBAL VARIABLE SETUP
 //	float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
@@ -206,9 +208,9 @@ public class Segway
 			nMotorEncoder[motorD] = 0;
 			nMotorEncoder[motorA] = 0;
 
-			//		ev3.resetMotorATachoCount ();
-			//		ev3.resetMotorDTachoCount ();
-
+			leftMotor.resetTachoCount();
+			rightMotor.resetTachoCount();
+			
 			// Sensor setup
 			int Gyro = 2;
 			int[] SensorType = new int[5];
@@ -244,7 +246,7 @@ public class Segway
 			starting_balancing_task = false;// We're done configuring. Main task now resumes.
 
 			//	ClearTimer(T4);                 // This timer is used in the driver. Do not use it for other purposes!
-			// start stopwatch
+			stopwatch.reset();
 			
 			System.out.println ("iter\tu\tpid\tth\tmotorpower\td_pwr\tmotorA\tmotorD");
 
@@ -255,9 +257,13 @@ public class Segway
 
 				//READ GYRO SENSOR
 //				u = ev3.getAngularVelocity ();
-				u = gyro.getAngularVelocity ();
-				Thread.sleep (2);
-				u = ev3.getAngularVelocity ();
+				u = gyroRate();
+				try {
+					Thread.sleep (2);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				u += gyroRate();
 
 				/*
 				#ifdef HiTechnic_Gyro
@@ -285,8 +291,8 @@ public class Segway
 				y_ref = y_ref + v*dt;
 
 				//COMPUTE MOTOR ENCODER POSITION AND SPEED
-				nMotorEncoder [motorA] = ev3.getMotorADegree ();
-				nMotorEncoder [motorD] = ev3.getMotorDDegree ();
+				nMotorEncoder [motorA] = leftMotor.getTachoCount();
+				nMotorEncoder [motorD] = rightMotor.getTachoCount();
 				n++;if(n == n_max){n = 0;}
 				encoder[n] = nMotorEncoder[motorA] + nMotorEncoder[motorD] + (int)y_ref;
 				n_comp = n+1;if(n_comp == n_max){n_comp = 0;}
@@ -318,43 +324,47 @@ public class Segway
 				//ERROR CHECKING OR SHUTDOWN
 				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
-				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
+//				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
+				if(Math.abs(th)>60 || Math.abs(motorpower) > 2000){
 					//				  StopAllTasks();
 					System.out.println ("error");
-					ev3.stopAll ();
+//					ev3.stopAll ();
+					leftMotor.flt();
+					rightMotor.flt();
 					break;
 				}
 
-				ev3.onMotorA (motor [motorA]);
-				ev3.onMotorD (motor [motorD]);
-				//				ev3.onMotorA (motor [motorA]/100);
-				//				ev3.onMotorD (motor [motorD]/100);
-
+//				ev3.onMotorA (motor [motorA]);
+//				ev3.onMotorD (motor [motorD]);
+				leftMotor.setPower(motorA);
+				rightMotor.setPower(motorD);
+				
 				//				//WAIT THEN REPEAT
 				//				while(time1[T4] < dt*1000){
 				//				  wait1Msec(1);
 				//				}
 				//				ClearTimer(T4);
-				Thread.sleep ((int)(dt * 1000));
+				try {
+					Thread.sleep ((int)(dt * 1000));
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 	}
 
 	/**
-	 * average of samples of angular velocity
+	 * average of angular velocity samples
 	 */
 	float gyroRate() {
 		float filter = 0;
 
 		// get samples
 		int sample_size = gyro.getAngleMode().sampleSize();
-		int offset = 0;
 		float[] sample = new float[sample_size];
-		//			gyro.getRateMode().fetchSample(sample, offset);
-		gyro.getAngleMode().fetchSample(sample, offset);
+		gyro.getRateMode().fetchSample(sample, 0);
 		for(int i = 0; i < sample_size; i ++)
 			filter += sample[i];
-		//				filter = ev3.getAngularVelocity () + filter;
 
 		return filter / sample_size;
 	}

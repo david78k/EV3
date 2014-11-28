@@ -28,7 +28,7 @@ public class Sejway
 //	private static final float Kp = 0.5f;  // default 0.5f
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
-    final float KP = 0.5f; // 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final float KP = 1f; // 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
     final float KI = 0.00001f; // 0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
     final float KD = 0.001f; // 0.001/0.01/0.1 good, 1 too fast, default 33
 //    final int SCALE = 1;  // default 18
@@ -121,7 +121,8 @@ public class Sejway
             
             leftMotor.setPower(power);
             rightMotor.setPower(power);
-            if (pid_val >= 0) {
+//            if (pid_val >= 0) {
+            if (pid_val < 0) {
 //                MotorPort.B.controlMotor(power, BasicMotorPort.FORWARD);
 //                MotorPort.C.controlMotor(power, BasicMotorPort.FORWARD);
             	leftMotor.forward();
