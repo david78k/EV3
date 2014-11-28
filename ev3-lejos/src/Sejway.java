@@ -47,17 +47,23 @@ public class Sejway
 	public static void main(String[] args) 
 	{
 		Sejway sej = new Sejway();
-//		sej.getBalancePos();
-		sej.pidControl();
-		sej.shutDown();
+		sej.start();
 	}
 	
-    public Sejway() 
-    {
+    public void start() {
 //        ls = new LightSensor(SensorPort.S2, true);
     	gyro.reset();
+//		sej.getBalancePos();
+    	pidControl();
+    	shutDown();
+    	
+    	try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     }
-	
+    
     /**
 	 * verified
 	 * average of 5 samples of angular velocity
@@ -111,11 +117,11 @@ public class Sejway
             int base_power = 20;
 //            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100]
             power = base_power + (power * (100 - base_power)) / 100; // [10,100]
-            System.out.println(pid_val + " " + power);
+            System.out.println(normVal + " " + pid_val + " " + power);
             
             leftMotor.setPower(power);
             rightMotor.setPower(power);
-            if (pid_val > 0) {
+            if (pid_val >= 0) {
 //                MotorPort.B.controlMotor(power, BasicMotorPort.FORWARD);
 //                MotorPort.C.controlMotor(power, BasicMotorPort.FORWARD);
             	leftMotor.forward();
