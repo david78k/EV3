@@ -28,11 +28,11 @@ public class Sejway
 //	private static final float Kp = 0.5f;  // default 0.5f
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
-    final float KP = 3; // 5 better, 1 bit slow, 10 good, 15/20 too fast, default 28
-    final float KI = 0.01f; // 0.01 better, 0.1 good, 0.5/1 too fast, default 4
-    final float KD = 0.001f; // 0.01/0.1 good, 1 too fast, default 33
+    final float KP = 3f; // 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final float KI = 0.00001f; // 0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
+    final float KD = 0.001f; // 0.001/0.01/0.1 good, 1 too fast, default 33
 //    final int SCALE = 1;  // default 18
-    final int base_power = 20;
+    final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
 
 //    LightSensor ls;
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
@@ -72,15 +72,16 @@ public class Sejway
 		float filter = 0;
 
 		// get 5 samples
-		float[] sample = new float[5];
+		int sample_size = 1;
 		int offset = 0;
-		gyro.getRateMode().fetchSample(sample, offset);
-//		gyro.getAngleMode().fetchSample(sample, offset );
-		for(int i = 0; i < 5; i ++)
+		float[] sample = new float[sample_size];
+//		gyro.getRateMode().fetchSample(sample, offset);
+		gyro.getAngleMode().fetchSample(sample, offset);
+		for(int i = 0; i < sample_size; i ++)
 			filter += sample[i];
 //			filter = ev3.getAngularVelocity () + filter;
 		
-		return filter / 5f;
+		return filter / sample_size;
 	}
 	
     public void pidControl() 
