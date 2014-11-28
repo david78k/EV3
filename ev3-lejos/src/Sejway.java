@@ -29,9 +29,10 @@ public class Sejway
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
     final float KP = 3; // 5 better, 1 bit slow, 10 good, 15/20 too fast, default 28
-    final float KI = 0.5f; // 0.1 good, 1 too fast, default 4
-    final int KD = 0; // default 33
+    final float KI = 0.01f; // 0.01 better, 0.1 good, 0.5/1 too fast, default 4
+    final float KD = 0.001f; // 0.01/0.1 good, 1 too fast, default 33
 //    final int SCALE = 1;  // default 18
+    final int base_power = 20;
 
 //    LightSensor ls;
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
@@ -113,7 +114,6 @@ public class Sejway
 
             // Power derived from PID value:
             int power = Math.abs(pid_val);
-            int base_power = 20;
 //            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100]
             power = base_power + (power * (100 - base_power)) / 100; // [10,100]
             System.out.println(normVal + " " + pid_val + " " + power);
