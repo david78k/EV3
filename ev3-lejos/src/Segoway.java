@@ -35,7 +35,8 @@ import lejos.robotics.navigation.Ballbot;
  * @author BB
  *
  */
-public class Segoway extends Thread { // TODO: Thread should be a private inner class.
+//public class Segoway extends Thread { // TODO: Thread should be a private inner class.
+public class Segoway implements Runnable{ // TODO: Thread should be a private inner class.
 
 	// Motors and gyro:
 //	private EV3GyroSensor gyro; 
@@ -165,6 +166,8 @@ public class Segoway extends Thread { // TODO: Thread should be a private inner 
 
 		Segoway segway = new Segoway(left, right, gyro, wheelDiameter);
 //		lejos.robotics.navigation.Ballbot bb = new Ballbot(xMotor, xGyro, yMotor, yGyro, rollerDiameter)
+		Thread t1 = new Thread(segway);
+		t1.start();
 	}
 	
 	/**
@@ -198,8 +201,8 @@ public class Segoway extends Thread { // TODO: Thread should be a private inner 
 		startBeeps();
 		
 		// Start balance thread
-		this.setDaemon(true);
-		this.start();		
+//		this.setDaemon(true);
+//		this.start();		
 	}
 
 	/**

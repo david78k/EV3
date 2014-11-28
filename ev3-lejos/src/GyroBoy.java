@@ -12,8 +12,8 @@ import lejos.utility.Stopwatch;
 
 public class GyroBoy
 {
-//	boolean DEBUG = true;
-	boolean DEBUG = false;
+//	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
