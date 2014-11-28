@@ -191,7 +191,7 @@ public class GyroBoy
 
 				// Wait: verified
 				// Timer >= dt, elapsedTime
-				int elapsedTime = stopwatch.elapsed(); // 72ms
+				int elapsedTime = stopwatch.elapsed(); // 
 //				System.out.println(elapsedTime + " " + totalwatch.elapsed());
 				if(elapsedTime < (int)(dt * 1000f))
 					sleep((int)(dt * 1000f) - elapsedTime);
@@ -472,8 +472,6 @@ public class GyroBoy
 		try {
 			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//			System.out.println("sleep interrupted");
 			e.printStackTrace(writer);
 			writer.flush();
 		}

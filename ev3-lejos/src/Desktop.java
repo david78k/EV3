@@ -1,7 +1,7 @@
-import tool.Tool4Robot;
-import tool.Tool4Throwable;
+//import tool.Tool4Robot;
+//import tool.Tool4Throwable;
 import lejos.hardware.Button;
-import lejos.hardware.ButtonListener;
+//import lejos.hardware.ButtonListener;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.Motor;
@@ -29,6 +29,7 @@ import lejos.utility.Delay;
  * @since 1.0
  */
 
+/*
 public class DeskTop implements ButtonListener {
 
    private DifferentialPilot robot;
@@ -39,10 +40,10 @@ public class DeskTop implements ButtonListener {
 
    private Tool4Robot t4r;
 
-   /**
+   *//**
     * The constructor <CODE>DeskTop</CODE> creates a new instance(object) of the class.
     * @since 1.0
-    */
+    *//*
    public DeskTop() {
 
       try {
@@ -92,10 +93,10 @@ public class DeskTop implements ButtonListener {
       }
    }
 
-   /**
+   *//**
     * The method <CODE>avoid</CODE> avoids an obstacle.
     * @since 1.0
-    */
+    *//*
    public void avoid() {
       robot.stop();
       Button.LEDPattern(Tool4Robot.RED_ON); 
@@ -120,10 +121,10 @@ public class DeskTop implements ButtonListener {
       robot.forward();
    }
    
-   /**
+   *//**
     * The method <CODE>go</CODE> lets the robot move.
     * @since 1.0
-    */
+    *//*
    public void go() {
       
       LCD.drawString("go...             ", 0, 3);
@@ -166,11 +167,11 @@ public class DeskTop implements ButtonListener {
       }
    }
 
-   /**
+   *//**
     * The method <CODE>main</CODE> starts the program.
     * @param args the command line arguments.
     * @since 1.0
-    */
+    *//*
    public static void main(String[] args) {
       DeskTop dt = new DeskTop();
       dt.go();
@@ -190,3 +191,4 @@ public class DeskTop implements ButtonListener {
    }
 
 }
+*/
