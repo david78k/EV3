@@ -4,6 +4,14 @@
 //import lejos.nxt.NXTMotor;
 //import lejos.nxt.SensorPort;
 //import lejos.nxt.addon.GyroSensor;
+import lejos.hardware.motor.NXTMotor;
+import lejos.hardware.port.MotorPort;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.robotics.EncoderMotor;
+import lejos.robotics.Gyroscope;
+import lejos.robotics.GyroscopeAdaptor;
+import lejos.robotics.SampleProvider;
 import lejos.robotics.navigation.Move;
 import lejos.robotics.navigation.MoveListener;
 import lejos.robotics.navigation.MoveProvider;
@@ -20,21 +28,24 @@ import lejos.robotics.navigation.MoveProvider;
  * @author BB
  *
  */
-public class SegwayPilotDemo implements MoveListener {
+public class SegowayPilotDemo implements MoveListener {
 
 	public static void main(String [] args) throws InterruptedException {
 		NXTMotor left = new NXTMotor(MotorPort.B);
 		NXTMotor right = new NXTMotor(MotorPort.C);
 		
-		GyroSensor g = new GyroSensor(SensorPort.S1);
+//		GyroSensor g = new GyroSensor(SensorPort.S1);
+		SampleProvider gyrosampler = new EV3GyroSensor(SensorPort.S2).getRateMode();
+		float gyrofreq = gyrosampler.sampleSize();
+		Gyroscope gyro = new GyroscopeAdaptor(gyrosampler, gyrofreq);
 				
 		// The track width is for the AnyWay. Make sure to use the appropriate wheel size.
-		SegowayPilot pilot = new SegowayPilot(left, right, g, SegowayPilot.WHEEL_SIZE_NXT2, 10.45); 
+		SegowayPilot pilot = new SegowayPilot(left, right, gyro, SegowayPilot.WHEEL_SIZE_NXT2, 10.45); 
 		
 		// If the robot is tippy, try slowing down the speed:
 		pilot.setTravelSpeed(80);
 		
-		MoveListener listy = new SegwayPilotDemo();
+		MoveListener listy = new SegowayPilotDemo();
 		pilot.addMoveListener(listy);
 		
 		// Draw three squares
