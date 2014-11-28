@@ -31,8 +31,8 @@ import lejos.robotics.navigation.MoveProvider;
 public class SegowayPilotDemo implements MoveListener {
 
 	public static void main(String [] args) throws InterruptedException {
-		NXTMotor left = new NXTMotor(MotorPort.B);
-		NXTMotor right = new NXTMotor(MotorPort.C);
+		NXTMotor left = new NXTMotor(MotorPort.A);
+		NXTMotor right = new NXTMotor(MotorPort.D);
 		
 //		GyroSensor g = new GyroSensor(SensorPort.S1);
 		SampleProvider gyrosampler = new EV3GyroSensor(SensorPort.S2).getRateMode();
