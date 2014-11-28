@@ -114,9 +114,9 @@ public class GyroBoy
 			while (!complete) {
 				steering = 0;
 				sleep (drive_sleep);
-				steering = -1*STEERING;
-				sleep (drive_sleep);
 				steering = STEERING;
+				sleep (drive_sleep);
+				steering = -1*STEERING;
 				sleep (drive_sleep);
 			}
 		}
