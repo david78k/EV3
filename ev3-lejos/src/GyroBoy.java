@@ -8,7 +8,6 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.robotics.EncoderMotor;
-import lejos.utility.DebugMessages;
 import lejos.utility.Stopwatch;
 
 public class GyroBoy
@@ -21,17 +20,18 @@ public class GyroBoy
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
 	File logfile = new File("/home/root/gyroboy.log");
 
-	private static final float Kp = 0.5f;
-	private static final float Ki = 11;
-	private static final float Kd = 0.005f;
+	private static final float Kp = 0.5f;  // default 0.5f
+	private static final float Ki = 11;   // default 11
+	private static final float Kd = 0.005f; // default 0.005f
 
 	private static final float gain_angular_velocity = 1.3f; // for theta_hat
 	private static final float gain_angle = 25;		// for theta
-	private static final float gain_motor_speed = 75;	// for y_hat
-	private static final float gain_motor_position = 350;	// for y
+	private static final float gain_motor_speed = 75;	// for y_hat, default 75
+	private static final float gain_motor_position = 350;	// for y, default 350
 
 	private static final int max_iter = 50000; // 50000 for sleep 7 seconds
 	private static final int drive_sleep = 7000; // milliseconds, default = 7000
+	private static final int DRIVE_SPEED = 30;
 
 	//boolean sound = false;
 	boolean sound = true;
@@ -59,6 +59,7 @@ public class GyroBoy
 //	int max_acceleration = 0;
 
 	private static final float radius_const = 57.3f;
+
 	float acc_err = 0, prev_err = 0;
 
 	boolean complete = false;
@@ -111,11 +112,11 @@ public class GyroBoy
 
 			//			while (true) {
 			while (!complete) {
-//				speed = 0;
-//				sleep (drive_sleep);
-				speed = -20;
+				speed = 0;
 				sleep (drive_sleep);
-				speed = 20;
+				speed = -1*DRIVE_SPEED;
+				sleep (drive_sleep);
+				speed = DRIVE_SPEED;
 				sleep (drive_sleep);
 			}
 		}
