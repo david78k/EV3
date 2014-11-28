@@ -219,7 +219,7 @@ public class SegowayPilot extends Segoway implements ArcRotateMoveController {
 	private long arc_target_tacho_avg; // Global for the target, used by calcXxxNotify()
 	private double arc_target_angle; // Global for the target, used by calcArcNotify()
 
-	public void stop() {
+/*	public void stop() {
 		// Get the average tacho distance it was supposed to travel (for arc calculation) 
 		arc_target_tacho_avg = left_start_tacho - left_tacho_target;
 		arc_target_tacho_avg += right_start_tacho - right_tacho_target;
@@ -244,7 +244,7 @@ public class SegowayPilot extends Segoway implements ArcRotateMoveController {
 		else
 			calcTravelNotify();
 		//try {Thread.sleep(move_delay);} catch (InterruptedException e) {}
-	}
+	}*/
 
 	/**
 	 * This method calculates the total distance traveled in straight lines.
