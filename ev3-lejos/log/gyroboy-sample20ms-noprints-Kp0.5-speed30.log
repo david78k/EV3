@@ -1,0 +1,19 @@
+initializing ...
+calibrating ...
+gyroRate:0.00
+driving ...
+refpos = 0.0, dt = 0.02, Kp = 0.5, Ki = 11.0, Kd = 0.005
+iter	speed	ang_vel	ang	sensor	avg_pwr	offset	refpos	mspeed	powerA	powerD	extra	pwr_b	pwr_c
+avg_pwr:961.67
+ERROR
+java.lang.InterruptedException: sleep interrupted
+	at java.lang.Thread.sleep(Native Method)
+	at GyroBoy.sleep(GyroBoy.java:473)
+	at GyroBoy.errors(GyroBoy.java:464)
+	at GyroBoy$Balancer.run(GyroBoy.java:175)
+	at java.lang.Thread.run(Thread.java:745)
+Iteration:392
+TotalTime:8689ms
+AvgTime:22.17ms
+iter	speed	ang_vel	ang	sensor	avg_pwr	offset	refpos	mspeed	powerA	powerD	extra	pwr_b	pwr_c
+392	-30.00	35.09	9.94	329.35	961.67	0.10	-0.07	0.01
