@@ -91,13 +91,88 @@ public class Segway
 	private static final int max_iter = 10;
 //	EV3Brick ev3 = new EV3Brick();
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
-//  private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
 	
 	//GLOBAL VARIABLE SETUP
-	float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
+//	float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
+	float mean_reading;
 
+	///////////////////////////
+	//ADVANCED USER CONTROL
+	///////////////////////////
+
+	/*
+	The following values can be modified for advanced control. Many users will not use these features,
+	which is why I do not require these to be set in the main program. You can just modify them here.
+	if you are unsure about what they do, just leave them at the default value.
+	 */
+
+	// Set gearing down ratio between motor and wheels (e.g. 5x slow down: 40z / 8z = 5)
+	// The default is 1, no gearing down.
+	float gear_down_ratio = 1;
+
+	// Set the time each loop cycle should last. You can set it up to 0.03 seconds or even higher, if you really
+	// need to. If you add code to the control loop below (such as to read another sensor), make sure that
+	// all code can run in under dt seconds. If it takes more time, set dt to a higher value.
+	// Default is 0.010 seconds (10 miliseconds).
+	float dt = 0.010f;
+
+	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
+	float gn_dth_dt = 0.23f;
+	float gn_th = 25.00f;
+	float gn_y = 272.8f;
+	float gn_dy_dt = 24.6f;
+	float kp = 0.0336f;
+	float ki = 0.2688f;
+	float kd = 0.000504f;
+
+	///////////////////////////
+	//END ADVANCED USER CONTROL
+	///////////////////////////
+
+	//MOTOR SETUP
+	int motorB = 1;
+	int motorC = 2;
+	int mtrNoReg = 0;
+	int[] nMotorPIDSpeedCtrl = new int[4];
+//	nMotorPIDSpeedCtrl[motorB] = mtrNoReg;
+//	nMotorPIDSpeedCtrl[motorC] = mtrNoReg;
+	int[] nMotorEncoder = new int[4];
+//	nMotorEncoder[motorC] = 0;
+//	nMotorEncoder[motorB] = 0;
+	int[] motor = new int[4];
+
+	//MATH private static finalANTS
+	private static final float radius = wheel_diameter/1000;
+	private static final float degtorad = (float)Math.PI/180;
+
+	//SETUP VARIABLES FOR CALCULATIONS
+	float u = 0;                    // Sensor Measurement (raw)
+	float th = 0,//Theta            // Angle of robot (degree)
+			dth_dt = 0;//dTheta/dt    // Angular velocity of robot (degree/sec)
+	float e = 0,//Error             // Sum of four states to be kept zero: th, dth_dt, y, dy_dt.
+			de_dt = 0,//dError/dt     // Change of above error
+			_edt = 0,//Integral Error // Accumulated error in time
+			e_prev = 0;//Previous Error/ Error found in previous loop cycle
+	float pid = 0;                  // SUM OF PID CALCULATION
+	float y = 0,//y                     // Measured Motor position (degrees)
+			dy_dt = 0,//dy/dt             // Measured motor velocity (degrees/sec)
+			v = 0,//velocity          // Desired motor velocity (degrees/sec)
+			y_ref = 0;//reference pos // Desired motor position (degrees)
+	int motorpower = 0,             // Power ultimately applied to motors
+			last_steering = 0,          // Steering value in previous cycle
+			straight = 0,               // Average motor position for synchronizing
+			d_pwr = 0;                  // Change in power required for synchronizing
+	private static final int n_max = 7;            // Number of measurement used for floating motor speed average
+	int n = 0, n_comp = 0;           // Intermediate variables needed to compute measured motor speed
+	int[] encoder = new int[n_max];                 // Array containing last n_max motor positions
+	
+	public static void main (String[] args) {
+		Segway segway = new Segway();
+		segway.start();
+	}
+	
 	public Segway ()
 	{
 	}
@@ -126,50 +201,10 @@ public class Segway
 			System.out.println("start balancing ...");
 			starting_balancing_task = true;
 
-			///////////////////////////
-			//ADVANCED USER CONTROL
-			///////////////////////////
-
-			/*
-			The following values can be modified for advanced control. Many users will not use these features,
-			which is why I do not require these to be set in the main program. You can just modify them here.
-			if you are unsure about what they do, just leave them at the default value.
-			 */
-
-			// Set gearing down ratio between motor and wheels (e.g. 5x slow down: 40z / 8z = 5)
-			// The default is 1, no gearing down.
-			gear_down_ratio = 1;
-
-			// Set the time each loop cycle should last. You can set it up to 0.03 seconds or even higher, if you really
-			// need to. If you add code to the control loop below (such as to read another sensor), make sure that
-			// all code can run in under dt seconds. If it takes more time, set dt to a higher value.
-			// Default is 0.010 seconds (10 miliseconds).
-			dt = 0.010f;
-
-			// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
-			gn_dth_dt = 0.23f;
-			gn_th = 25.00f;
-			gn_y = 272.8f;
-			gn_dy_dt = 24.6f;
-			kp = 0.0336f;
-			ki = 0.2688f;
-			kd = 0.000504f;
-
-			///////////////////////////
-			//END ADVANCED USER CONTROL
-			///////////////////////////
-
-			//MOTOR SETUP
-			int motorB = 1;
-			int motorC = 2;
-			int mtrNoReg = 0;
-			int[] nMotorPIDSpeedCtrl = new int[4];
 			nMotorPIDSpeedCtrl[motorB] = mtrNoReg;
 			nMotorPIDSpeedCtrl[motorC] = mtrNoReg;
-			int[] nMotorEncoder = new int[4];
 			nMotorEncoder[motorC] = 0;
 			nMotorEncoder[motorB] = 0;
-			int[] motor = new int[4];
 
 			//		ev3.resetMotorATachoCount ();
 			//		ev3.resetMotorDTachoCount ();
@@ -182,52 +217,29 @@ public class Segway
 			int nSensorsDefined = 0;
 			mean_reading = 0;
 			/*
-	#ifdef HiTechnic_Gyro
-	    SensorType[Gyro] = sensorRawValue;
-	    // The following sets the average HiTechnic sensor value. If you know the average, you can avoid the calibration
-	    // next time like so: mean_reading = 593.82; (if that's your sensor average).
-	    mean_reading = calibrate_hitechnic();
-	    nSensorsDefined++;
-	#endif
-	#ifdef MindSensors_IMU
-	  int   ux,uy,uz;									// Mindsensors Sensor Measurement
-	  mean_reading = 0;
-	  SensorType[Gyro] = sensorI2CCustomFastSkipStates;
-	  wait1Msec(500);
-		MSIMUsetGyroFilter(Gyro, 0x00);
-		wait1Msec(1000);
-	  nSensorsDefined++;
-	#endif
-	if(nSensorsDefined != 1){
-	  nxtDisplayTextLine(0,"Check Sensor");
-	  nxtDisplayTextLine(1,"definition!");
-	  wait1Msec(5000);StopAllTasks();
-	}
+			#ifdef HiTechnic_Gyro
+			    SensorType[Gyro] = sensorRawValue;
+			    // The following sets the average HiTechnic sensor value. If you know the average, you can avoid the calibration
+			    // next time like so: mean_reading = 593.82; (if that's your sensor average).
+			    mean_reading = calibrate_hitechnic();
+			    nSensorsDefined++;
+			#endif
+			#ifdef MindSensors_IMU
+			  int   ux,uy,uz;									// Mindsensors Sensor Measurement
+			  mean_reading = 0;
+			  SensorType[Gyro] = sensorI2CCustomFastSkipStates;
+			  wait1Msec(500);
+				MSIMUsetGyroFilter(Gyro, 0x00);
+				wait1Msec(1000);
+			  nSensorsDefined++;
+			#endif
+			if(nSensorsDefined != 1){
+			  nxtDisplayTextLine(0,"Check Sensor");
+			  nxtDisplayTextLine(1,"definition!");
+			  wait1Msec(5000);StopAllTasks();
+			}
 			 */
-			//MATH private static finalANTS
-			private static final float radius = wheel_diameter/1000;
-			private static final float degtorad = (float)Math.PI/180;
-
-			//SETUP VARIABLES FOR CALCULATIONS
-			float u = 0;                    // Sensor Measurement (raw)
-			float th = 0,//Theta            // Angle of robot (degree)
-					dth_dt = 0;//dTheta/dt    // Angular velocity of robot (degree/sec)
-			float e = 0,//Error             // Sum of four states to be kept zero: th, dth_dt, y, dy_dt.
-					de_dt = 0,//dError/dt     // Change of above error
-					_edt = 0,//Integral Error // Accumulated error in time
-					e_prev = 0;//Previous Error/ Error found in previous loop cycle
-			float pid = 0;                  // SUM OF PID CALCULATION
-			float y = 0,//y                     // Measured Motor position (degrees)
-					dy_dt = 0,//dy/dt             // Measured motor velocity (degrees/sec)
-					v = 0,//velocity          // Desired motor velocity (degrees/sec)
-					y_ref = 0;//reference pos // Desired motor position (degrees)
-			int motorpower = 0,             // Power ultimately applied to motors
-					last_steering = 0,          // Steering value in previous cycle
-					straight = 0,               // Average motor position for synchronizing
-					d_pwr = 0;                  // Change in power required for synchronizing
-			private static final int n_max = 7;            // Number of measurement used for floating motor speed average
-			int n = 0, n_comp = 0;           // Intermediate variables needed to compute measured motor speed
-			int[] encoder = new int[n_max];                 // Array containing last n_max motor positions
+			
 			//			memset(&encoder[0],0,sizeof(encoder));
 			starting_balancing_task = false;// We're done configuring. Main task now resumes.
 
@@ -242,7 +254,7 @@ public class Segway
 
 				//READ GYRO SENSOR
 				u = ev3.getAngularVelocity ();
-				Thread.Sleep (2);
+				Thread.sleep (2);
 				u = ev3.getAngularVelocity ();
 
 				/*
@@ -321,7 +333,7 @@ public class Segway
 				//				  wait1Msec(1);
 				//				}
 				//				ClearTimer(T4);
-				Thread.Sleep ((int)(dt * 1000));
+				Thread.sleep ((int)(dt * 1000));
 			}
 		}
 	}
