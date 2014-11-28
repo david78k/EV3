@@ -108,9 +108,11 @@ public class Sejway
 
             // Power derived from PID value:
             int power = Math.abs(pid_val);
-//            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 +
-//            power = 25 + (power * 45) / 100; // NORMALIZE POWER
-
+            int base_power = 20;
+//            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100]
+            power = base_power + (power * (100 - base_power)) / 100; // [10,100]
+            System.out.println(pid_val + " " + power);
+            
             leftMotor.setPower(power);
             rightMotor.setPower(power);
             if (pid_val > 0) {
