@@ -31,7 +31,7 @@ public class GyroBoy
 
 	private static final int max_iter = 50000; // 50000 for sleep 7 seconds
 	private static final int drive_sleep = 7000; // milliseconds, default = 7000
-	private static final int DRIVE_SPEED = 30;
+	private static final int DRIVE_SPEED = 20;  // 30 bad, default 20
 
 	//boolean sound = false;
 	boolean sound = true;
