@@ -156,13 +156,13 @@ public class Segoway implements Runnable{ // TODO: Thread should be a private in
 	public static void main(String[] args) {
 //		SampleProvider gyrosampler = new EV3GyroSensor(LocalEV3.get().getPort("S2")).getRateMode();
 		SampleProvider gyrosampler = new EV3GyroSensor(SensorPort.S2).getRateMode();
-		float gyrofreq = 1;
+		float gyrofreq = gyrosampler.sampleSize();
 		
 		EncoderMotor left = new NXTMotor(MotorPort.A);
 		EncoderMotor right= new NXTMotor(MotorPort.D);
 //		EV3GyroSensor gyro = new EV3GyroSensor(LocalEV3.get().getPort("S2"));
 		Gyroscope gyro = new GyroscopeAdaptor(gyrosampler, gyrofreq);
-		double wheelDiameter = 5.6;
+		double wheelDiameter = 5.6; // cm
 
 		Segoway segway = new Segoway(left, right, gyro, wheelDiameter);
 //		lejos.robotics.navigation.Ballbot bb = new Ballbot(xMotor, xGyro, yMotor, yGyro, rollerDiameter)
@@ -225,7 +225,6 @@ public class Segoway implements Runnable{ // TODO: Thread should be a private in
 		//right_motor.flt();
 		
 		gyro.recalibrateOffset();
-//		gyro.reset();
 	}
 
 	/**
@@ -256,11 +255,8 @@ public class Segoway implements Runnable{ // TODO: Thread should be a private in
 		// TODO: The GyroSensor class actually rebaselines for drift ever 5 seconds. This not needed? Or is this method better?
 		// Some of this fine tuning may actually interfere with fine-tuning happening in the hardcoded dIMU and GyroScope code.
 		float gyroRaw;
-		float[] gyrosample = new float[1];
 		
 		gyroRaw = gyro.getAngularVelocity();
-//		gyro.getRateMode().fetchSample(gyrosample, 0);
-//		gyroRaw = gyrosample[0];
 		gOffset = EMAOFFSET * gyroRaw + (1-EMAOFFSET) * gOffset;
 		gyroSpeed = gyroRaw - gOffset; // Angular velocity (degrees/sec)
 
