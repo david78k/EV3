@@ -31,7 +31,7 @@ public class Sejway
 
 //    LightSensor ls;
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
-    private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
+//    private DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
 	
@@ -88,6 +88,7 @@ public class Sejway
 	
     public void pidControl() 
     {
+    	System.out.println("PID control");
         while (!Button.ESCAPE.isDown()) 
         {
 //            int normVal = ls.readNormalizedValue();
@@ -126,8 +127,8 @@ public class Sejway
             } else {
 //                MotorPort.B.controlMotor(power, BasicMotorPort.BACKWARD);
 //                MotorPort.C.controlMotor(power, BasicMotorPort.BACKWARD);
-            	leftMotor.forward();
-            	rightMotor.forward();
+            	leftMotor.backward();
+            	rightMotor.backward();
             }
         }
     }
