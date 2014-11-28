@@ -31,7 +31,7 @@ public class GyroBoy
 
 	private static final int max_iter = 50000; // 50000 for sleep 7 seconds
 	private static final int drive_sleep = 7000; // milliseconds, default = 7000
-	private static final int DRIVE_SPEED = 20;  // 30 bad, default 20
+	private static final int STEERING = 20;  // 30 bad, default 20
 
 	//boolean sound = false;
 	boolean sound = true;
@@ -112,11 +112,11 @@ public class GyroBoy
 
 			//			while (true) {
 			while (!complete) {
-				speed = 0;
+				steering = 0;
 				sleep (drive_sleep);
-				speed = -1*DRIVE_SPEED;
+				steering = -1*STEERING;
 				sleep (drive_sleep);
-				speed = DRIVE_SPEED;
+				steering = STEERING;
 				sleep (drive_sleep);
 			}
 		}
