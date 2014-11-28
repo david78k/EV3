@@ -28,7 +28,7 @@ public class Sejway
 //	private static final float Kp = 0.5f;  // default 0.5f
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
-    final int KP = 8; // default 28
+    final float KP = 0.1f; // default 28
     final int KI = 0; // default 4
     final int KD = 0; // default 33
     final int SCALE = 1;  // default 18
@@ -40,8 +40,8 @@ public class Sejway
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
 	
 	// Global vars:
-	int offset;
-	int prev_error;
+	final static int offset = 0;
+	float prev_error;
 	float int_error;
 	
 	public static void main(String[] args) 
@@ -68,7 +68,7 @@ public class Sejway
 		// get 5 samples
 		float[] sample = new float[5];
 		int offset = 0;
-		gyro.getRateMode().fetchSample(sample, offset );
+		gyro.getRateMode().fetchSample(sample, offset);
 //		gyro.getAngleMode().fetchSample(sample, offset );
 		for(int i = 0; i < 5; i ++)
 			filter += sample[i];
@@ -83,10 +83,10 @@ public class Sejway
         while (!Button.ESCAPE.isDown()) 
         {
 //            int normVal = ls.readNormalizedValue();
-        	int normVal = (int) gyroRate();
+        	float normVal = gyroRate();
 
             // Proportional Error:
-            int error = normVal - offset;
+            float error = normVal - offset;
             // Adjust far and near light readings:
 //            if (error < 0) error = (int)(error * 1.8F);
 			
@@ -95,7 +95,7 @@ public class Sejway
             int_error = (int_error + error);
 			
             // Derivative Error:
-            int deriv_error = error - prev_error;
+            float deriv_error = error - prev_error;
             prev_error = error;
 			
 //            int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error) / SCALE;
@@ -108,7 +108,7 @@ public class Sejway
 
             // Power derived from PID value:
             int power = Math.abs(pid_val);
-            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 +
+//            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 +
 //            power = 25 + (power * 45) / 100; // NORMALIZE POWER
 
             leftMotor.setPower(power);
