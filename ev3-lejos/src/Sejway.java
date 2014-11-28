@@ -28,10 +28,10 @@ public class Sejway
 //	private static final float Kp = 0.5f;  // default 0.5f
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
-    final float KP = 0.1f; // default 28
+    final float KP = 1; // 5 better, 10 good, 15/20 too fast, default 28
     final int KI = 0; // default 4
     final int KD = 0; // default 33
-    final int SCALE = 1;  // default 18
+//    final int SCALE = 1;  // default 18
 
 //    LightSensor ls;
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
@@ -65,7 +65,6 @@ public class Sejway
     }
     
     /**
-	 * verified
 	 * average of 5 samples of angular velocity
 	 */
 	float gyroRate() {
