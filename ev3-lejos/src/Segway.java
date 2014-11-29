@@ -1,4 +1,5 @@
-﻿import lejos.hardware.motor.NXTMotor;
+﻿import lejos.hardware.Button;
+import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
@@ -89,7 +90,7 @@ public class Segway
 	int speed = 0;
 	boolean starting_balancing_task = true;
 	private static final float wheel_diameter = 56;	// in millimeters
-	private static final int max_iter = 1000;
+	private static final int max_iter = 10;
 //	EV3Brick ev3 = new EV3Brick();
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
@@ -262,7 +263,7 @@ public class Segway
 
 			int iter = 0;
 			//			while(true)
-			while(iter ++ < max_iter)
+			while(iter ++ < max_iter || !Button.ESCAPE.isDown())
 			{
 
 				//READ GYRO SENSOR
@@ -334,10 +335,14 @@ public class Segway
 				//ERROR CHECKING OR SHUTDOWN
 //				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
+				System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower);
 //				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 				if(Math.abs(th)>60 || Math.abs(motorpower) > 2000){
 					//				  StopAllTasks();
-					System.out.println ("error");
+					System.out.println ("Error");
+//					System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower 
+//							+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]
+//									);
 //					ev3.stopAll ();
 					leftMotor.flt();
 					rightMotor.flt();
@@ -346,8 +351,8 @@ public class Segway
 
 //				ev3.onMotorA (motor [motorA]);
 //				ev3.onMotorD (motor [motorD]);
-				leftMotor.setPower(motorA);
-				rightMotor.setPower(motorD);
+				leftMotor.setPower(motor[motorA]);
+				rightMotor.setPower(motor[motorD]);
 				
 				//				//WAIT THEN REPEAT
 				//				while(time1[T4] < dt*1000){
