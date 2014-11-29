@@ -2,6 +2,7 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
@@ -37,7 +38,7 @@ public class GyroBoy
 	boolean sound = true;
 
 	float refpos = 0;	// reference position
-	private static final int sample_time = 20;	// 15/20/25/30 good, 40 bad, sample time in milliseconds (ms), default 20
+	private static final int sample_time = 10;	// 15/20/25/30 good, 40 bad, sample time in milliseconds (ms), default 20
 	private static final float dt = sample_time/1000f;	// verified, default 0.02
 	float speed = 0;
 	private static final int wheel_diameter = 55; // in millimeters (mm), default 55
@@ -139,6 +140,7 @@ public class GyroBoy
 			float motor_speed = 0, motor_position = 0, ang_vel = 0, sensor_values = 0, avg_pwr = 0;
 			stopwatch.reset();
 
+//			while (!Button.ESCAPE.isDown() || (++iter < max_iter && !complete)) {
 			while (++iter < max_iter && !complete) {
 				// Position: verified
 				refpos = refpos + (dt * speed * 0.002f);
