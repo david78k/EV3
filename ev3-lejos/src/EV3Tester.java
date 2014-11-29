@@ -55,6 +55,9 @@ public class EV3Tester {
 //		lejos.utility.Timer timer = new Timer(theDelay, el);
 //		Delay.msDelay(2);
 		Delay.msDelay(2000);
+		// ideally the tacho count has to 450 (750 * 0.3 = 225, 225 * 2 seconds = 450)
+		// count in the air = 429 245
+		// count on the table = 340 354 (due to friction)
 		System.out.println(leftMotor.getTachoCount() + " " + rightMotor.getTachoCount());
 		
 		while(!Button.ESCAPE.isDown())
