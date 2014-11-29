@@ -95,7 +95,7 @@ public class Segway
 	private static final float wheel_diameter = 56;	// in millimeters
 	
 	private static final int SPEED = 30;	// default speed
-	private static final int DRIVE = -7;	// default steering -7
+	private static final int DRIVE = 7;	// default steering -7
 	private static final int SAMPLE_SIZE = 2;
 	
 	//GLOBAL VARIABLE SETUP
@@ -295,7 +295,8 @@ public class Segway
 				//CONTROL MOTOR POWER AND STEERING
 				motorpower = 	(int)pid;
 				motor[motorA] = motorpower + d_pwr;
-				motor[motorD] = motorpower - d_pwr;
+				motor[motorD] = motorpower + d_pwr;
+//				motor[motorD] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
 //				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 

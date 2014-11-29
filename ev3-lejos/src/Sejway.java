@@ -28,9 +28,9 @@ public class Sejway
 //	private static final float Kp = 0.5f;  // default 0.5f
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
-    final float KP = 5f; // 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final float KI = 0.00001f; // 0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
-    final float KD = 0.001f; // 0.001/0.01/0.1 good, 1 too fast, default 33
+    final float KP = 3f; // 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final float KI = 0; // 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
+    final float KD = 0; // 0.001/0.01/0.1 good, 1 too fast, default 33
 //    final int SCALE = 1;  // default 18
     final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
 
@@ -66,17 +66,16 @@ public class Sejway
     }
     
     /**
-	 * average of 5 samples of angular velocity
+	 * average of samples of angular velocity
 	 */
 	float gyroRate() {
 		float filter = 0;
 
-		// get 5 samples
+		// get samples
 		int sample_size = 1;
 		int offset = 0;
 		float[] sample = new float[sample_size];
-//		gyro.getRateMode().fetchSample(sample, offset);
-		gyro.getAngleMode().fetchSample(sample, offset);
+		gyro.getRateMode().fetchSample(sample, offset);
 		for(int i = 0; i < sample_size; i ++)
 			filter += sample[i];
 //			filter = ev3.getAngularVelocity () + filter;
@@ -117,7 +116,7 @@ public class Sejway
             int power = Math.abs(pid_val);
 //            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100]
             power = base_power + (power * (100 - base_power)) / 100; // [10,100]
-            System.out.println(normVal + " " + pid_val + " " + power);
+//            System.out.println(normVal + " " + pid_val + " " + power);
             
             int sign = (int) Math.signum(pid_val);
             leftMotor.setPower(sign*power);
@@ -136,6 +135,7 @@ public class Sejway
             	rightMotor.backward();
             }*/
         }
+        System.out.println("complete");
     }
 	
     public void shutDown()
