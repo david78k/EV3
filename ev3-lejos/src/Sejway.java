@@ -32,7 +32,7 @@ public class Sejway
     final float KI = 0.00001f; // 0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
     final float KD = 0.001f; // 0.001/0.01/0.1 good, 1 too fast, default 33
 //    final int SCALE = 1;  // default 18
-    final int base_power = 10; // 30 bit fast, 10 not moving, default 20 good
+    final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
 
 //    LightSensor ls;
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
