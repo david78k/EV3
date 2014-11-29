@@ -85,32 +85,24 @@ You need the sensor driver suite at all times, even if you use the HiTechnic Gyr
 
 public class Segway
 {
-	int steering = 0;
-	int acceleration = 50;
-	int speed = 0;
-	boolean starting_balancing_task = true;
-	private static final float wheel_diameter = 56;	// in millimeters
-	private static final int max_iter = 10;
+	private static final int max_iter = 10000;
 //	EV3Brick ev3 = new EV3Brick();
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
-	Stopwatch stopwatch = new Stopwatch();
 	
+	private static final float wheel_diameter = 56;	// in millimeters
+	
+	private static final int SPEED = 30;	// base speed
 	//GLOBAL VARIABLE SETUP
-//	float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
-	float mean_reading;
-
 	///////////////////////////
 	//ADVANCED USER CONTROL
 	///////////////////////////
-
 	/*
 	The following values can be modified for advanced control. Many users will not use these features,
 	which is why I do not require these to be set in the main program. You can just modify them here.
 	if you are unsure about what they do, just leave them at the default value.
 	 */
-
 	// Set gearing down ratio between motor and wheels (e.g. 5x slow down: 40z / 8z = 5)
 	// The default is 1, no gearing down.
 	private final static float gear_down_ratio = 1;
@@ -130,10 +122,13 @@ public class Segway
 	private final static float ki = 0.2688f;
 	private final static float kd = 0.000504f;
 
+//	float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
+	float mean_reading;
+	Stopwatch stopwatch = new Stopwatch();
+	
 	///////////////////////////
 	//END ADVANCED USER CONTROL
 	///////////////////////////
-
 	//MOTOR SETUP
 	private final static int motorA = 1;
 	private final static int motorD = 2;
@@ -170,6 +165,11 @@ public class Segway
 	private static final int n_max = 7;            // Number of measurement used for floating motor speed average
 	int n = 0, n_comp = 0;           // Intermediate variables needed to compute measured motor speed
 	int[] encoder = new int[n_max];                 // Array containing last n_max motor positions
+
+	int steering = 0;
+	int acceleration = 50;
+	int speed = 0;
+	boolean starting_balancing_task = true;
 	
 	public static void main (String[] args) {
 		Segway segway = new Segway();
@@ -189,8 +189,11 @@ public class Segway
 		System.out.println ("Complete balancing task.");
 
 		steering = -7;
-		speed = 30;
+		speed = SPEED;
 
+		if(Button.ESCAPE.isDown())
+			stopMotors();
+		
 		try {
 			t1.join ();
 		} catch (InterruptedException e) {
@@ -338,7 +341,7 @@ public class Segway
 //						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
 				System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower);
 //				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
-				if(Math.abs(th)>60 || Math.abs(motorpower) > 2000){
+				if(Math.abs(th)>60 || Math.abs(motorpower) > 5000){
 					//				  StopAllTasks();
 					System.out.println ("Error");
 //					System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower 
