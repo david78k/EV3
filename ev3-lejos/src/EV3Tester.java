@@ -34,6 +34,11 @@ public class EV3Tester {
 		tester.sleep(wait);
 	}
 	
+	public void testGyroAndMotors() {
+		System.out.println("Testing Gyro and Motors...");
+		
+	}
+	
 	public void testMotors() {
 		System.out.println("Testing Motors...");
 		
