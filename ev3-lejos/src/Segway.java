@@ -95,7 +95,7 @@ public class Segway
 	private static final float wheel_diameter = 56;	// in millimeters
 	
 	private static final int SPEED = 30;	// default speed
-	private static final int DRIVE = 7;	// default steering -7
+	private static final int DRIVE = -7;	// default steering -7
 	private static final int SAMPLE_SIZE = 2;
 	
 	//GLOBAL VARIABLE SETUP
@@ -243,7 +243,6 @@ public class Segway
 			//			while(true)
 			while(iter ++ < max_iter || !Button.ESCAPE.isDown())
 			{
-
 				//READ GYRO SENSOR
 //				u = ev3.getAngularVelocity ();
 				u = gyroRate(SAMPLE_SIZE);

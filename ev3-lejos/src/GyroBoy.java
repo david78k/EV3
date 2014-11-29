@@ -350,7 +350,6 @@ public class GyroBoy
 		if (max_index <= compare_index)
 			compare_index = 0;
 
-//		enc_val[enc_index] = (ev3.getMotorADegree() + ev3.getMotorDDegree())/2.0f;
 		enc_val[enc_index] = (leftMotor.getTachoCount() + rightMotor.getTachoCount())/2.0f;
 		//			System.out.println (enc_val [enc_index] + " " + enc_val[compare_index] + " " + max_index + " " + dt);
 
@@ -391,21 +390,19 @@ public class GyroBoy
 			new_steering = -50;
 
 		float extra_pwr = 0;
-		if (new_steering == 0) { // always this case
+		if (new_steering == 0) { 
 			int sync_0 = 0;
 
 			if (old_steering != 0) { // +/-STEERING
-//				sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
 				sync_0 = rightMotor.getTachoCount() - leftMotor.getTachoCount();
 			}
-//			extra_pwr = (ev3.getMotorDDegree () - ev3.getMotorADegree () - sync_0) * 0.05f;
 			extra_pwr = (rightMotor.getTachoCount () - leftMotor.getTachoCount() - sync_0) * 0.05f;
 		} else { // never reached
 			extra_pwr = new_steering * (-0.5f);
 		}
 
-		float pwr_c = avg_pwr - extra_pwr;
 		float pwr_b = avg_pwr + extra_pwr;
+		float pwr_c = avg_pwr - extra_pwr;
 		old_steering = new_steering;
 
 		float powerA = (pwr_b * 0.021f / radius);
@@ -419,7 +416,7 @@ public class GyroBoy
 
 	// verified except the interrupting balance loop
 	public void errors(float avg_pwr) {
-		nowOutOfBound = (Math.abs (avg_pwr) > 2000f);
+		nowOutOfBound = (Math.abs (avg_pwr) > 5000f);
 //		nowOutOfBound = (Math.abs (avg_pwr) > 100f);
 
 		// read cur_err
