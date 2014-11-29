@@ -33,7 +33,8 @@ public class EV3Tester {
 		tester.testMotors();
 //		tester.testDifferentialPilot();
 
-		tester.sleep(wait);
+//		tester.sleep(wait);
+		tester.escape();
 	}
 	
 	public void testGyroAndMotors() {
@@ -50,12 +51,15 @@ public class EV3Tester {
 		setPower(power);
 		Delay.msDelay(2);
 		printTachoCounts();
+		
 		power = -30;
 		Delay.msDelay(2);
 		setPower(power);
 		
 		power = 30;
+		setPower(power);
 		Delay.msDelay(2);
+		printTachoCounts();
 		
 		power = 30;
 //		lejos.utility.Timer timer = new Timer(theDelay, el);
@@ -65,8 +69,7 @@ public class EV3Tester {
 		// count on the table = 340 354 (due to friction)
 		printTachoCounts();
 		
-		while(!Button.ESCAPE.isDown())
-			Delay.msDelay(1);
+		escape();
 		floatMotors();
 	}
 	
@@ -86,6 +89,11 @@ public class EV3Tester {
 	void floatMotors() {
 		leftMotor.flt();
 		rightMotor.flt();
+	}
+	
+	void escape() {
+		while(!Button.ESCAPE.isDown())
+			Delay.msDelay(1);
 	}
 	
 	public void testPilot() {
