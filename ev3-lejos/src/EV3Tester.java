@@ -45,34 +45,17 @@ public class EV3Tester {
 	public void testGyro() {
 		System.out.println("Testing Gyro...");
 				
-//		EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2); // 2424ms
+		int size = 5;
+		float[] sample = new float[size]; 
 		
-		watch.reset();
-		angleProvider = gyro.getAngleMode();
-		System.out.println(watch.elapsed() + "ms"); // 20, 6ms, 6ms, 20ms,1ms
-		System.out.println("angleProvider ready."); 
-		sleep(3); // in seconds
-		
-		watch.reset();
+//		watch.reset();
 		gyro.reset();
-		System.out.println(watch.elapsed() + "ms"); // 21, 10ms, 9ms, 12ms, 9ms
-		System.out.println("GyroSensor reset."); 
-		sleep(3); // in seconds
+		gyro.getRateMode().fetchSample(sample, 0);
+		System.out.println("sample size = " + size);
 		
-		watch.reset();
-		float[] sample = new float[angleProvider.sampleSize()]; // sample size 1
-		angleProvider.fetchSample(sample, 0);
-		System.out.println(watch.elapsed() + "ms");  // 30, 32ms, 32ms, 31ms, 4ms
-		System.out.println("sample fetched.");
-		sleep(3); // in seconds
-		
-		watch.reset();
-		System.out.println("sample size = " + angleProvider.sampleSize());
-		System.out.println(watch.elapsed() + "ms");  // 26, 21ms, 13ms, 19ms, 4ms
-		System.out.println("sample fetched.");
-		sleep(3); // 2 seconds
-		
-		System.out.println("sample[0]: " + sample[0]);
+		for (float f : sample) {
+			System.out.printf("sample: %.2f\n", f);
+		}
 	}
 	
 	public void testMotors() {
