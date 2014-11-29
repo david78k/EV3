@@ -14,13 +14,13 @@ import lejos.utility.Stopwatch;
 import lejos.utility.Timer;
 
 public class EV3Tester {
-	private static int wait = 10; // wait time in seconds
 
-//		Port port = LocalEV3.get().getPort("S2");
-//		EV3GyroSensor gyro = new EV3GyroSensor(port);
 	private EncoderMotor leftMotor = new NXTMotor(MotorPort.A);
 	private EncoderMotor rightMotor = new NXTMotor(MotorPort.D);
 	private EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2); // 2424ms
+	private static final int TIMEOUT = 30*1000; // escape timeout in milliseconds
+	private static int wait = 10; // wait time in seconds
+	
 	private static SampleProvider angleProvider;
 	private Stopwatch watch = new Stopwatch();
 	
@@ -29,8 +29,8 @@ public class EV3Tester {
 	
 	public static void main(String[] args) {
 		EV3Tester tester = new EV3Tester();
-//		tester.testGyro();
-		tester.testMotors();
+		tester.testGyro();
+//		tester.testMotors();
 //		tester.testDifferentialPilot();
 
 //		tester.sleep(wait);
@@ -40,6 +40,39 @@ public class EV3Tester {
 	public void testGyroAndMotors() {
 		System.out.println("Testing Gyro and Motors...");
 		
+	}
+	
+	public void testGyro() {
+		System.out.println("Testing Gyro...");
+				
+//		EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2); // 2424ms
+		
+		watch.reset();
+		angleProvider = gyro.getAngleMode();
+		System.out.println(watch.elapsed() + "ms"); // 20, 6ms, 6ms, 20ms,1ms
+		System.out.println("angleProvider ready."); 
+		sleep(3); // in seconds
+		
+		watch.reset();
+		gyro.reset();
+		System.out.println(watch.elapsed() + "ms"); // 21, 10ms, 9ms, 12ms, 9ms
+		System.out.println("GyroSensor reset."); 
+		sleep(3); // in seconds
+		
+		watch.reset();
+		float[] sample = new float[angleProvider.sampleSize()]; // sample size 1
+		angleProvider.fetchSample(sample, 0);
+		System.out.println(watch.elapsed() + "ms");  // 30, 32ms, 32ms, 31ms, 4ms
+		System.out.println("sample fetched.");
+		sleep(3); // in seconds
+		
+		watch.reset();
+		System.out.println("sample size = " + angleProvider.sampleSize());
+		System.out.println(watch.elapsed() + "ms");  // 26, 21ms, 13ms, 19ms, 4ms
+		System.out.println("sample fetched.");
+		sleep(3); // 2 seconds
+		
+		System.out.println("sample[0]: " + sample[0]);
 	}
 	
 	public void testMotors() {
@@ -69,7 +102,7 @@ public class EV3Tester {
 		// count on the table = 340 354 (due to friction)
 		printTachoCounts();
 		
-		escape();
+//		escape();
 		floatMotors();
 	}
 	
@@ -92,8 +125,9 @@ public class EV3Tester {
 	}
 	
 	void escape() {
-		while(!Button.ESCAPE.isDown())
-			Delay.msDelay(1);
+//		while(!Button.ESCAPE.isDown())
+//			Delay.msDelay(1);
+		Button.waitForAnyEvent(TIMEOUT);
 	}
 	
 	public void testPilot() {
@@ -129,8 +163,8 @@ public class EV3Tester {
 //		fail("Not yet implemented");
 	}
 
-	public void testGyro() {
-		System.out.println("Testing GyroSensor...");
+	public void testGyroSampleTime() {
+		System.out.println("Testing GyroSampleTime...");
 				
 //		EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2); // 2424ms
 		
