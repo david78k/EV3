@@ -43,25 +43,47 @@ public class EV3Tester {
 	
 	public void testMotors() {
 		System.out.println("Testing Motors...");
-		leftMotor.resetTachoCount();
-		rightMotor.resetTachoCount();
-		int left = leftMotor.getTachoCount();
-		int right = rightMotor.getTachoCount();
-		System.out.println(left + " " + right);
+		resetTachoCounts();
+		printTachoCounts();
 		
 		int power = 30; // %
-		leftMotor.setPower(power);
-		rightMotor.setPower(power);
+		setPower(power);
+		Delay.msDelay(2);
+		printTachoCounts();
+		power = -30;
+		Delay.msDelay(2);
+		setPower(power);
+		
+		power = 30;
+		Delay.msDelay(2);
+		
+		power = 30;
 //		lejos.utility.Timer timer = new Timer(theDelay, el);
-//		Delay.msDelay(2);
 		Delay.msDelay(2000);
 		// ideally the tacho count has to 450 (750 * 0.3 = 225, 225 * 2 seconds = 450)
-		// count in the air = 429 245
+		// count in the air = 429 445
 		// count on the table = 340 354 (due to friction)
-		System.out.println(leftMotor.getTachoCount() + " " + rightMotor.getTachoCount());
+		printTachoCounts();
 		
 		while(!Button.ESCAPE.isDown())
 			Delay.msDelay(1);
+		floatMotors();
+	}
+	
+	void printTachoCounts() {
+		System.out.println(leftMotor.getTachoCount() + " " + rightMotor.getTachoCount());
+	}
+	
+	void resetTachoCounts() {
+		leftMotor.resetTachoCount();
+		rightMotor.resetTachoCount();
+	}
+	void setPower(int power) {
+		leftMotor.setPower(power);
+		rightMotor.setPower(power);
+	}
+	
+	void floatMotors() {
 		leftMotor.flt();
 		rightMotor.flt();
 	}
