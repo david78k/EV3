@@ -113,35 +113,35 @@ public class Segway
 
 	// Set gearing down ratio between motor and wheels (e.g. 5x slow down: 40z / 8z = 5)
 	// The default is 1, no gearing down.
-	float gear_down_ratio = 1;
+	private final static float gear_down_ratio = 1;
 
 	// Set the time each loop cycle should last. You can set it up to 0.03 seconds or even higher, if you really
 	// need to. If you add code to the control loop below (such as to read another sensor), make sure that
 	// all code can run in under dt seconds. If it takes more time, set dt to a higher value.
 	// Default is 0.010 seconds (10 miliseconds).
-	float dt = 0.010f;
+	private final static float dt = 0.010f;
 
 	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
-	float gn_dth_dt = 0.23f;
-	float gn_th = 25.00f;
-	float gn_y = 272.8f;
-	float gn_dy_dt = 24.6f;
-	float kp = 0.0336f;
-	float ki = 0.2688f;
-	float kd = 0.000504f;
+	private final static float gn_dth_dt = 0.23f;
+	private final static float gn_th = 25.00f;
+	private final static float gn_y = 272.8f;
+	private final static float gn_dy_dt = 24.6f;
+	private final static float kp = 0.0336f;
+	private final static float ki = 0.2688f;
+	private final static float kd = 0.000504f;
 
 	///////////////////////////
 	//END ADVANCED USER CONTROL
 	///////////////////////////
 
 	//MOTOR SETUP
-	int motorA = 1;
-	int motorD = 2;
-	int mtrNoReg = 0;
-	int[] nMotorPIDSpeedCtrl = new int[4];
+	private final static int motorA = 1;
+	private final static int motorD = 2;
+	private final static int mtrNoReg = 0;
+	private final static int[] nMotorPIDSpeedCtrl = new int[4];
 //	nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
 //	nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
-	int[] nMotorEncoder = new int[4];
+	private final static int[] nMotorEncoder = new int[4];
 //	nMotorEncoder[motorD] = 0;
 //	nMotorEncoder[motorA] = 0;
 	int[] motor = new int[4];
