@@ -343,11 +343,12 @@ public class Segway
 
 		// get samples
 //		int sample_size = gyro.getAngleMode().sampleSize();
-		float[] sample = new float[sample_size];
-		gyro.getRateMode().fetchSample(sample, 0);
-		for(int i = 0; i < sample_size; i ++)
-			filter += sample[i];
-
+		float[] sample = new float[1];
+		for(int i = 0; i < sample_size; i ++) {
+			gyro.getRateMode().fetchSample(sample, 0);
+			filter += sample[0];
+		}
+	
 		return filter / sample_size;
 	}
 

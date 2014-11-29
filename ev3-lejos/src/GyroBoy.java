@@ -307,12 +307,11 @@ public class GyroBoy
 		float filter = 0;
 
 		// get 5 samples
-		float[] sample = new float[5];
+		float[] sample = new float[1];
 		int offset = 0;
-		gyro.getRateMode().fetchSample(sample, offset );
-//		gyro.getAngleMode().fetchSample(sample, offset );
 		for(int i = 0; i < 5; i ++)
-			filter += sample[i];
+			gyro.getRateMode().fetchSample(sample, offset );
+			filter += sample[0];
 //			filter = ev3.getAngularVelocity () + filter;
 		
 		return filter / 5f;
