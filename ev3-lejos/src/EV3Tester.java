@@ -1,7 +1,10 @@
 import lejos.hardware.Sound;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.NXTMotor;
+import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.robotics.EncoderMotor;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -11,13 +14,16 @@ import lejos.utility.Stopwatch;
 public class EV3Tester {
 	private static int wait = 10; // wait time in seconds
 
-	private DifferentialPilot p;
 //		Port port = LocalEV3.get().getPort("S2");
 //		EV3GyroSensor gyro = new EV3GyroSensor(port);
+	private EncoderMotor leftMotor = new NXTMotor(MotorPort.A);
+	private EncoderMotor rightMotor = new NXTMotor(MotorPort.D);
 	private EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2); // 2424ms
 	private static SampleProvider angleProvider;
-	private static OdometryPoseProvider opp;
 	private Stopwatch watch = new Stopwatch();
+	
+	private static OdometryPoseProvider opp;
+	private DifferentialPilot p;
 	
 	public static void main(String[] args) {
 		EV3Tester tester = new EV3Tester();
@@ -30,6 +36,11 @@ public class EV3Tester {
 	
 	public void testMotors() {
 		System.out.println("Testing Motors...");
+		
+	}
+	
+	public void testPilot() {
+		System.out.println("Testing Pilot...");
 		
 		watch.reset();
 		DifferentialPilot pilot = new DifferentialPilot(5.6, 9.25, Motor.A, Motor.D);

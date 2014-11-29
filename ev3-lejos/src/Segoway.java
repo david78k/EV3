@@ -201,8 +201,8 @@ public class Segoway extends Thread { // TODO: Thread should be a private inner 
 		startBeeps();
 		
 		// Start balance thread
-		this.setDaemon(true);
-		this.start();		
+//		this.setDaemon(true);
+//		this.start();		
 	}
 
 	/**
@@ -450,7 +450,7 @@ public class Segoway extends Thread { // TODO: Thread should be a private inner 
 
 		Sound.beepSequenceUp();
 		System.out.println("Oops... I fell");
-		System.out.println("tInt ms:");
+		System.out.print("tInt ms:");
 		System.out.println((int)tInterval*1000);
 	} // END OF BALANCING THREAD CODE
 

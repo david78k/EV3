@@ -2,7 +2,6 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
@@ -38,7 +37,7 @@ public class GyroBoy
 	boolean sound = true;
 
 	float refpos = 0;	// reference position
-	private static final int sample_time = 10;	// 15/20/25/30 good, 40 bad, sample time in milliseconds (ms), default 20
+	private static final int sample_time = 20;	// 15/20/25/30 good, 40 bad, sample time in milliseconds (ms), default 20
 	private static final float dt = sample_time/1000f;	// verified, default 0.02
 	float speed = 0;
 	private static final int wheel_diameter = 55; // in millimeters (mm), default 55
@@ -148,7 +147,6 @@ public class GyroBoy
 				// ReadEncoders: verified
 				//functionwatch.Restart();
 				motor_speed = (radius * getMotorSpeed ()) / radius_const;
-//				float motor_position = (radius * (ev3.getMotorADegree () + ev3.getMotorDDegree ()) / 2.0f) / radius_const;
 				motor_position = (radius * (leftMotor.getTachoCount() + rightMotor.getTachoCount())/ 2.0f) / radius_const;
 				//Console.Write(functionwatch.ElapsedMilliseconds + "ms ");
 
@@ -397,7 +395,7 @@ public class GyroBoy
 				sync_0 = rightMotor.getTachoCount() - leftMotor.getTachoCount();
 			}
 			extra_pwr = (rightMotor.getTachoCount () - leftMotor.getTachoCount() - sync_0) * 0.05f;
-		} else { // never reached
+		} else { 
 			extra_pwr = new_steering * (-0.5f);
 		}
 
