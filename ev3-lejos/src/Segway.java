@@ -95,7 +95,7 @@ public class Segway
 	private static final float wheel_diameter = 56;	// in millimeters
 	
 	private static final int SPEED = 30;	// default speed
-	private static final int DRIVE = -7;	// default steering
+	private static final int DRIVE = 7;	// default steering -7
 	
 	//GLOBAL VARIABLE SETUP
 	///////////////////////////
@@ -117,22 +117,22 @@ public class Segway
 	private final static float dt = 0.010f; // 0.003/0.005 good, 0.010 not bad, 0.02 not good
 
 	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
-//	private final static float gn_dth_dt = 0.23f;	// default 0.23f
-//	private final static float gn_th = 25.00f;		// default 25
-//	private final static float gn_y = 272.8f;		// default 272.8
-//	private final static float gn_dy_dt = 24.6f;	// default 24.6
-//	private final static float kp = 0.0336f;		// default 0.0336
-//	private final static float ki = 0.2688f;		// default 0.2688
-//	private final static float kd = 0.00504f;		// default 0.000504
+	private final static float gn_dth_dt = 0.23f;	// default 0.23f
+	private final static float gn_th = 25.00f;		// default 25
+	private final static float gn_y = 272.8f;		// default 272.8
+	private final static float gn_dy_dt = 24.6f;	// default 24.6
+	private final static float kp = 0.0336f;		// default 0.0336
+	private final static float ki = 0.2688f;		// default 0.2688
+	private final static float kd = 0.00504f;		// default 0.000504
 
-	// from GyroBoy
-	private static final float kp = 0.5f;  // default 0.5f
-	private static final float ki = 11;   // default 11
-	private static final float kd = 0.005f; // default 0.005f
-	private static final float gn_dth_dt = 1.3f; // for theta_hat
-	private static final float gn_th = 25;		// for theta
-	private static final float gn_dy_dt = 75;	// for y_hat, default 75
-	private static final float gn_y = 350;	// for y, default 350
+	// from GyroBoy: not working
+//	private static final float kp = 0.5f;  // default 0.5f
+//	private static final float ki = 11;   // default 11
+//	private static final float kd = 0.005f; // default 0.005f
+//	private static final float gn_dth_dt = 1.3f; // for theta_hat
+//	private static final float gn_th = 25;		// for theta
+//	private static final float gn_dy_dt = 75;	// for y_hat, default 75
+//	private static final float gn_y = 350;	// for y, default 350
 	
 //	float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
 	float mean_reading;
@@ -144,13 +144,9 @@ public class Segway
 	//MOTOR SETUP
 	private final static int motorA = 1;
 	private final static int motorD = 2;
-	private final static int mtrNoReg = 0;
-	private final static int[] nMotorPIDSpeedCtrl = new int[4];
-//	nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
-//	nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
+//	private final static int mtrNoReg = 0;
+//	private final static int[] nMotorPIDSpeedCtrl = new int[4];
 	private final static int[] nMotorEncoder = new int[4];
-//	nMotorEncoder[motorD] = 0;
-//	nMotorEncoder[motorA] = 0;
 	int[] motor = new int[4];
 
 	//MATH private static finalANTS
@@ -188,10 +184,6 @@ public class Segway
 		segway.start();
 	}
 	
-	public Segway ()
-	{
-	}
-
 	public void start() {
 		initialize();
 		
@@ -223,47 +215,22 @@ public class Segway
 	void initialize() {
 		starting_balancing_task = true;
 
-		nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
-		nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
-		nMotorEncoder[motorD] = 0;
-		nMotorEncoder[motorA] = 0;
-
 		leftMotor.resetTachoCount();
 		rightMotor.resetTachoCount();
 		
-		// Sensor setup
-		int Gyro = 2;
-		int[] SensorType = new int[5];
-		//			SensorType[Gyro] = ev3.getAngularVelocity();
+//		nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
+//		nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
+		nMotorEncoder[motorD] = 0;
+		nMotorEncoder[motorA] = 0;
 
-		int nSensorsDefined = 0;
+		// Sensor setup
+//		int Gyro = 2;
+//		int[] SensorType = new int[5];
+
+//		int nSensorsDefined = 0;
 		gyro.reset();
 		mean_reading = 0;
-		/*
-		#ifdef HiTechnic_Gyro
-		    SensorType[Gyro] = sensorRawValue;
-		    // The following sets the average HiTechnic sensor value. If you know the average, you can avoid the calibration
-		    // next time like so: mean_reading = 593.82; (if that's your sensor average).
-		    mean_reading = calibrate_hitechnic();
-		    nSensorsDefined++;
-		#endif
-		#ifdef MindSensors_IMU
-		  int   ux,uy,uz;									// Mindsensors Sensor Measurement
-		  mean_reading = 0;
-		  SensorType[Gyro] = sensorI2CCustomFastSkipStates;
-		  wait1Msec(500);
-			MSIMUsetGyroFilter(Gyro, 0x00);
-			wait1Msec(1000);
-		  nSensorsDefined++;
-		#endif
-		if(nSensorsDefined != 1){
-		  nxtDisplayTextLine(0,"Check Sensor");
-		  nxtDisplayTextLine(1,"definition!");
-		  wait1Msec(5000);StopAllTasks();
-		}
-		 */
 		
-		//			memset(&encoder[0],0,sizeof(encoder));
 		starting_balancing_task = false;// We're done configuring. Main task now resumes.
 	}
 	 
