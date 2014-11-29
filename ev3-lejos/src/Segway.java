@@ -96,6 +96,7 @@ public class Segway
 	
 	private static final int SPEED = 30;	// default speed
 	private static final int DRIVE = 7;	// default steering -7
+	private static final int SAMPLE_SIZE = 2;
 	
 	//GLOBAL VARIABLE SETUP
 	///////////////////////////
@@ -209,7 +210,6 @@ public class Segway
 			Thread.sleep(10000);
 		} catch (Exception e) {
 		}
-//		System.out.println("End");
 	}
 
 	void initialize() {
@@ -252,28 +252,17 @@ public class Segway
 
 				//READ GYRO SENSOR
 //				u = ev3.getAngularVelocity ();
-				u = gyroRate();
-				try {
-					Thread.sleep (2);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-				u += gyroRate();
-
-				/*
-				#ifdef HiTechnic_Gyro
-			  u =   SensorRaw[Gyro];wait1Msec(2);
-			  u = u+SensorRaw[Gyro];
-				#endif
-				#ifdef MindSensors_IMU
-					MSIMUreadGyroAxes(Gyro, ux, uy, uz);
-					u = uz*0.0210;
-				#endif
-				////////////
-				 */
+				u = gyroRate(SAMPLE_SIZE);
+//				try {
+//					Thread.sleep (2);
+//				} catch (InterruptedException e1) {
+//					e1.printStackTrace();
+//				}
+//				u += gyroRate();
 
 				//COMPUTE GYRO ANGULAR VELOCITY AND ESTIMATE ANGLE
-				dth_dt = u/2 - mean_reading;
+//				dth_dt = u/2 - mean_reading;
+				dth_dt = u - mean_reading;
 				mean_reading = mean_reading*0.999f + (0.001f*(dth_dt+mean_reading));
 				th = th + dth_dt*dt;
 
@@ -313,8 +302,7 @@ public class Segway
 				//CONTROL MOTOR POWER AND STEERING
 				motorpower = 	(int)pid;
 				motor[motorA] = motorpower + d_pwr;
-				motor[motorD] = motorpower + d_pwr;
-				//				motor[motorD] = motorpower - d_pwr;
+				motor[motorD] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
 //				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
@@ -357,11 +345,11 @@ public class Segway
 	/**
 	 * average of angular velocity samples
 	 */
-	float gyroRate() {
+	float gyroRate(int sample_size) {
 		float filter = 0;
 
 		// get samples
-		int sample_size = gyro.getAngleMode().sampleSize();
+//		int sample_size = gyro.getAngleMode().sampleSize();
 		float[] sample = new float[sample_size];
 		gyro.getRateMode().fetchSample(sample, 0);
 		for(int i = 0; i < sample_size; i ++)
