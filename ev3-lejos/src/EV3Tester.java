@@ -49,12 +49,11 @@ public class EV3Tester {
 		float filter = 0;
 
 		// get 5 samples
-		float[] sample = new float[5];
+		float[] sample = new float[1];
 		int offset = 0;
-		gyro.getRateMode().fetchSample(sample, offset );
-//		gyro.getAngleMode().fetchSample(sample, offset );
 		for(int i = 0; i < 5; i ++)
-			filter += sample[i];
+			gyro.getRateMode().fetchSample(sample, offset );
+			filter += sample[0];
 //			filter = ev3.getAngularVelocity () + filter;
 		
 		return filter / 5f;
@@ -64,18 +63,22 @@ public class EV3Tester {
 		System.out.println("Testing Gyro...");
 				
 		int size = 5;
-		float[] sample = new float[size]; 
+		float[] sample = new float[1]; 
 		System.out.println("sample size = " + size);
 		
 //		watch.reset();
 		gyro.reset();
 		
 		while(!Button.ESCAPE.isDown()) {
-			gyro.getRateMode().fetchSample(sample, 0);
-
-			for (float f : sample) {
-				System.out.printf("sample: %.2f\n", f);
+			float filter = 0;
+			for (int i = 0; i < size; i ++) {
+				gyro.getRateMode().fetchSample(sample, 0);
+				System.out.printf("velocity: %.2f\n", sample[0]);
+				filter += sample[0];
 			}
+			
+			System.out.printf("filter: %.2f\n", filter/size);
+			Delay.msDelay(1000);
 		}
 	}
 	
