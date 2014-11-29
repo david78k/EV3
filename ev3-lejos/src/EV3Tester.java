@@ -18,7 +18,7 @@ public class EV3Tester {
 	private EncoderMotor leftMotor = new NXTMotor(MotorPort.A);
 	private EncoderMotor rightMotor = new NXTMotor(MotorPort.D);
 	private EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2); // 2424ms
-	private static final int TIMEOUT = 30*1000; // escape timeout in milliseconds
+	private static final int TIMEOUT = 300*1000; // escape timeout in milliseconds
 	private static int wait = 10; // wait time in seconds
 	
 	private static SampleProvider angleProvider;
@@ -42,19 +42,40 @@ public class EV3Tester {
 		
 	}
 	
+	/**
+	 * average of 5 samples of angular velocity
+	 */
+	float gyroRate() {
+		float filter = 0;
+
+		// get 5 samples
+		float[] sample = new float[5];
+		int offset = 0;
+		gyro.getRateMode().fetchSample(sample, offset );
+//		gyro.getAngleMode().fetchSample(sample, offset );
+		for(int i = 0; i < 5; i ++)
+			filter += sample[i];
+//			filter = ev3.getAngularVelocity () + filter;
+		
+		return filter / 5f;
+	}
+	
 	public void testGyro() {
 		System.out.println("Testing Gyro...");
 				
 		int size = 5;
 		float[] sample = new float[size]; 
+		System.out.println("sample size = " + size);
 		
 //		watch.reset();
 		gyro.reset();
-		gyro.getRateMode().fetchSample(sample, 0);
-		System.out.println("sample size = " + size);
 		
-		for (float f : sample) {
-			System.out.printf("sample: %.2f\n", f);
+		while(!Button.ESCAPE.isDown()) {
+			gyro.getRateMode().fetchSample(sample, 0);
+
+			for (float f : sample) {
+				System.out.printf("sample: %.2f\n", f);
+			}
 		}
 	}
 	
