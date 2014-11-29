@@ -114,7 +114,7 @@ public class Segway
 	// need to. If you add code to the control loop below (such as to read another sensor), make sure that
 	// all code can run in under dt seconds. If it takes more time, set dt to a higher value.
 	// Default is 0.010 seconds (10 miliseconds).
-	private final static float dt = 0.010f;
+	private final static float dt = 0.010f; // 0.003/0.005 good, 0.010 not bad, 0.02 not good
 
 	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
 	private final static float gn_dth_dt = 0.23f;	// default 0.23f
