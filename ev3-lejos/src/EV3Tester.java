@@ -1,3 +1,4 @@
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.motor.NXTMotor;
@@ -48,13 +49,16 @@ public class EV3Tester {
 		int right = rightMotor.getTachoCount();
 		System.out.println(left + " " + right);
 		
-		int power = 10;
+		int power = 30; // %
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
 //		lejos.utility.Timer timer = new Timer(theDelay, el);
-		Delay.msDelay(2);
+//		Delay.msDelay(2);
+		Delay.msDelay(2000);
 		System.out.println(leftMotor.getTachoCount() + " " + rightMotor.getTachoCount());
 		
+		while(!Button.ESCAPE.isDown())
+			Delay.msDelay(1);
 		leftMotor.flt();
 		rightMotor.flt();
 	}
