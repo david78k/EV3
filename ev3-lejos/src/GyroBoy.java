@@ -190,10 +190,13 @@ public class GyroBoy
 
 				// Wait: verified
 				// Timer >= dt, elapsedTime
-				int elapsedTime = stopwatch.elapsed(); // 
+//				int elapsedTime = stopwatch.elapsed(); // 
 //				System.out.println(elapsedTime + " " + totalwatch.elapsed());
-				if(elapsedTime < (int)(dt * 1000f))
-					sleep((int)(dt * 1000f) - elapsedTime);
+//				if(elapsedTime < (int)(dt * 1000f))
+//					sleep((int)(dt * 1000f) - elapsedTime);
+				while(stopwatch.elapsed() < dt*1000) {
+					sleep(1);
+				}
 				stopwatch.reset();
 			}
 			int totaltime = totalwatch.elapsed();
@@ -235,9 +238,6 @@ public class GyroBoy
 			enc_val [i] = 0;
 		}
 
-//		stopwatch = Stopwatch.StartNew();
-//		ev3.resetMotorATachoCount ();
-//		ev3.resetMotorDTachoCount();
 		stopwatch.reset();
 		leftMotor.resetTachoCount();
 		rightMotor.resetTachoCount();
@@ -382,7 +382,7 @@ public class GyroBoy
 	// read the shared variable steering
 	public void setMotorPower(float avg_pwr) {
 		// limit steering: [-50, 50]
-		int new_steering = steering; // always 0
+		int new_steering = steering; // always 0 or +/-STEERING
 		if (steering > 50)
 			new_steering = 50;
 		if (steering < -50)
@@ -392,7 +392,7 @@ public class GyroBoy
 		if (new_steering == 0) { // always this case
 			int sync_0 = 0;
 
-			if (old_steering != 0) { // always skipped
+			if (old_steering != 0) { // +/-STEERING
 //				sync_0 = ev3.getMotorDDegree() - ev3.getMotorADegree();
 				sync_0 = rightMotor.getTachoCount() - leftMotor.getTachoCount();
 			}
@@ -417,7 +417,8 @@ public class GyroBoy
 
 	// verified except the interrupting balance loop
 	public void errors(float avg_pwr) {
-		nowOutOfBound = (Math.abs (avg_pwr) > 100f);
+		nowOutOfBound = (Math.abs (avg_pwr) > 2000f);
+//		nowOutOfBound = (Math.abs (avg_pwr) > 100f);
 
 		// read cur_err
 
