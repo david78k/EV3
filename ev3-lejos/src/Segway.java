@@ -114,13 +114,13 @@ public class Segway
 	private final static float dt = 0.010f;
 
 	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
-	private final static float gn_dth_dt = 0.23f; // 0.23f
-	private final static float gn_th = 25.00f;
-	private final static float gn_y = 272.8f;
-	private final static float gn_dy_dt = 24.6f;
-	private final static float kp = 0.0336f;
-	private final static float ki = 0.2688f;
-	private final static float kd = 0.000504f;
+	private final static float gn_dth_dt = 0.23f;	// default 0.23f
+	private final static float gn_th = 25.00f;		// default 25
+	private final static float gn_y = 272.8f;		// default 272.8
+	private final static float gn_dy_dt = 24.6f;	// default 24.6
+	private final static float kp = 0.0336f;		// default 0.0336
+	private final static float ki = 0.2688f;		// default 0.2688
+	private final static float kd = 0.000504f;		// default 0.000504
 
 //	float gn_dth_dt,gn_th,gn_y,gn_dy_dt,kp,ki,kd,mean_reading,gear_down_ratio,dt;
 	float mean_reading;
