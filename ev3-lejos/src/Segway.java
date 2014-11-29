@@ -122,7 +122,7 @@ public class Segway
 	private final static float dt = 0.010f;
 
 	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
-	private final static float gn_dth_dt = 0.23f;
+	private final static float gn_dth_dt = 0.23f; // 0.23f
 	private final static float gn_th = 25.00f;
 	private final static float gn_y = 272.8f;
 	private final static float gn_dy_dt = 24.6f;
@@ -196,7 +196,8 @@ public class Segway
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
+		stopMotors();
+		
 		try {
 			Thread.sleep(10000);
 		} catch (Exception e) {
@@ -343,9 +344,7 @@ public class Segway
 //					System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower 
 //							+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]
 //									);
-//					ev3.stopAll ();
-					leftMotor.flt();
-					rightMotor.flt();
+					stopMotors ();
 					break;
 				}
 
@@ -387,6 +386,11 @@ public class Segway
 		return filter / sample_size;
 	}
 
+	void stopMotors() {
+		leftMotor.flt();
+		rightMotor.flt();
+	}
+	
 	/*#ifdef HiTechnic_Gyro
 	int calibrate_hitechnic()
 	{
