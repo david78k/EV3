@@ -10,6 +10,7 @@ import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.utility.Delay;
 import lejos.utility.Stopwatch;
+import lejos.utility.Timer;
 
 public class EV3Tester {
 	private static int wait = 10; // wait time in seconds
@@ -41,7 +42,21 @@ public class EV3Tester {
 	
 	public void testMotors() {
 		System.out.println("Testing Motors...");
+		leftMotor.resetTachoCount();
+		rightMotor.resetTachoCount();
+		int left = leftMotor.getTachoCount();
+		int right = rightMotor.getTachoCount();
+		System.out.println(left + " " + right);
 		
+		int power = 10;
+		leftMotor.setPower(power);
+		rightMotor.setPower(power);
+//		lejos.utility.Timer timer = new Timer(theDelay, el);
+		Delay.msDelay(2);
+		System.out.println(leftMotor.getTachoCount() + " " + rightMotor.getTachoCount());
+		
+		leftMotor.flt();
+		rightMotor.flt();
 	}
 	
 	public void testPilot() {
