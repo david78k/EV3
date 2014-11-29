@@ -109,7 +109,7 @@ public class Segway
 	 */
 	// Set gearing down ratio between motor and wheels (e.g. 5x slow down: 40z / 8z = 5)
 	// The default is 1, no gearing down.
-	private final static float gear_down_ratio = 0.5f;
+	private final static float gear_down_ratio = 1f; // 0.1/2 bad
 
 	// Set the time each loop cycle should last. You can set it up to 0.03 seconds or even higher, if you really
 	// need to. If you add code to the control loop below (such as to read another sensor), make sure that
@@ -295,9 +295,8 @@ public class Segway
 
 				//CONTROL MOTOR POWER AND STEERING
 				motorpower = 	(int)pid;
-				motor[motorA] = motorpower - d_pwr;
+				motor[motorA] = motorpower + d_pwr;
 				motor[motorD] = motorpower - d_pwr;
-//				motor[motorD] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
 //				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
