@@ -85,6 +85,7 @@ You need the sensor driver suite at all times, even if you use the HiTechnic Gyr
 
 public class Segway
 {
+	private static final boolean DEBUG = false;
 	private static final int max_iter = 10000;
 //	EV3Brick ev3 = new EV3Brick();
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
@@ -256,7 +257,8 @@ public class Segway
 	}
 	 
 	class Balancer implements Runnable{
-//		private void balance() {
+
+		//		private void balance() {
 		public void run() {
 			System.out.println("start balancing ...");
 
@@ -339,7 +341,8 @@ public class Segway
 				//ERROR CHECKING OR SHUTDOWN
 //				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
-				System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower);
+				if(DEBUG)
+					System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower);
 //				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 				if(Math.abs(th)>60 || Math.abs(motorpower) > 5000){
 					//				  StopAllTasks();
