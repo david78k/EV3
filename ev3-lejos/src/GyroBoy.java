@@ -74,7 +74,6 @@ public class GyroBoy
 			writer = new PrintWriter(logfile);
 		} catch (FileNotFoundException e) {
 			System.out.println("Can't find " + logfile);
-//			e.printStackTrace();
 		}
 	}
 	
@@ -112,11 +111,11 @@ public class GyroBoy
 
 			//			while (true) {
 			while (!complete) {
-				steering = 0;
+				speed = 0; steering = 0;
 				sleep (drive_sleep);
-				steering = STEERING;
+				speed = 0; steering = STEERING;
 				sleep (drive_sleep);
-				steering = -1*STEERING;
+				speed = 0; steering = -1*STEERING;
 				sleep (drive_sleep);
 			}
 		}
@@ -409,8 +408,6 @@ public class GyroBoy
 
 		float powerA = (pwr_b * 0.021f / radius);
 		float powerD = (pwr_c * 0.021f / radius);
-		//			ev3.setPowerMotorA ((int)speedA);
-		//			ev3.setPowerMotorD ((int)speedD);
 		leftMotor.setPower((int)powerA);
 		rightMotor.setPower((int)powerD);
 		
@@ -440,8 +437,6 @@ public class GyroBoy
 				);*/
 			
 			sleep (100);
-//			ev3.offMotorA ();
-//			ev3.offMotorD ();
 			leftMotor.stop();
 			rightMotor.stop();
 			
