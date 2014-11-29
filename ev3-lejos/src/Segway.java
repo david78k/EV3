@@ -94,7 +94,9 @@ public class Segway
 	
 	private static final float wheel_diameter = 56;	// in millimeters
 	
-	private static final int SPEED = 30;	// base speed
+	private static final int SPEED = 30;	// default speed
+	private static final int DRIVE = -7;	// default steering
+	
 	//GLOBAL VARIABLE SETUP
 	///////////////////////////
 	//ADVANCED USER CONTROL
@@ -189,7 +191,7 @@ public class Segway
 //		while (starting_balancing_task) {}
 		System.out.println ("Complete balancing task.");
 
-		steering = -7;
+		steering = DRIVE;
 		speed = SPEED;
 
 		if(Button.ESCAPE.isDown())
@@ -341,21 +343,21 @@ public class Segway
 				//ERROR CHECKING OR SHUTDOWN
 //				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
 //						+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]);
-				if(DEBUG)
-					System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower);
 //				if(pid.Equals(float.NaN) || Math.Abs(th)>60 || Math.Abs(motorpower) > 2000){
 				if(Math.abs(th)>60 || Math.abs(motorpower) > 5000){
 					//				  StopAllTasks();
 					System.out.println ("Error");
+					System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower);
 //					System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower 
 //							+ "\t" + d_pwr + "\t" + motor[motorA] + "\t" + motor[motorD]
 //									);
 					stopMotors ();
 					break;
+				} else {
+					if(DEBUG)
+						System.out.printf ("%d %.2f %.2f %.0f %d\n", iter, u, th, pid, motorpower);
 				}
-
-//				ev3.onMotorA (motor [motorA]);
-//				ev3.onMotorD (motor [motorD]);
+				
 				leftMotor.setPower(motor[motorA]);
 				rightMotor.setPower(motor[motorD]);
 				
