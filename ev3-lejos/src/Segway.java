@@ -87,7 +87,7 @@ public class Segway
 {
 	private static final boolean DEBUG = false;
 	private static final int max_iter = 10000;
-//	EV3Brick ev3 = new EV3Brick();
+
 	EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
@@ -109,7 +109,7 @@ public class Segway
 	 */
 	// Set gearing down ratio between motor and wheels (e.g. 5x slow down: 40z / 8z = 5)
 	// The default is 1, no gearing down.
-	private final static float gear_down_ratio = 1;
+	private final static float gear_down_ratio = 0.5f;
 
 	// Set the time each loop cycle should last. You can set it up to 0.03 seconds or even higher, if you really
 	// need to. If you add code to the control loop below (such as to read another sensor), make sure that
@@ -218,16 +218,10 @@ public class Segway
 		leftMotor.resetTachoCount();
 		rightMotor.resetTachoCount();
 		
-//		nMotorPIDSpeedCtrl[motorA] = mtrNoReg;
-//		nMotorPIDSpeedCtrl[motorD] = mtrNoReg;
 		nMotorEncoder[motorD] = 0;
 		nMotorEncoder[motorA] = 0;
 
 		// Sensor setup
-//		int Gyro = 2;
-//		int[] SensorType = new int[5];
-
-//		int nSensorsDefined = 0;
 		gyro.reset();
 		mean_reading = 0;
 		
@@ -301,8 +295,9 @@ public class Segway
 
 				//CONTROL MOTOR POWER AND STEERING
 				motorpower = 	(int)pid;
-				motor[motorA] = motorpower + d_pwr;
+				motor[motorA] = motorpower - d_pwr;
 				motor[motorD] = motorpower - d_pwr;
+//				motor[motorD] = motorpower - d_pwr;
 
 				//ERROR CHECKING OR SHUTDOWN
 //				System.out.println (iter + "\t" + u + "\t" + pid + "\t" + th + "\t" + motorpower 
@@ -362,39 +357,4 @@ public class Segway
 		leftMotor.flt();
 		rightMotor.flt();
 	}
-	
-	/*#ifdef HiTechnic_Gyro
-	int calibrate_hitechnic()
-	{
-	 //Function for finding the HiTechnic Gyro offset
-	 int mean_reading = 0, p = 0;
-
-	 while(nNxtButtonPressed == kEnterButton){}
-	 nxtDisplayTextLine(0,"Put Segway Down");
-	 wait1Msec(500);
-	 nxtDisplayTextLine(2,"Calibrating");
-	 nxtDisplayTextLine(3,"HiTechnic Gyro..");
-
-	 for(p = 0; p < 40;p++){
-	    mean_reading = mean_reading + SensorRaw[Gyro];
-	    wait1Msec(50);}
-	 mean_reading = mean_reading/40;
-	 PlayTone(500,50);
-
-	 if(mean_reading < 550 || mean_reading > 640){
-	    nxtDisplayTextLine(4,"FAILED. Exiting...");
-	    nxtDisplayTextLine(6,"Sensor Connected?");
-	    wait1Msec(2000);StopAllTasks();}
-
-	 eraseDisplay();
-	 nxtDisplayTextLine(2,"Done! Hold Segway");
-	 nxtDisplayTextLine(4,"upright and press");
-	 nxtDisplayTextLine(6,"the orange button");
-	 while(nNxtButtonPressed != kEnterButton){}
-	 while(nNxtButtonPressed == kEnterButton){}
-	 eraseDisplay();
-
-	 return(mean_reading);
-	}
-	#endif*/
 }
