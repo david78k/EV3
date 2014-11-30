@@ -28,10 +28,11 @@ public class Sejway
 //	private static final float Kp = 0.5f;  // default 0.5f
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
-    final float KP = 3f; // 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final float KI = 0; // 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
+	// (1.5, 0.01, 0) working
+    final float KP = 1.5f; // 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final float KI = 0.01f; // 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
     final float KD = 0; // 0.001/0.01/0.1 good, 1 too fast, default 33
-//    final int SCALE = 1;  // default 18
+    final int SCALE = 1;  // default 18
     final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
 
 //    LightSensor ls;
@@ -104,8 +105,8 @@ public class Sejway
             float deriv_error = error - prev_error;
             prev_error = error;
 			
-//            int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error) / SCALE;
-            int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error);
+            int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error) / SCALE;
+//            int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error);
 			
             if (pid_val > 100)
                 pid_val = 100;
@@ -119,8 +120,8 @@ public class Sejway
 //            System.out.println(normVal + " " + pid_val + " " + power);
             
             int sign = (int) Math.signum(pid_val);
-            leftMotor.setPower(sign*power);
-            rightMotor.setPower(sign*power);
+            leftMotor.setPower(-1*sign*power);
+            rightMotor.setPower(-1*sign*power);
             /*
 //            if (pid_val >= 0) {
             if (pid_val < 0) {
