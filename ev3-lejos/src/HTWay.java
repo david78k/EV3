@@ -17,7 +17,7 @@
 // From the Edit menu, select Preferences.  Select the Compiler tab,
 // and then NBC/NXC sub-tab and check 'NXT 2.0 compatible firmware.'
 
-public class HTWay {
+public class HTway {
 	// Port Input and Output
 	#define GYRO         IN_1
 	#define IR_RECEIVER  IN_4
