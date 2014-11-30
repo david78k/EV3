@@ -118,13 +118,13 @@ public class Segway
 	private final static float dt = 0.010f; // 0.003/0.005 good, 0.010 not bad, 0.02 not good
 
 	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
+	private final static float kp = 0.1f;		// default 0.0336
+	private final static float ki = 0f;		// default 0.2688
+	private final static float kd = 0f;		// default 0.000504
 	private final static float gn_dth_dt = 0.23f;	// default 0.23f
 	private final static float gn_th = 25.00f;		// default 25
 	private final static float gn_y = 272.8f;		// default 272.8
 	private final static float gn_dy_dt = 24.6f;	// default 24.6
-	private final static float kp = 0.0336f;		// default 0.0336
-	private final static float ki = 0.2688f;		// default 0.2688
-	private final static float kd = 0.00504f;		// default 0.000504
 
 	// from GyroBoy: not working
 //	private static final float kp = 0.5f;  // default 0.5f
