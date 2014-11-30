@@ -108,27 +108,33 @@ public class NNSejway
             // Adjust far and near light readings:
 //            if (error < 0) error = (int)(error * 1.8F);
 
-            int pid_val = (int) pidControl(error);
+            int u = (int) nnControl(error);
+//            int u = (int) pidControl(error);
 			
             // may need to change to check if outbound count > 20
-            if (pid_val > 100)
-                pid_val = 100;
-            if (pid_val < -100)
-                pid_val = -100;
+            if (u > 100)
+                u = 100;
+            if (u < -100)
+                u = -100;
 
             // Power derived from PID value:
-            int power = Math.abs(pid_val);
+            int power = Math.abs(u);
 //            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100]
             power = base_power + (power * (100 - base_power)) / 100; // [10,100]
 //            System.out.println(normVal + " " + pid_val + " " + power);
             
-            int sign = -1 * (int) Math.signum(pid_val);
+            int sign = -1 * (int) Math.signum(u);
             leftMotor.setPower(sign*power);
             rightMotor.setPower(sign*power);
         }
         System.out.println("complete");
     }
 	
+    // neural network control
+    public float nnControl(float error) {
+    	return 0;
+    }
+    
     public float pidControl(float error) 
     {
 //    	System.out.println("PID control");
