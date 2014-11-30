@@ -29,14 +29,16 @@ public class NNSejway
 //  final float KI = 0.222f;
 //  final float KD = 2.3f;
 
-	// (1.5, 0.01, 0) working in oscillation
-	// (1.5, 0.01, 10) working more stable
 	// (1.5, 0.01, 20) working more stable with 1 sample
-	// (10, 0.1, 23) working very stable with 5 samples
-	// (10, 0.2, 23) working robust to disturbance with 5 samples
-    final float KP = 10f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final float KI = 0.2f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
-    final float KD = 23f; // 0/10 working, 0.001/0.01/0.1 good, 1 too fast, default 33
+	// 5 samples
+	// (10, 0.1, 23) working very stable
+	// (10, 0.15, 23) working too much oscillation
+	// (10, 0.2, 23) working robust to disturbance, best 
+	// (13, 0.222, 23) working easily falls down 
+	// (8, 0.222, 23) working unstable 
+    final static float KP = 10f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final static float KI = 0.2f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
+    final static float KD = 23f; // 0/10 working, 0.001/0.01/0.1 good, 1 too fast, default 33
     // PID constants
 //	kp = 0.0336f;
 //	ki = 0.2688f;
@@ -45,8 +47,9 @@ public class NNSejway
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
 //    final int SCALE = 1;  // default 18
-    final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
-
+    final static int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
+    final static int max_power = 200; // default 100
+    
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
@@ -118,10 +121,10 @@ public class NNSejway
             int u = (int) pidControl(error);
 			
             // may need to change to check if outbound count > 20
-            if (u > 100)
-                u = 100;
-            if (u < -100)
-                u = -100;
+            if (u > max_power)
+                u = max_power;
+            if (u < max_power)
+                u = max_power;
 
             // Power derived from PID value:
             int power = Math.abs(u);
