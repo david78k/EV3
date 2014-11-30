@@ -119,6 +119,7 @@ public class Segway
 
 	// Customize PID private static finalants. These variables are global, so you can optionally dynamically change them in your main task.
 	// (0.01, 0.05, 0.0001) good
+	// (0.01, 0.05, 0.0005) no good
 	private final static float kp = 0.01f;		// [0.01,0.1], default 0.0336
 	private final static float ki = 0.05f;		// [0.001, 0.01] default 0.2688
 	private final static float kd = 0.0001f;		// default 0.000504

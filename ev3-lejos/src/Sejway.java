@@ -29,9 +29,11 @@ public class Sejway
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
 	// (1.5, 0.01, 0) working in oscillation
+	// (1.5, 0.01, 10) working more stable
+	// (1.5, 0.01, 20) working more stable
     final float KP = 1.5f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
     final float KI = 0.01f; // 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
-    final float KD = 10f; // 0/10 working, 0.001/0.01/0.1 good, 1 too fast, default 33
+    final float KD = 20f; // 0/10 working, 0.001/0.01/0.1 good, 1 too fast, default 33
 //    final int SCALE = 1;  // default 18
     final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
 
