@@ -29,8 +29,8 @@ public class Sejway
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
 	// (1.5, 0.01, 0) working in oscillation
-    final float KP = 1.5f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final float KI = 0.001f; // 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
+    final float KP = 1f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final float KI = 0.01f; // 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
     final float KD = 0f; // 0 working, 0.001/0.01/0.1 good, 1 too fast, default 33
 //    final int SCALE = 1;  // default 18
     final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
@@ -42,7 +42,7 @@ public class Sejway
 	EncoderMotor rightMotor = new NXTMotor(MotorPort.D); 
 	
 	// Global vars:
-	final static int offset = 0;
+	float offset = 0;
 	float prev_error;
 	float int_error;
 	
@@ -55,6 +55,7 @@ public class Sejway
     public void start() {
 //        ls = new LightSensor(SensorPort.S2, true);
     	gyro.reset();
+    	offset = gyroRate();
 //		sej.getBalancePos();
     	pidControl();
     	shutDown();
@@ -66,14 +67,18 @@ public class Sejway
 		}
     }
     
+    float gyroRate() {
+    	return gyroRate(1);
+    }
+    
     /**
 	 * average of samples of angular velocity
 	 */
-	float gyroRate() {
+    float gyroRate(int sample_size) {
 		float filter = 0;
 
 		// get samples
-		int sample_size = 1;
+//		int sample_size = 1;
 		int offset = 0;
 		float[] sample = new float[sample_size];
 		gyro.getRateMode().fetchSample(sample, offset);
@@ -157,7 +162,7 @@ public class Sejway
     		// NXTway must be balanced.
 //    		offset = ls.readNormalizedValue();
     		LCD.clear();
-    		LCD.drawInt(offset, 2, 4);
+//    		LCD.drawInt(offset, 2, 4);
     		LCD.refresh();
     	}
     }
