@@ -48,7 +48,6 @@ public class NNSejway
 //	private static final float Kd = 0.005f; // default 0.005f
 //    final int SCALE = 1;  // default 18
     final static int base_power = 20; // in percentage, 30 bit fast, 10 not moving, default 20 good
-    final static int max_power = 100; // %, default 100% (max), shouldn't be over 100
     
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
@@ -120,11 +119,12 @@ public class NNSejway
 //            int u = (int) nnControl(error);
             int u = (int) pidControl(error);
 			
+            // power in percentage (%): 100% is max
             // may need to change to check if outbound count > 20
-            if (u > max_power)
-                u = max_power;
-            if (u < max_power)
-                u = max_power;
+            if (u > 100)
+                u = 100;
+            if (u < -100)
+                u = -100;
 
             // Power derived from PID value:
             int power = Math.abs(u);
