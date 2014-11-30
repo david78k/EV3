@@ -102,7 +102,7 @@ public class Sejway
         while (!Button.ESCAPE.isDown()) 
         {
 //            int normVal = ls.readNormalizedValue();
-        	float normVal = gyroRate(5);
+        	float normVal = gyroRate(5);  // [-49, 0]
 //        	float normVal = gyroRate();
 
             // Proportional Error:
@@ -132,9 +132,9 @@ public class Sejway
             power = base_power + (power * (100 - base_power)) / 100; // [10,100]
 //            System.out.println(normVal + " " + pid_val + " " + power);
             
-            int sign = (int) Math.signum(pid_val);
-            leftMotor.setPower(-1*sign*power);
-            rightMotor.setPower(-1*sign*power);
+            int sign = -1 * (int) Math.signum(pid_val);
+            leftMotor.setPower(sign*power);
+            rightMotor.setPower(sign*power);
             /*
 //            if (pid_val >= 0) {
             if (pid_val < 0) {
