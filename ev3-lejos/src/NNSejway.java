@@ -55,6 +55,10 @@ public class NNSejway
 	float prev_error;
 	float int_error;
 	
+	// assume that network is already trained
+	// NeuralNetwork nn = new NeuralNetwork();
+	// NeuralNetwork nn = new NeuralNetwork(weights);
+	
 	public static void main(String[] args) 
 	{
 		NNSejway sej = new NNSejway();
@@ -62,6 +66,7 @@ public class NNSejway
 	}
 	
     public void start() {
+    	// nn.train();
     	gyro.reset();
     	for(int i = 0; i < 20; i ++) {
     		offset += gyroRate();
@@ -108,8 +113,8 @@ public class NNSejway
             // Adjust far and near light readings:
 //            if (error < 0) error = (int)(error * 1.8F);
 
-            int u = (int) nnControl(error);
-//            int u = (int) pidControl(error);
+//            int u = (int) nnControl(error);
+            int u = (int) pidControl(error);
 			
             // may need to change to check if outbound count > 20
             if (u > 100)
@@ -131,7 +136,9 @@ public class NNSejway
     }
 	
     // neural network control
+    // assume that network is already trained and weights are known
     public float nnControl(float error) {
+    	// return nn.test(error);
     	return 0;
     }
     
