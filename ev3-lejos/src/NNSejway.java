@@ -47,8 +47,8 @@ public class NNSejway
 //	private static final float Ki = 11;   // default 11
 //	private static final float Kd = 0.005f; // default 0.005f
 //    final int SCALE = 1;  // default 18
-    final static int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
-    final static int max_power = 200; // default 100
+    final static int base_power = 20; // in percentage, 30 bit fast, 10 not moving, default 20 good
+    final static int max_power = 100; // %, default 100% (max), shouldn't be over 100
     
     EV3GyroSensor gyro = new EV3GyroSensor(SensorPort.S2);
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
@@ -128,8 +128,8 @@ public class NNSejway
 
             // Power derived from PID value:
             int power = Math.abs(u);
-//            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100]
-            power = base_power + (power * (100 - base_power)) / 100; // [10,100]
+//            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100%]
+            power = base_power + (power * (100 - base_power)) / 100; // [10,100%]
 //            System.out.println(normVal + " " + pid_val + " " + power);
             
             int sign = -1 * (int) Math.signum(u);
