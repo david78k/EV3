@@ -71,10 +71,10 @@ public class NNSejway
     public void start() {
     	// nn.train();
     	gyro.reset();
-    	for(int i = 0; i < 20; i ++) {
+    	/*for(int i = 0; i < 20; i ++) {
     		offset += gyroRate();
     	}
-    	offset /= 20f;
+    	offset /= 20f;*/
     	
 //		sej.getBalancePos();
 //    	pidControl();
