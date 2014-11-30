@@ -18,7 +18,7 @@
 // and then NBC/NXC sub-tab and check 'NXT 2.0 compatible firmware.'
 
 public class HTway {
-	// Port Input and Output
+	/*// Port Input and Output
 	#define GYRO         IN_1
 	#define IR_RECEIVER  IN_4
 
@@ -516,6 +516,6 @@ public class HTway {
 		}
 		// Wait to allow user time to see screen.
 		Wait(10000);
-	}
+	}*/
 }
 

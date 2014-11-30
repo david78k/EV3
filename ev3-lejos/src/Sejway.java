@@ -21,13 +21,15 @@ import lejos.robotics.EncoderMotor;
 
 public class Sejway 
 {
-    // PID constants
-//	kp = 0.0336f;
-//	ki = 0.2688f;
-//	kd = 0.000504f;
-//	private static final float Kp = 0.5f;  // default 0.5f
-//	private static final float Ki = 11;   // default 11
-//	private static final float Kd = 0.005f; // default 0.005f
+    // PID constants from others
+//    final float KP = 1.556f;
+//    final float KI = 0.222f;
+//    final float KD = 1.833f;
+
+//  final float KP = 1.7f;
+//  final float KI = 0.222f;
+//  final float KD = 2.3f;
+
 	// (1.5, 0.01, 0) working in oscillation
 	// (1.5, 0.01, 10) working more stable
 	// (1.5, 0.01, 20) working more stable with 1 sample
@@ -35,6 +37,13 @@ public class Sejway
     final float KP = 10f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
     final float KI = 0.1f; // 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
     final float KD = 23f; // 0/10 working, 0.001/0.01/0.1 good, 1 too fast, default 33
+    // PID constants
+//	kp = 0.0336f;
+//	ki = 0.2688f;
+//	kd = 0.000504f;
+//	private static final float Kp = 0.5f;  // default 0.5f
+//	private static final float Ki = 11;   // default 11
+//	private static final float Kd = 0.005f; // default 0.005f
 //    final int SCALE = 1;  // default 18
     final int base_power = 20; // 30 bit fast, 10 not moving, default 20 good
 
@@ -102,7 +111,7 @@ public class Sejway
         while (!Button.ESCAPE.isDown()) 
         {
 //            int normVal = ls.readNormalizedValue();
-        	float normVal = gyroRate(5);  // [-49, 0]
+        	float normVal = gyroRate(5);  // [-440, 440]
 //        	float normVal = gyroRate();
 
             // Proportional Error:
@@ -121,6 +130,7 @@ public class Sejway
 //            int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error) / SCALE;
             int pid_val = (int)(KP * error + KI * int_error + KD * deriv_error);
 			
+            // may need to change to check if outbound count > 20
             if (pid_val > 100)
                 pid_val = 100;
             if (pid_val < -100)
