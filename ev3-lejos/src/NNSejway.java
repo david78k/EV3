@@ -33,8 +33,9 @@ public class NNSejway
 	// (1.5, 0.01, 10) working more stable
 	// (1.5, 0.01, 20) working more stable with 1 sample
 	// (10, 0.1, 23) working very stable with 5 samples
+	// (10, 0.2, 23) working robust to disturbance with 5 samples
     final float KP = 10f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final float KI = 0.1f; // 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 0.5/1 too fast, default 4, depends on sample time dt
+    final float KI = 0.2f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
     final float KD = 23f; // 0/10 working, 0.001/0.01/0.1 good, 1 too fast, default 33
     // PID constants
 //	kp = 0.0336f;
