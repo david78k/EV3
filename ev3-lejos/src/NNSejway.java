@@ -113,11 +113,11 @@ public class NNSejway
 		float filter = 0;
 
 		// get samples
-		int offset = 0;
 		float[] sample = new float[sample_size];
-		gyro.getRateMode().fetchSample(sample, offset);
-		for(int i = 0; i < sample_size; i ++)
-			filter += sample[i];
+		for(int i = 0; i < sample_size; i ++) {
+			gyro.getRateMode().fetchSample(sample, 0);
+			filter += sample[0];
+		}
 		
 		return filter / sample_size;
 	}
