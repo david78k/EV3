@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 import lejos.hardware.Button;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.NXTMotor;
@@ -20,6 +24,7 @@ import lejos.utility.Delay;
 
 public class NNSejway 
 {
+	File logfile = new File("/home/root/sejway.log");
     // PID constants from others
 //    final float KP = 1.556f;
 //    final float KI = 0.222f;
@@ -30,15 +35,19 @@ public class NNSejway
 //  final float KD = 2.3f;
 
 	// (1.5, 0.01, 20) working more stable with 1 sample
-	// 5 samples
+	// 5 samples, base_power 20
 	// (10, 0.1, 23) working very stable
 	// (10, 0.15, 23) working too much oscillation
 	// (10, 0.2, 23) working robust to disturbance, best 
 	// (13, 0.222, 23) working easily falls down 
 	// (8, 0.222, 23) working unstable 
-    final static float KP = 10f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final static float KI = 0.2f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
-    final static float KD = 23f; // 0/10 working, 0.001/0.01/0.1 good, 1 too fast, default 33
+	// (20, 0, 0) can stand alone: 30, 100 are similar, but 20 is best
+	// (15, 0.15, 20) good
+	//5 samples, base_power 0
+	// (10, 0.1, 20) not good
+    final static float KP = 15f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final static float KI = 0.1f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
+    final static float KD = 20f; // 20 good, 30 not good, 0/10 working, default 33
     // PID constants
 //	kp = 0.0336f;
 //	ki = 0.2688f;
@@ -58,6 +67,8 @@ public class NNSejway
 	float prev_error;
 	float int_error;
 	
+	PrintWriter writer;
+	
 	// assume that network is already trained
 	// NeuralNetwork nn = new NeuralNetwork();
 	// NeuralNetwork nn = new NeuralNetwork(weights);
@@ -69,6 +80,13 @@ public class NNSejway
 	}
 	
     public void start() {
+    	
+    	try {
+    		writer = new PrintWriter(logfile);
+    	} catch (FileNotFoundException e) {
+    		System.out.println("Can't find " + logfile);
+    	}
+    		
     	// nn.train();
     	gyro.reset();
     	/*for(int i = 0; i < 20; i ++) {
@@ -129,7 +147,7 @@ public class NNSejway
             // Power derived from PID value:
             int power = Math.abs(u);
 //            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100%]
-            power = base_power + (power * (100 - base_power)) / 100; // [10,100%]
+            power = base_power + (power * (100 - base_power)) / 100; // [base,100%]
 //            System.out.println(normVal + " " + pid_val + " " + power);
             
             int sign = -1 * (int) Math.signum(u);

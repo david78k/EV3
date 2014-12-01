@@ -2,6 +2,7 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
@@ -99,7 +100,7 @@ public class GyroBoy
 			e.printStackTrace();
 		}
 		
-//		Button.ESCAPE.waitForPressAndRelease();
+		Button.ESCAPE.waitForPressAndRelease();
 	}
 
 	// verified
@@ -139,8 +140,8 @@ public class GyroBoy
 			float motor_speed = 0, motor_position = 0, ang_vel = 0, sensor_values = 0, avg_pwr = 0;
 			stopwatch.reset();
 
-//			while (!Button.ESCAPE.isDown() || (++iter < max_iter && !complete)) {
-			while (++iter < max_iter && !complete) {
+//			while (++iter < max_iter && !complete) {
+			while (!Button.ESCAPE.isDown() || (++iter < max_iter && !complete)) {
 				// Position: verified
 				refpos = refpos + (dt * speed * 0.002f);
 
@@ -308,11 +309,10 @@ public class GyroBoy
 
 		// get 5 samples
 		float[] sample = new float[1];
-		int offset = 0;
-		for(int i = 0; i < 5; i ++)
-			gyro.getRateMode().fetchSample(sample, offset );
+		for(int i = 0; i < 5; i ++) {
+			gyro.getRateMode().fetchSample(sample, 0);
 			filter += sample[0];
-//			filter = ev3.getAngularVelocity () + filter;
+		}
 		
 		return filter / 5f;
 	}
