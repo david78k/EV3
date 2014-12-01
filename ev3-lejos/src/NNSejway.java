@@ -45,8 +45,8 @@ public class NNSejway
 	// (15, 0.15, 20) good
 	//5 samples, base_power 0
 	// (10, 0.1, 20) not good
-    final static float KP = 10f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final static float KI = 0.2f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
+    final static float KP = 15f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final static float KI = 0.3f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
     final static float KD = 20f; // 20 good, 30 not good, 0/10 working, default 33
     // PID constants
 //	kp = 0.0336f;
@@ -150,11 +150,12 @@ public class NNSejway
 //            power = 55 + (power * 45) / 100; // Default NORMALIZE POWER 55 + => [55,100%]
             power = base_power + (power * (100 - base_power)) / 100; // [base,100%]
 //            System.out.println(normVal + " " + pid_val + " " + power);
-            writer.println(normVal + " " + u + " " + power);
             
-            int sign = -1 * (int) Math.signum(u);
-            leftMotor.setPower(sign*power);
-            rightMotor.setPower(sign*power);
+            power = (int) Math.signum(u) * power;
+//            power = -1 * (int) Math.signum(u) * power;
+            leftMotor.setPower(power);
+            rightMotor.setPower(power);
+            writer.println(normVal + " " + u + " " + power);
         }
         System.out.println("complete");
         writer.flush();
