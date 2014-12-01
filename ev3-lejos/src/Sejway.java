@@ -94,7 +94,7 @@ public class Sejway
 		float filter = 0;
 
 		// get samples
-		float[] sample = new float[sample_size];
+		float[] sample = new float[1];
 		for(int i = 0; i < sample_size; i ++) {
 			gyro.getRateMode().fetchSample(sample, 0);
 			filter += sample[0];

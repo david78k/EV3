@@ -45,8 +45,8 @@ public class NNSejway
 	// (15, 0.15, 20) good
 	//5 samples, base_power 0
 	// (10, 0.1, 20) not good
-    final static float KP = 15f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
-    final static float KI = 0.3f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
+    final static float KP = 10f; // 1.5f working, 5 better, 1 bit slow, 3/10 good, 15/20 too fast, default 28
+    final static float KI = 0.2f; // 0.5 large oscillation, 0.01 working, 0.00001/0.01 better, 0.001/0.1 good, 1 too fast, default 4, depends on sample time dt
     final static float KD = 20f; // 20 good, 30 not good, 0/10 working, default 33
     // PID constants
 //	kp = 0.0336f;
@@ -113,7 +113,7 @@ public class NNSejway
 		float filter = 0;
 
 		// get samples
-		float[] sample = new float[sample_size];
+		float[] sample = new float[1];
 		for(int i = 0; i < sample_size; i ++) {
 			gyro.getRateMode().fetchSample(sample, 0);
 			filter += sample[0];
@@ -151,8 +151,8 @@ public class NNSejway
             power = base_power + (power * (100 - base_power)) / 100; // [base,100%]
 //            System.out.println(normVal + " " + pid_val + " " + power);
             
-            power = (int) Math.signum(u) * power;
-//            power = -1 * (int) Math.signum(u) * power;
+//            power = (int) Math.signum(u) * power;
+            power = -1 * (int) Math.signum(u) * power;
             leftMotor.setPower(power);
             rightMotor.setPower(power);
             writer.println(normVal + " " + u + " " + power);
