@@ -35,12 +35,13 @@ public class ObjectAvoidance {
 			speed = 50;
 			while(true) {
 				// motor rotation degree > 25
+				// in meter
 				ultra.getDistanceMode().fetchSample(sample, 0);
 				dist = sample[0];
-				System.out.println(dist);
 				Delay.msDelay(200);
-				if(dist <= 30) break;
+				if(dist <= 0.3) break;
 			}
+			System.out.println(dist);
 			// object detected
 			speed = -30;
 			Delay.msDelay(2000);
@@ -48,5 +49,6 @@ public class ObjectAvoidance {
 			// steering = 30;
 			Delay.msDelay(2000);
 		}
+		Delay.msDelay(10000);
 	}
 }
