@@ -33,28 +33,29 @@ import java.lang.Math;
 
 public class MLP
 {
-	
+	//training data
+	// dist, state | L, R, state, delay, sense?
+	// 0.3m, F     | 
 	static double[][] trainInputs = new double[][]{
 		new double[]{0, 1, 1},
-		new double[]{1, 1, 1}
+		new double[]{1, 1, 1}, 
+		new double[]{0, 0, 1}, 
+		new double[]{1, 0, 1}, 
 	};
-	static double[] trainOutputs = new double[]{1, 0};
+	static double[] trainOutputs = new double[]{0, 1, 2, 2};
 	/*	static double[][] trainOutputs = new double[][]{
 		new double[]{1, 0},
 		new double[]{0, 1}
 	};
 	 */
-	//training data
-//	 public static double[][] trainInputs  = new double[numPatterns][numInputs];
-//	public static double[] trainOutputs = new double[numPatterns];
 
 	//user defineable variables
 	public static int numEpochs = 500; //number of training cycles
-	public static int numInputs  = 3; //number of inputs - this includes the input bias
-	public static int numHidden  = 4; //number of hidden units
+	public static int numInputs = trainInputs[0].length; //number of inputs - this includes the input bias
+	public static int numHidden = 4; //number of hidden units
 	public static int numPatterns = trainInputs.length; //number of training patterns
-	public static double LR_IH = 0.7; //learning rate
-	public static double LR_HO = 0.07; //learning rate
+	public static double LR_IH = 0.7; //learning rate, default 0.7
+	public static double LR_HO = 0.07; //learning rate, default 0.07
 
 	//the outputs of the hidden neurons
 	public static double[] hiddenVal  = new double[numHidden];
