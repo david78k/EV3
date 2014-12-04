@@ -80,45 +80,15 @@ public class MLP
 
   train();
 
+  //training has finished
+  //display the results
+  displayResults();
+  
  }
 
 //============================================================
 //********** END OF THE MAIN PROGRAM **************************
 //=============================================================
-
-//************************************
-public static void initData()
-{
-
-   System.out.println("initialising data");
-
-   // the data here is the XOR data
-   // it has been rescaled to the range
-   // [-1][1]
-   // an extra input valued 1 is also added
-   // to act as the bias
-/*
-   trainInputs[0][0]  = 1;
-   trainInputs[0][1]  = -1;
-   trainInputs[0][2]  = 1;//bias
-   trainOutputs[0] = 1;
-
-   trainInputs[1][0]  = -1;
-   trainInputs[1][1]  = 1;
-   trainInputs[1][2]  = 1;//bias
-   trainOutputs[1] = 1;
-
-   trainInputs[2][0]  = 1;
-   trainInputs[2][1]  = 1;
-   trainInputs[2][2]  = 1;//bias
-   trainOutputs[2] = -1;
-
-   trainInputs[3][0]  = -1;
-   trainInputs[3][1]  = -1;
-   trainInputs[3][2]  = 1;//bias
-   trainOutputs[3] = -1;
-*/
-}
 
  public static void train()
  {
@@ -158,12 +128,15 @@ public static void initData()
 
     //training has finished
     //display the results
-    displayResults();
+//    displayResults();
 
  }
 
 
 //************************************
+/**
+ * forward propagation
+ */
 public static void calcNet()
  {
     //calculate the outputs of the hidden neurons
@@ -241,6 +214,40 @@ public static void calcNet()
 
 
 //************************************
+public static void initData()
+{
+
+  System.out.println("initialising data");
+
+  // the data here is the XOR data
+  // it has been rescaled to the range
+  // [-1][1]
+  // an extra input valued 1 is also added
+  // to act as the bias
+/*
+  trainInputs[0][0]  = 1;
+  trainInputs[0][1]  = -1;
+  trainInputs[0][2]  = 1;//bias
+  trainOutputs[0] = 1;
+
+  trainInputs[1][0]  = -1;
+  trainInputs[1][1]  = 1;
+  trainInputs[1][2]  = 1;//bias
+  trainOutputs[1] = 1;
+
+  trainInputs[2][0]  = 1;
+  trainInputs[2][1]  = 1;
+  trainInputs[2][2]  = 1;//bias
+  trainOutputs[2] = -1;
+
+  trainInputs[3][0]  = -1;
+  trainInputs[3][1]  = -1;
+  trainInputs[3][2]  = 1;//bias
+  trainOutputs[3] = -1;
+*/
+}
+
+//************************************
  public static double tanh(double x)
  {
     if (x > 20)
@@ -257,12 +264,22 @@ public static void calcNet()
 
 
 //************************************
+public static double test(int patternNumber) {
+	patNum = patternNumber;
+	calcNet();
+	return outPred;
+}
+
+/**
+ * test and display results
+ */
  public static void displayResults()
     {
      for(int i = 0;i<numPatterns;i++)
         {
-        patNum = i;
-        calcNet();
+//        patNum = i;
+//        calcNet();
+    	 test(i);
         System.out.println("pat = " + (patNum+1) + " actual = " + trainOutputs[patNum] + " neural model = " + outPred);
         }
     }
