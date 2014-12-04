@@ -14,7 +14,7 @@ public class ObjectAvoidance {
 //	private static final boolean DEBUG = true;
 	private static final boolean DEBUG = false;
 
-	private static final int max_iter = 10;
+	private static final int max_iter = 200;
 			
 	EV3UltrasonicSensor ultra = new EV3UltrasonicSensor(SensorPort.S4); // ultrasonic
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
@@ -45,13 +45,14 @@ public class ObjectAvoidance {
 			ultra.getDistanceMode().fetchSample(sample, 0);
 			dist = sample[0];
 			Delay.msDelay(200);
-			if(dist <= 0.3) {
+			if(dist > 0.3) {
 				patternNum = 0; state = 0;
 			} else {
 				patternNum = 1; state = 1;
 			}
 			// rounding
 			result = (int) (MLP.test(patternNum) + 0.5);
+			System.out.println(dist + " " + patternNum + " " + result);
 			
 			switch (result) {
 			case 0: // move straight
