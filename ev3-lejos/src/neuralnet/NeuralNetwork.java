@@ -49,7 +49,7 @@ public class NeuralNetwork
 	  0.743352171704018 0.861532711544111
 	 */
 	double[][] weights; // need matrix?
-	int epochs = 100;
+	int epochs = 1000;
 	double learningRate = 0.35;
 	long seed = System.currentTimeMillis();
 //	int seed = (int) DateTime.Now.Ticks & 0x0000FFFF;

@@ -107,6 +107,7 @@ public class MLP
         //display the overall network error
         //after each epoch
         calcOverallError();
+        if(j % 100 == 0)
         System.out.println("epoch = " + j + "  RMS Error = " + RMSerror);
 
     }
