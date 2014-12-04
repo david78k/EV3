@@ -45,19 +45,24 @@ public class ObjectAvoidance {
 				if(dist <= 0.3) break;
 			}
 			System.out.println(dist);
+			speed = 0;
+			leftMotor.setPower(speed);
+			rightMotor.setPower(speed);
+			Delay.msDelay(2000);
 			// object detected
 			speed = -30;
 			// move back
 			leftMotor.setPower(speed);
 			rightMotor.setPower(speed);
 			Delay.msDelay(2000);
-			speed = 0;
+			speed = 15;
 			leftMotor.setPower(speed);
+			speed = -15;
 			rightMotor.setPower(speed);
 			// move right
 			// steering = 30;
-			leftMotor.forward();
-			rightMotor.forward();
+//			leftMotor.forward();
+//			rightMotor.backward();
 			Delay.msDelay(2000);
 		}
 		Delay.msDelay(10000);
