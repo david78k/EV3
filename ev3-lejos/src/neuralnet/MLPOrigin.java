@@ -31,7 +31,7 @@ Symantec Cafe Lite
 
 import java.lang.Math;
 
-public class MLP
+public class MLPOrigin
 {
 
 	//user defineable variables
@@ -41,15 +41,6 @@ public class MLP
 	public static int numPatterns = 4; //number of training patterns
 	public static double LR_IH = 0.7; //learning rate
 	public static double LR_HO = 0.07; //learning rate
-
-/*	double[][] trainInputs = new double[][]{
-			new double[]{0, 1},
-			new double[]{1, 1}
-	};
-	double[][] trainOutputs = new double[][]{
-			new double[]{1, 0},
-			new double[]{0, 1}
-	};*/
 
 	//training data
 	 public static double[][] trainInputs  = new double[numPatterns][numInputs];
