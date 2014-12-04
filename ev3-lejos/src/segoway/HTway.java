@@ -1,3 +1,4 @@
+package segoway;
 //=====================================================================
 // HiTechnic HTWay Version 1.1
 // Copyright (c) 2010 HiTechnic
