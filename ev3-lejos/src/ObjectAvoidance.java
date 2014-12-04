@@ -1,5 +1,6 @@
 import java.io.File;
 
+import neuralnet.NeuralNetwork;
 import lejos.hardware.Button;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
@@ -27,8 +28,6 @@ public class ObjectAvoidance {
 	}
 
 	public void runNeuralNetwork() {
-		
-		
 		
 		int speed = 0;
 		float dist = 0;
