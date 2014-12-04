@@ -14,7 +14,7 @@ public class ObjectAvoidance {
 //	private static final boolean DEBUG = true;
 	private static final boolean DEBUG = false;
 
-	private static final int max_iter = 200;
+	private static final int max_iter = 2000;
 			
 	EV3UltrasonicSensor ultra = new EV3UltrasonicSensor(SensorPort.S4); // ultrasonic
 	EncoderMotor leftMotor = new NXTMotor(MotorPort.A); 
@@ -40,15 +40,20 @@ public class ObjectAvoidance {
 		
 		int i = 0;
 		while(i++ < max_iter && !Button.ESCAPE.isDown()) {
-			// motor rotation degree > 25
-			// in meter
-			ultra.getDistanceMode().fetchSample(sample, 0);
-			dist = sample[0];
-			Delay.msDelay(200);
+			if(state != 1) {
+				// in meter
+				ultra.getDistanceMode().fetchSample(sample, 0);
+				dist = sample[0];
+				Delay.msDelay(200);
+			}
 			if(dist > 0.3) {
 				patternNum = 0; state = 0;
 			} else {
-				patternNum = 1; state = 1;
+				if(state == 0) {
+					patternNum = 1; state = 1;
+				} else {
+					patternNum = 2; state = 2;
+				}
 			}
 			// rounding
 			result = (int) (MLP.test(patternNum) + 0.5);
@@ -63,7 +68,7 @@ public class ObjectAvoidance {
 				break;
 			case 1: // move back
 				// object detected
-				System.out.println(dist);
+				System.out.println("object detected");
 				
 				speed = -30;
 				leftMotor.setPower(speed);
@@ -71,6 +76,7 @@ public class ObjectAvoidance {
 				Delay.msDelay(2000);
 				break;
 			case 2: // move right
+				System.out.println("move right");
 				// steering = 30;
 				speed = -50;
 				leftMotor.setPower(speed);
