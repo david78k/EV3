@@ -33,6 +33,9 @@ public class ObjectAvoidance {
 		int i = 0;
 		while(i++ < max_iter && !Button.ESCAPE.isDown()) {
 			speed = 50;
+			// move straight
+			leftMotor.setPower(speed);
+			rightMotor.setPower(speed);
 			while(true) {
 				// motor rotation degree > 25
 				// in meter
@@ -44,9 +47,17 @@ public class ObjectAvoidance {
 			System.out.println(dist);
 			// object detected
 			speed = -30;
+			// move back
+			leftMotor.setPower(speed);
+			rightMotor.setPower(speed);
 			Delay.msDelay(2000);
 			speed = 0;
+			leftMotor.setPower(speed);
+			rightMotor.setPower(speed);
+			// move right
 			// steering = 30;
+			leftMotor.forward();
+			rightMotor.forward();
 			Delay.msDelay(2000);
 		}
 		Delay.msDelay(10000);
