@@ -33,27 +33,28 @@ import java.lang.Math;
 
 public class MLP
 {
+	
+	static double[][] trainInputs = new double[][]{
+		new double[]{0, 1, 1},
+		new double[]{1, 1, 1}
+	};
+	static double[] trainOutputs = new double[]{1, 0};
+	/*	static double[][] trainOutputs = new double[][]{
+		new double[]{1, 0},
+		new double[]{0, 1}
+	};
+	 */
+	//training data
+//	 public static double[][] trainInputs  = new double[numPatterns][numInputs];
+//	public static double[] trainOutputs = new double[numPatterns];
 
 	//user defineable variables
 	public static int numEpochs = 500; //number of training cycles
 	public static int numInputs  = 3; //number of inputs - this includes the input bias
 	public static int numHidden  = 4; //number of hidden units
-	public static int numPatterns = 4; //number of training patterns
+	public static int numPatterns = trainInputs.length; //number of training patterns
 	public static double LR_IH = 0.7; //learning rate
 	public static double LR_HO = 0.07; //learning rate
-
-/*	double[][] trainInputs = new double[][]{
-			new double[]{0, 1},
-			new double[]{1, 1}
-	};
-	double[][] trainOutputs = new double[][]{
-			new double[]{1, 0},
-			new double[]{0, 1}
-	};*/
-
-	//training data
-	 public static double[][] trainInputs  = new double[numPatterns][numInputs];
-	public static double[] trainOutput = new double[numPatterns];
 
 	//the outputs of the hidden neurons
 	public static double[] hiddenVal  = new double[numHidden];
@@ -95,27 +96,27 @@ public static void initData()
    // [-1][1]
    // an extra input valued 1 is also added
    // to act as the bias
-
+/*
    trainInputs[0][0]  = 1;
    trainInputs[0][1]  = -1;
    trainInputs[0][2]  = 1;//bias
-   trainOutput[0] = 1;
+   trainOutputs[0] = 1;
 
    trainInputs[1][0]  = -1;
    trainInputs[1][1]  = 1;
    trainInputs[1][2]  = 1;//bias
-   trainOutput[1] = 1;
+   trainOutputs[1] = 1;
 
    trainInputs[2][0]  = 1;
    trainInputs[2][1]  = 1;
    trainInputs[2][2]  = 1;//bias
-   trainOutput[2] = -1;
+   trainOutputs[2] = -1;
 
    trainInputs[3][0]  = -1;
    trainInputs[3][1]  = -1;
    trainInputs[3][2]  = 1;//bias
-   trainOutput[3] = -1;
-
+   trainOutputs[3] = -1;
+*/
 }
 
  public static void train()
@@ -184,7 +185,7 @@ public static void calcNet()
     outPred = outPred + hiddenVal[i] * weightsHO[i];
 
     //calculate the error
-    errThisPat = outPred - trainOutput[patNum];
+    errThisPat = outPred - trainOutputs[patNum];
  }
 
 
@@ -261,7 +262,7 @@ public static void calcNet()
         {
         patNum = i;
         calcNet();
-        System.out.println("pat = " + (patNum+1) + " actual = " + trainOutput[patNum] + " neural model = " + outPred);
+        System.out.println("pat = " + (patNum+1) + " actual = " + trainOutputs[patNum] + " neural model = " + outPred);
         }
     }
 
