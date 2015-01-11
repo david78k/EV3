@@ -58,3 +58,4 @@ monobrick/ev3/ev3/bin/Debug/ev3.exe
 monobrick/ev3/ev3/bin/Debug/ev3.pdb
 monobrick/ev3/ev3/bin/Debug/ev3.vshost.exe
 monobrick/ev3/ev3/obj/x86/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+*.class
