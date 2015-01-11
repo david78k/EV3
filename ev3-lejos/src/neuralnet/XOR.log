@@ -1,0 +1,11 @@
+initialising data
+epoch = 0  RMS Error = 0.6445466038716903
+epoch = 100  RMS Error = 0.3680414447166694
+epoch = 200  RMS Error = 0.3961727142546005
+epoch = 300  RMS Error = 0.31077639911710836
+epoch = 400  RMS Error = 0.2758527337092009
+epoch = 500  RMS Error = 0.29135861820169817
+pat = 1 actual = 0.0 neural model = 0.0
+pat = 2 actual = 1.0 neural model = 0.6000780598752624
+pat = 3 actual = 1.0 neural model = 0.5866102826123263
+pat = 4 actual = 0.0 neural model = 0.0934385411199079
